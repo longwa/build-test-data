@@ -1,0 +1,29 @@
+<plugin name='build-test-data' version='2.0.4' grailsVersion='2.0.0 &gt; *'>
+  <author>Ted Naleid</author>
+  <authorEmail>contact@naleid.com</authorEmail>
+  <title>Build Test Data Plugin</title>
+  <description>\
+Enables the easy creation of test data by automatic inspection of constraints.  Any properties that are required have
+their constraints examined and a value is automatically provided for them.
+</description>
+  <documentation>http://bitbucket.org/tednaleid/grails-test-data/wiki/Home</documentation>
+  <type>BuildTestDataGrailsPlugin</type>
+  <resources>
+    <resource>TestDataConfigTemplate</resource>
+    <resource>grails.buildtestdata.BuildTestDataService</resource>
+  </resources>
+  <repositories>
+    <repository name='grailsCentral' url='http://grails.org/plugins' />
+    <repository name='http://repo.grails.org/grails/core' url='http://repo.grails.org/grails/core/' />
+    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+    <repository name='http://grails.org/plugins' url='http://grails.org/plugins' />
+  </repositories>
+  <dependencies>
+    <compile>
+      <dependency group='dk.brics.automaton' name='automaton' version='1.11-8' />
+    </compile>
+  </dependencies>
+  <plugins />
+  <runtimePluginRequirements />
+  <behavior />
+</plugin>
