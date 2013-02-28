@@ -33,12 +33,12 @@ In a unit test, you'll just use an annotation to let it know what domain class y
 - Changes to domain objects that do not affect the the code under test should not break the test.
 
 
-- [Features](wiki/Features)
-- [Overview Presentation](http://www.slideshare.net/tednaleid/grails-buildtestdata-plugin-1723277)
-- [Installation](wiki/Installation)
-- [Basic Usage](wiki/BasicUsage)
-- [Unit Test Support](wiki/UnitTestSupport) - as of Grails 2.0
-- [SampleCode|Sample Code](wiki/SampleCode)
-- [Configuration using TestDataConfig](wiki/TestDataConfig)
-- [Other Test Data Creation Patterns](wiki/OtherTestDataCreationStrengthsWeaknesses)
-- [Release Notes/Upgrade Instructions](wiki/ReleaseNotes)
+* [Features](http://github.com/tednaleid/build-test-data/wiki/Features)
+* [Overview Presentation](http://www.slideshare.net/tednaleid/grails-buildtestdata-plugin-1723277)
+* [Installation](http://github.com/tednaleid/build-test-data/wiki/Installation)
+* [Basic Usage](http://github.com/tednaleid/build-test-data/wiki/BasicUsage)
+* [Unit Test Support](http://github.com/tednaleid/build-test-data/wiki/UnitTestSupport) - as of Grails 2.0
+* [Sample Code](http://github.com/tednaleid/build-test-data/wiki/SampleCode)
+* [Configuration using TestDataConfig](http://github.com/tednaleid/build-test-data/wiki/TestDataConfig)
+* [Other Test Data Creation Patterns](http://github.com/tednaleid/build-test-data/wiki/OtherTestDataCreationStrengthsWeaknesses)
+* [Release Notes/Upgrade Instructions](http://github.com/tednaleid/build-test-data/wiki/ReleaseNotes)
