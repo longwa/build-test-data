@@ -4,7 +4,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
 class BuildTestDataGrailsPlugin {
     // the plugin version
-    def version = "2.0.4"
+    def version = "2.0.5-RC1"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0.0 > *"
     def dependsOn = [:]
