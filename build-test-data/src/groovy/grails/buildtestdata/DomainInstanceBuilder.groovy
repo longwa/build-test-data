@@ -18,6 +18,8 @@ import grails.buildtestdata.handler.ValidatorConstraintHandler
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.apache.commons.logging.LogFactory
 
+import java.lang.reflect.Modifier
+
 import static grails.buildtestdata.TestDataConfigurationHolder.*
 import static grails.buildtestdata.DomainUtil.*
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -67,6 +69,8 @@ public class DomainInstanceBuilder {
     def domainProperties
     def requiredDomainPropertyNames
     def propsToSaveFirst
+
+    Map<Class, Boolean> keyTypeCache = [:]
 
     DomainInstanceBuilder(domainArtefact) {
 
@@ -167,7 +171,7 @@ public class DomainInstanceBuilder {
             domainInstance."$propertyName" = value
         }
 
-        GrailsDomainClass defDomain = getDomainArtefact(domainInstance.class)
+        GrailsDomainClass defDomain = getDomainArtefact(domainInstance.class) as GrailsDomainClass
         def domainProp = defDomain.propertyMap[propertyName]
 
         if (domainProp?.isManyToOne()) {            
@@ -235,7 +239,7 @@ public class DomainInstanceBuilder {
             }
         }
 
-        boolean hasAssignedKey = isAssignedKey(domainInstance)
+        boolean hasAssignedKey = isAssignedKey(domainInstance.getClass())
         if ((hasAssignedKey || domainInstance.ident() == null) && !domainInstance.save()) {
             throw new Exception("Unable to build valid ${domainInstance.class.name} instance, errors: [${domainInstance.errors.collect {'\t' + it + '\n'}}]")
         }
@@ -256,22 +260,44 @@ public class DomainInstanceBuilder {
         }
     }
 
-    def isAssignedKey(domainInstance) {
-        def assigned = false
+    /**
+     * See if the given class (presumably a domain class) has an assigned key. We do this
+     * by looking for and evaluating the static mapping block. This can come from the
+     * GrailsDomainBinder, but that introduces a hibernate dependency.
+     *
+     * @param clazz
+     * @return true if the class has a mapping block with an id(generator: '...') defined
+     */
+    private boolean isAssignedKey(Class clazz) {
+        boolean assigned = false
 
-        // If the instance has a mapping property, evaluate the closure to see if it has an id
-        // property which is assigned. This is done generically to avoid needing hibernate dependencies.
-        if( domainInstance.hasProperty("mapping") ) {
-            MappingDelegate mappingDelegate = new MappingDelegate()
-            def mappingBlock = domainInstance.getProperty("mapping")
-            if ( mappingBlock instanceof Closure ) {
-                mappingBlock = mappingBlock.clone() as Closure
+        // See if we've already check this instance
+        if( keyTypeCache.containsKey(clazz) ) {
+            assigned = keyTypeCache[clazz]
+        }
+        else {
+            // If the instance has a mapping property, evaluate the closure to see if it has an id
+            // property which is assigned. This is done generically to avoid needing hibernate dependencies.
+            def hasMapping = clazz.declaredFields.find { it.name == 'mapping' && Modifier.isStatic(it.modifiers) }
+            if( hasMapping && clazz.mapping instanceof Closure) {
+                MappingDelegate mappingDelegate = new MappingDelegate()
+
+                // Evaluate the mapping block
+                def mappingBlock = clazz.mapping.clone() as Closure
                 mappingBlock.delegate = mappingDelegate
                 mappingBlock.call()
+
                 assigned = mappingDelegate.isAssigned
             }
         }
 
+        // Sometimes the mapping block is in a parent class, we'll check those as well
+        if( !assigned && clazz.superclass ) {
+            assigned = isAssignedKey(clazz.superclass)
+        }
+
+        // Remember this class so we don't have to check again
+        keyTypeCache[clazz] = assigned
         assigned
     }
 
@@ -295,8 +321,8 @@ public class DomainInstanceBuilder {
     static class MappingDelegate {
         boolean isAssigned = false
         def invokeMethod(String name, args) {
-            if ( name == "id" && args && args[0] instanceof Map ) {
-                isAssigned = (args[0].generator != null)
+            if ( name == "id" && args && (args[0] instanceof Map) && args[0].generator ) {
+                isAssigned = true
             }
         }
     }
