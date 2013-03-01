@@ -21,8 +21,6 @@ import org.apache.commons.logging.LogFactory
 import static grails.buildtestdata.TestDataConfigurationHolder.*
 import static grails.buildtestdata.DomainUtil.*
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 
 public class DomainInstanceBuilder {
     private static log = LogFactory.getLog(this)
@@ -237,11 +235,12 @@ public class DomainInstanceBuilder {
             }
         }
 
-        if ((isAssignedKey(domainInstance) || domainInstance.ident() == null) && !domainInstance.save()) {
+        boolean hasAssignedKey = isAssignedKey(domainInstance)
+        if ((hasAssignedKey || domainInstance.ident() == null) && !domainInstance.save()) {
             throw new Exception("Unable to build valid ${domainInstance.class.name} instance, errors: [${domainInstance.errors.collect {'\t' + it + '\n'}}]")
         }
 
-        if (!(isAssignedKey(domainInstance) || domainInstance.ident() == null)) {
+        if (!(hasAssignedKey || domainInstance.ident() == null)) {
             log.info "After ${domainInstance.class.name}.save() $domainInstance, skipped because it already has a key and isn't assigned"
         }
         else {
@@ -260,11 +259,19 @@ public class DomainInstanceBuilder {
     def isAssignedKey(domainInstance) {
         def assigned = false
 
-        // Try to get the identity mapping attribute from the domain object
-        def identity = GrailsDomainBinder.getMapping(domainInstance.class)?.identity
-        if( identity ) {
-            assigned = (identity instanceof CompositeIdentity) || identity.generator != null
+        // If the instance has a mapping property, evaluate the closure to see if it has an id
+        // property which is assigned. This is done generically to avoid needing hibernate dependencies.
+        if( domainInstance.hasProperty("mapping") ) {
+            MappingDelegate mappingDelegate = new MappingDelegate()
+            def mappingBlock = domainInstance.getProperty("mapping")
+            if ( mappingBlock instanceof Closure ) {
+                mappingBlock = mappingBlock.clone() as Closure
+                mappingBlock.delegate = mappingDelegate
+                mappingBlock.call()
+                assigned = mappingDelegate.isAssigned
+            }
         }
+
         assigned
     }
 
@@ -280,6 +287,17 @@ public class DomainInstanceBuilder {
         }
         else {
             return domainArtefact
+        }
+    }
+
+    // Evaluate the mapping block to see if there is an id mapping with a generator defined
+    // This is just a quick and dirty way to determine assigned keys without using hibernate
+    static class MappingDelegate {
+        boolean isAssigned = false
+        def invokeMethod(String name, args) {
+            if ( name == "id" && args && args[0] instanceof Map ) {
+                isAssigned = (args[0].generator != null)
+            }
         }
     }
 }
