@@ -14,8 +14,11 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.junit.Before;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("UnusedDeclaration")
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class BuildTransformation extends TestForTransformation {
 
@@ -44,44 +47,47 @@ public class BuildTransformation extends TestForTransformation {
 
         ListExpression values = getListOfClasses(node);
         if (values == null) {
-            error(source, "Error processing class '" + cName + "'. " + MY_TYPE_NAME +
-                    " annotation expects a class or a list of classes to mock");
+            error(source, "Error processing class '" + cName + "'. " + MY_TYPE_NAME + " annotation expects a class or a list of classes to mock");
             return;
         }
 
-        weaveMixinClass(classNode, BuildTestDataUnitTestMixin.class);
+        List<ClassExpression> domainClassNodes = new ArrayList<ClassExpression>();
         for (Expression expression : values.getExpressions()) {
             if (expression instanceof ClassExpression) {
-                weaveMock(classNode, (ClassExpression) expression, false);
-                addBuildCollaboratorToSetup(classNode, (ClassExpression) expression);
+                ClassExpression classEx = (ClassExpression) expression;
+                domainClassNodes.add(classEx);
             }
+        }
+        if(!domainClassNodes.isEmpty()) {
+            weaveMixinClass(classNode, BuildTestDataUnitTestMixin.class);
+            addBuildCollaboratorToSetup(classNode, domainClassNodes);
         }
     }
 
-    private void addBuildCollaboratorToSetup(ClassNode classNode, ClassExpression targetClassExpression) {
+    private void addBuildCollaboratorToSetup(ClassNode classNode, List<ClassExpression> targetClasses) {
         BlockStatement methodBody;
         if (isJunit3Test(classNode)) {
             methodBody = getOrCreateNoArgsMethodBody(classNode, SET_UP_METHOD);
-            addBuildCollaborator(targetClassExpression, methodBody);
+            addBuildCollaborator(targetClasses, methodBody);
         } else {
-            addToJunit4BeforeMethods(classNode, targetClassExpression);
+            addToJunit4BeforeMethods(classNode, targetClasses);
         }
     }
 
-    private void addToJunit4BeforeMethods(ClassNode classNode, ClassExpression targetClassExpression) {
+    private void addToJunit4BeforeMethods(ClassNode classNode, List<ClassExpression> targetClasses) {
         Map<String, MethodNode> declaredMethodsMap = classNode.getDeclaredMethodsMap();
         boolean weavedIntoBeforeMethods = false;
         for (MethodNode methodNode : declaredMethodsMap.values()) {
             if (isDeclaredBeforeMethod(methodNode)) {
                 Statement code = getMethodBody(methodNode);
-                addBuildCollaborator(targetClassExpression, (BlockStatement) code);
+                addBuildCollaborator(targetClasses, (BlockStatement) code);
                 weavedIntoBeforeMethods = true;
             }
         }
 
         if (!weavedIntoBeforeMethods) {
             BlockStatement junit4Setup = getJunit4Setup(classNode);
-            addBuildCollaborator(targetClassExpression, junit4Setup);
+            addBuildCollaborator(targetClasses, junit4Setup);
         }
     }
 
@@ -117,9 +123,11 @@ public class BuildTransformation extends TestForTransformation {
 
     }
 
-    protected void addBuildCollaborator(ClassExpression targetClass, BlockStatement methodBody) {
-        ArgumentListExpression args = new ArgumentListExpression();
-        args.addExpression(targetClass);
+    protected void addBuildCollaborator(List<ClassExpression> targetClasses, BlockStatement methodBody) {
+        ListExpression args = new ListExpression();
+        for (ClassExpression targetClass : targetClasses) {
+            args.addExpression(targetClass);
+        }
         methodBody.getStatements().add(0, new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "mockForBuild", args)));
     }
 }
