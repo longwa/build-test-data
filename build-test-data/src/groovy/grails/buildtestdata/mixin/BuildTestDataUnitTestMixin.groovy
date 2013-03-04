@@ -35,7 +35,7 @@ import java.lang.reflect.Modifier
  * not used by the test), it may perform worse than @Mock for complex object graphs.
  */
 class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
-
+    static Map<String, List<GrailsDomainClass>> subClassCache = [:]
     static {
         TestDataConfigurationHolder.loadTestDataConfig()
     }
@@ -208,23 +208,31 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      * @return list of subclasses for this parent
      */
     private List<GrailsDomainClass> findDomainSubclasses(GrailsDomainClass domainClass) {
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true)
-        provider.addIncludeFilter(new AssignableTypeFilter(domainClass.getClazz()))
-
-        // Scan all packages
+        // Finding subclasses is expensive, only do this once if possible for the whole run
         List<GrailsDomainClass> subClassList = []
-        Set<BeanDefinition> components = provider.findCandidateComponents("")
-        for(BeanDefinition it in components) {
-            Class subClass = grailsApplication.classLoader.loadClass(it.beanClassName)
+        if( subClassCache.containsKey(domainClass.fullName) ) {
+            subClassList = subClassCache[domainClass.fullName]
+        }
+        else {
+            ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true)
+            provider.addIncludeFilter(new AssignableTypeFilter(domainClass.getClazz()))
 
-            // If this is a domain class and it's not been registered, register it and setup subclasses
-            if ( DomainClassArtefactHandler.isDomainClass(subClass) ) {
-                GrailsDomainClass domainSubClass = getGrailsDomainClass(subClass)
-                domainClass.subClasses << domainSubClass
-                subClassList << domainSubClass
+            // Scan all packages
+            Set<BeanDefinition> components = provider.findCandidateComponents("")
+            for(BeanDefinition it in components) {
+                Class subClass = grailsApplication.classLoader.loadClass(it.beanClassName)
+
+                // If this is a domain class and it's not been registered, register it and setup subclasses
+                if ( DomainClassArtefactHandler.isDomainClass(subClass) ) {
+                    GrailsDomainClass domainSubClass = getGrailsDomainClass(subClass)
+                    subClassList << domainSubClass
+                }
             }
         }
 
+        // Add to the domain class so that the domain instance builder can use it later
+        domainClass.getSubClasses().addAll(subClassList)
+        subClassCache[domainClass.fullName] = subClassList
         subClassList
     }
 
