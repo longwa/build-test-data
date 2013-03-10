@@ -29,6 +29,7 @@ target
 UrlMappings.groovy
 sitemesh.xml
 applicationContext.xml
+plugin.xml
 
 .DS_Store
 
