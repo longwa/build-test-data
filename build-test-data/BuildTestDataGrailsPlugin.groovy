@@ -1,6 +1,5 @@
 import grails.buildtestdata.BuildTestDataService
 import grails.buildtestdata.TestDataConfigurationHolder
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
 class BuildTestDataGrailsPlugin {
     // the plugin version
@@ -11,7 +10,9 @@ class BuildTestDataGrailsPlugin {
     def pluginExcludes = [
             "grails-app/views/error.gsp"
     ]
-    def loadAfter = ['services']
+
+    def loadAfter = ['services', 'dataSource', 'hibernate', 'validation']
+    def watchedResources = ["file:./grails-app/domain/**.groovy"]
 
     def author = "Ted Naleid"
     def authorEmail = "contact@naleid.com"
@@ -35,6 +36,14 @@ their constraints examined and a value is automatically provided for them.
     def issueManagement = [ system: 'bitbucket', url: 'https://bitbucket.org/tednaleid/grails-test-data/issues' ]
 
     def doWithDynamicMethods = { applicationContext ->
+        decorateDomainClasses(application.domainClasses)
+    }
+
+    def onChange = { event ->
+        decorateDomainClasses(application.domainClasses)
+    }
+
+    private decorateDomainClasses(domainClasses) {
         def buildTestDataService = new BuildTestDataService()
 
         log.debug("Loading config file (if present)")
@@ -43,41 +52,20 @@ their constraints examined and a value is automatically provided for them.
         if (TestDataConfigurationHolder.isPluginEnabled()) {
             log.debug('build-test-data plugin enabled, decorating domain classes with build methods')
 
-            application.domainClasses.each { domainClass ->
+            domainClasses.each { domainClass ->
                 log.debug("decorating $domainClass with build-test-data 'build' methods")
                 try {
                     buildTestDataService.decorateWithMethods(domainClass)
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     log.error "Error decorating ${domainClass}. Message: [${e.getMessage()}]"
                 }
             }
 
             log.debug("done decorating domain classes with 'build' methods")
-        } else {
-            log.warn("build-test-data plugin is disabled in this environment")
         }
-    }
-
-    // If a domain class changes, re-decorate the newly loaded classes
-    def onChange = { event ->
-        def buildTestDataService = new BuildTestDataService()
-        def domainClass = event.source
-
-        if( domainClass instanceof GrailsDomainClass ) {
-            log.debug("Loading config file (if present)")
-            TestDataConfigurationHolder.loadTestDataConfig()
-
-            if (TestDataConfigurationHolder.isPluginEnabled()) {
-                log.debug("build-test-data plugin enabled, re-decorating domain class ${domainClass} with build methods")
-                try {
-                    buildTestDataService.decorateWithMethods(domainClass)
-                } catch (Exception e) {
-                    log.error("Error decorating ${domainClass}", e)
-                }
-            }
-            else {
-                log.warn("build-test-data plugin is disabled in this environment")
-            }
+        else {
+            log.warn("build-test-data plugin is disabled in this environment")
         }
     }
 }
