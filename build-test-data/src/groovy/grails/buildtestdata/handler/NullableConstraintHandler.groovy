@@ -105,7 +105,7 @@ public class NullableConstraintHandler implements ConstraintHandler {
         // probably something like JodaTime that can be configured to be saved
         // we don't want to have to have all kinds of jar files in our code, plus we couldn't handle user created classes
         Class propertyType = constrainedProperty.propertyType
-        log.info("Trying to instantiate an instance of $propertyType from the class.newInstance() method")
+        log.debug("Trying to instantiate an instance of $propertyType from the class.newInstance() method")
         def configuredParams = getPropertyValues(propertyType.name, getConfigPropertyNames(propertyType.name))
         if (configuredParams) {
             log.debug "Instantiating with params: ${configuredParams}"

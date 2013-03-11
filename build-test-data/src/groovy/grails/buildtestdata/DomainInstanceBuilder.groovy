@@ -27,6 +27,12 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
 public class DomainInstanceBuilder {
     private static log = LogFactory.getLog(this)
 
+    // Special logging to see the recursive building of the object graph. Useful
+    // for tracking down issues with large graph construction without other
+    // noise from BTD.
+    private static graphLog = LogFactory.getLog("grails.buildtestdata.GRAPH")
+    private static graphDepth = 0
+
     static CONSTRAINT_SORT_ORDER = [
         ConstrainedProperty.IN_LIST_CONSTRAINT, // most important
         ConstrainedProperty.EMAIL_CONSTRAINT,
@@ -127,22 +133,25 @@ public class DomainInstanceBuilder {
     }
 
     def buildWithoutSave(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
-        def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
-        circularCheckList.update(domainInstance, domainInstance.validate())
-        return domainInstance
+        logToGraph("buildWithoutSave: ${domainClass.name}") {
+            def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
+            circularCheckList.update(domainInstance, domainInstance.validate())
+            return domainInstance
+        }
     }
 
     def build(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
-        def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
-        domainInstance = save(domainInstance)
+        logToGraph("build: ${domainClass.name}") {
+            def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
+            domainInstance = save(domainInstance)
 
-        // TODO: do we really need to validate here?  What does that add?
-        circularCheckList.update(domainInstance, domainInstance.validate())
-        return domainInstance
+            // TODO: do we really need to validate here?  What does that add?
+            circularCheckList.update(domainInstance, domainInstance.validate())
+            return domainInstance
+        }
     }
 
     def populateInstance(domainInstance, Map propValues, CircularCheckList circularCheckList) {
-
         propValues = findMissingConfigValues(propValues) + propValues
 
         for (property in propValues.keySet()) {
@@ -313,6 +322,17 @@ public class DomainInstanceBuilder {
         }
         else {
             return domainArtefact
+        }
+    }
+
+    private logToGraph(String str, Closure c) {
+        try {
+            graphLog.info(("    |" * graphDepth) + str)
+            graphDepth++
+            c.call()
+        }
+        finally {
+            graphDepth--
         }
     }
 

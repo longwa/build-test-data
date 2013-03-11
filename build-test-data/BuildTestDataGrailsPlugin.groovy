@@ -3,7 +3,7 @@ import grails.buildtestdata.TestDataConfigurationHolder
 
 class BuildTestDataGrailsPlugin {
     // the plugin version
-    def version = "2.0.5-RC1"
+    def version = "2.0.5-RC2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0.0 > *"
     def dependsOn = [:]
