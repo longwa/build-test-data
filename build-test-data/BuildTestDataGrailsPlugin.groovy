@@ -1,6 +1,8 @@
 import grails.buildtestdata.BuildTestDataService
 import grails.buildtestdata.TestDataConfigurationHolder
+import groovy.util.logging.Commons
 
+@Commons
 class BuildTestDataGrailsPlugin {
     // the plugin version
     def version = "2.0.5-RC2"
@@ -43,7 +45,7 @@ their constraints examined and a value is automatically provided for them.
         decorateDomainClasses(application.domainClasses)
     }
 
-    private decorateDomainClasses(domainClasses) {
+    def decorateDomainClasses(domainClasses) {
         def buildTestDataService = new BuildTestDataService()
 
         log.debug("Loading config file (if present)")
