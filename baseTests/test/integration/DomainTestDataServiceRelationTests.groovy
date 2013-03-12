@@ -24,7 +24,13 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
         CircularSelf.metaClass.ident = identMock
         CircularOne.metaClass.ident = identMock
         CircularTwo.metaClass.ident = identMock
-        
+
+        Owner.metaClass.static.create = {-> Owner.newInstance() }
+        Owned.metaClass.static.create = {-> Owned.newInstance() }
+        EmbeddedOwner.metaClass.static.create = {-> EmbeddedOwner.newInstance() }
+        CircularSelf.metaClass.static.create = {-> CircularSelf.newInstance() }
+        CircularOne.metaClass.static.create = {-> CircularOne.newInstance() }
+        CircularTwo.metaClass.static.create = {-> CircularTwo.newInstance() }
     }
 
     protected void tearDown() {

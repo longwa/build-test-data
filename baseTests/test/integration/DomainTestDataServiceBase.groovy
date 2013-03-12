@@ -31,7 +31,11 @@ class DomainTestDataServiceBase extends GrailsUnitTestCase {
         // mock save method as we don't have things fully hooked up to the DB for these test classes and we're doing validation based on constraints
         domainClass.metaClass.save = saveMock
         domainClass.metaClass.validate = validateMock        
-        domainClass.metaClass.ident = identMock        
+        domainClass.metaClass.ident = identMock
+        domainClass.metaClass.static.create = { ->
+            domainClass.newInstance()
+        }
+
         return domainClass
     }
 

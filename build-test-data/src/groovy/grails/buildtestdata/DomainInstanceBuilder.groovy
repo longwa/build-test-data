@@ -134,7 +134,7 @@ public class DomainInstanceBuilder {
 
     def buildWithoutSave(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
         logToGraph("buildWithoutSave: ${domainClass.name}") {
-            def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
+            def domainInstance = populateInstance(domainClass.create(), propValues, circularCheckList)
             circularCheckList.update(domainInstance, domainInstance.validate())
             return domainInstance
         }
@@ -142,7 +142,7 @@ public class DomainInstanceBuilder {
 
     def build(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
         logToGraph("build: ${domainClass.name}") {
-            def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
+            def domainInstance = populateInstance(domainClass.create(), propValues, circularCheckList)
             domainInstance = save(domainInstance)
 
             // TODO: do we really need to validate here?  What does that add?
