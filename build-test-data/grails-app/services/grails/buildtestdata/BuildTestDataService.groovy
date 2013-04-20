@@ -1,8 +1,5 @@
 package grails.buildtestdata
 
-import grails.buildtestdata.handler.NullableConstraintHandler
-
-
 class BuildTestDataService {
 
     private domainInstanceBuilders = [:]

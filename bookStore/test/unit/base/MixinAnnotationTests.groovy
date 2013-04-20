@@ -9,7 +9,7 @@ class MixinAnnotationTests {
 
     void testMockForBuildAddsBuildMethod() {
         assert !Author.metaClass.hasMetaMethod('build')
-        mockForBuild Author
+        mockForBuild([Author])
         assert Author.metaClass.hasMetaMethod('build')
 
         def domainObject = Author.build()

@@ -18,14 +18,20 @@ import grails.buildtestdata.handler.ValidatorConstraintHandler
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.apache.commons.logging.LogFactory
 
+import java.lang.reflect.Modifier
+
 import static grails.buildtestdata.TestDataConfigurationHolder.*
 import static grails.buildtestdata.DomainUtil.*
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 
 public class DomainInstanceBuilder {
     private static log = LogFactory.getLog(this)
+
+    // Special logging to see the recursive building of the object graph. Useful
+    // for tracking down issues with large graph construction without other
+    // noise from BTD.
+    private static graphLog = LogFactory.getLog("grails.buildtestdata.GRAPH")
+    private static graphDepth = 0
 
     static CONSTRAINT_SORT_ORDER = [
         ConstrainedProperty.IN_LIST_CONSTRAINT, // most important
@@ -69,6 +75,8 @@ public class DomainInstanceBuilder {
     def domainProperties
     def requiredDomainPropertyNames
     def propsToSaveFirst
+
+    Map<Class, Boolean> keyTypeCache = [:]
 
     DomainInstanceBuilder(domainArtefact) {
 
@@ -125,22 +133,25 @@ public class DomainInstanceBuilder {
     }
 
     def buildWithoutSave(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
-        def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
-        circularCheckList.update(domainInstance, domainInstance.validate())
-        return domainInstance
+        logToGraph("buildWithoutSave: ${domainClass.name}") {
+            def domainInstance = populateInstance(domainClass.create(), propValues, circularCheckList)
+            circularCheckList.update(domainInstance, domainInstance.validate())
+            return domainInstance
+        }
     }
 
     def build(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
-        def domainInstance = populateInstance(domainClass.newInstance(), propValues, circularCheckList)
-        domainInstance = save(domainInstance)
+        logToGraph("build: ${domainClass.name}") {
+            def domainInstance = populateInstance(domainClass.create(), propValues, circularCheckList)
+            domainInstance = save(domainInstance)
 
-        // TODO: do we really need to validate here?  What does that add?
-        circularCheckList.update(domainInstance, domainInstance.validate())
-        return domainInstance
+            // TODO: do we really need to validate here?  What does that add?
+            circularCheckList.update(domainInstance, domainInstance.validate())
+            return domainInstance
+        }
     }
 
     def populateInstance(domainInstance, Map propValues, CircularCheckList circularCheckList) {
-
         propValues = findMissingConfigValues(propValues) + propValues
 
         for (property in propValues.keySet()) {
@@ -169,7 +180,7 @@ public class DomainInstanceBuilder {
             domainInstance."$propertyName" = value
         }
 
-        GrailsDomainClass defDomain = getDomainArtefact(domainInstance.class)
+        GrailsDomainClass defDomain = getDomainArtefact(domainInstance.class) as GrailsDomainClass
         def domainProp = defDomain.propertyMap[propertyName]
 
         if (domainProp?.isManyToOne()) {            
@@ -237,11 +248,12 @@ public class DomainInstanceBuilder {
             }
         }
 
-        if ((isAssignedKey(domainInstance) || domainInstance.ident() == null) && !domainInstance.save()) {
+        boolean hasAssignedKey = isAssignedKey(domainInstance.getClass())
+        if ((hasAssignedKey || domainInstance.ident() == null) && !domainInstance.save()) {
             throw new Exception("Unable to build valid ${domainInstance.class.name} instance, errors: [${domainInstance.errors.collect {'\t' + it + '\n'}}]")
         }
 
-        if (!(isAssignedKey(domainInstance) || domainInstance.ident() == null)) {
+        if (!(hasAssignedKey || domainInstance.ident() == null)) {
             log.info "After ${domainInstance.class.name}.save() $domainInstance, skipped because it already has a key and isn't assigned"
         }
         else {
@@ -257,14 +269,44 @@ public class DomainInstanceBuilder {
         }
     }
 
-    def isAssignedKey(domainInstance) {
-        def assigned = false
+    /**
+     * See if the given class (presumably a domain class) has an assigned key. We do this
+     * by looking for and evaluating the static mapping block. This can come from the
+     * GrailsDomainBinder, but that introduces a hibernate dependency.
+     *
+     * @param clazz
+     * @return true if the class has a mapping block with an id(generator: '...') defined
+     */
+    private boolean isAssignedKey(Class clazz) {
+        boolean assigned = false
 
-        // Try to get the identity mapping attribute from the domain object
-        def identity = GrailsDomainBinder.getMapping(domainInstance.class)?.identity
-        if( identity ) {
-            assigned = (identity instanceof CompositeIdentity) || identity.generator != null
+        // See if we've already check this instance
+        if( keyTypeCache.containsKey(clazz) ) {
+            assigned = keyTypeCache[clazz]
         }
+        else {
+            // If the instance has a mapping property, evaluate the closure to see if it has an id
+            // property which is assigned. This is done generically to avoid needing hibernate dependencies.
+            def hasMapping = clazz.declaredFields.find { it.name == 'mapping' && Modifier.isStatic(it.modifiers) }
+            if( hasMapping && clazz.mapping instanceof Closure) {
+                MappingDelegate mappingDelegate = new MappingDelegate()
+
+                // Evaluate the mapping block
+                def mappingBlock = clazz.mapping.clone() as Closure
+                mappingBlock.delegate = mappingDelegate
+                mappingBlock.call()
+
+                assigned = mappingDelegate.isAssigned
+            }
+        }
+
+        // Sometimes the mapping block is in a parent class, we'll check those as well
+        if( !assigned && clazz.superclass ) {
+            assigned = isAssignedKey(clazz.superclass)
+        }
+
+        // Remember this class so we don't have to check again
+        keyTypeCache[clazz] = assigned
         assigned
     }
 
@@ -280,6 +322,28 @@ public class DomainInstanceBuilder {
         }
         else {
             return domainArtefact
+        }
+    }
+
+    private logToGraph(String str, Closure c) {
+        try {
+            graphLog.info(("    |" * graphDepth) + str)
+            graphDepth++
+            c.call()
+        }
+        finally {
+            graphDepth--
+        }
+    }
+
+    // Evaluate the mapping block to see if there is an id mapping with a generator defined
+    // This is just a quick and dirty way to determine assigned keys without using hibernate
+    static class MappingDelegate {
+        boolean isAssigned = false
+        def invokeMethod(String name, args) {
+            if ( name == "id" && args && (args[0] instanceof Map) && args[0].generator ) {
+                isAssigned = true
+            }
         }
     }
 }
