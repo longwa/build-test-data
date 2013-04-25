@@ -327,7 +327,7 @@ public class DomainInstanceBuilder {
 
     private logToGraph(String str, Closure c) {
         try {
-            graphLog.info(("    |" * graphDepth) + str)
+            graphLog.debug(("    |" * graphDepth) + str)
             graphDepth++
             c.call()
         }
