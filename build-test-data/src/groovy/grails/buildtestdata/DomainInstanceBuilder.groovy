@@ -1,30 +1,30 @@
 package grails.buildtestdata
 
-import grails.buildtestdata.handler.NullableConstraintHandler
+import static grails.buildtestdata.DomainUtil.*
+import static grails.buildtestdata.TestDataConfigurationHolder.*
+import grails.buildtestdata.handler.BlankConstraintHandler
 import grails.buildtestdata.handler.ConstraintHandler
-import grails.buildtestdata.handler.MinSizeConstraintHandler
-import grails.buildtestdata.handler.MaxSizeConstraintHandler
-import grails.buildtestdata.handler.InListConstraintHandler
 import grails.buildtestdata.handler.CreditCardConstraintHandler
 import grails.buildtestdata.handler.EmailConstraintHandler
-import grails.buildtestdata.handler.UrlConstraintHandler
+import grails.buildtestdata.handler.InListConstraintHandler
+import grails.buildtestdata.handler.MatchesConstraintHandler
+import grails.buildtestdata.handler.MaxConstraintHandler
+import grails.buildtestdata.handler.MaxSizeConstraintHandler
+import grails.buildtestdata.handler.MinConstraintHandler
+import grails.buildtestdata.handler.MinSizeConstraintHandler
+import grails.buildtestdata.handler.NullableConstraintHandler
 import grails.buildtestdata.handler.RangeConstraintHandler
 import grails.buildtestdata.handler.SizeConstraintHandler
-import grails.buildtestdata.handler.MinConstraintHandler
-import grails.buildtestdata.handler.MaxConstraintHandler
-import grails.buildtestdata.handler.MatchesConstraintHandler
-import grails.buildtestdata.handler.BlankConstraintHandler
+import grails.buildtestdata.handler.UrlConstraintHandler
 import grails.buildtestdata.handler.ValidatorConstraintHandler
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.apache.commons.logging.LogFactory
 
 import java.lang.reflect.Modifier
 
-import static grails.buildtestdata.TestDataConfigurationHolder.*
-import static grails.buildtestdata.DomainUtil.*
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
 
-public class DomainInstanceBuilder {
+class DomainInstanceBuilder {
     private static log = LogFactory.getLog(this)
 
     // Special logging to see the recursive building of the object graph. Useful
@@ -99,14 +99,14 @@ public class DomainInstanceBuilder {
     def findRequiredPropertyNames(domainArtefact) {
         def constrainedProperties = domainArtefact.constrainedProperties
         def allPropertyNames = constrainedProperties.keySet()
-        return allPropertyNames.findAll { propName ->                   
+        return allPropertyNames.findAll { propName ->
             !constrainedProperties."$propName".isNullable()
         }
     }
 
     def findDomainProperties(domainArtefact) {
         domainArtefact.constrainedProperties.values().findAll { constrainedProperty ->
-            propertyIsToOneDomainClass(constrainedProperty.propertyType) 
+            propertyIsToOneDomainClass(constrainedProperty.propertyType)
         }
     }
 
@@ -127,7 +127,7 @@ public class DomainInstanceBuilder {
         def list = domainClass.list(limit: 1)
         return list ? list.first() : null
     }
-    
+
     def findExisting(propValues) {
         return domainClass.findWhere(propValues)
     }
@@ -183,7 +183,7 @@ public class DomainInstanceBuilder {
         GrailsDomainClass defDomain = getDomainArtefact(domainInstance.class) as GrailsDomainClass
         def domainProp = defDomain.propertyMap[propertyName]
 
-        if (domainProp?.isManyToOne()) {            
+        if (domainProp?.isManyToOne()) {
             // value is an Author and we're a Book, add us to the Author's set of books if there is one
             NullableConstraintHandler.addInstanceToOwningObjectCollection(value, domainInstance, domainProp)
         }
@@ -192,7 +192,7 @@ public class DomainInstanceBuilder {
     def setValueOnNestedProperty(domainInstance, propertyName, value) {
         // this is an embedded property, i.e. 'bar.foo' = 23
         def props = propertyName.split(/\./)
-        props[0..-2].inject(domainInstance) { current, next -> current[next] }[props[-1]] = value        
+        props[0..-2].inject(domainInstance) { current, next -> current[next] }[props[-1]] = value
     }
 
     def findMissingConfigValues(propValues) {
@@ -237,7 +237,7 @@ public class DomainInstanceBuilder {
         constrainedProperty.validate(domain, domain."$propertyName", errors)
         return errors
     }
-    
+
     def save(domainInstance, circularTrap = []) {
         if (circularTrap.contains(domainInstance) || domainInstance instanceof Enum) return
 

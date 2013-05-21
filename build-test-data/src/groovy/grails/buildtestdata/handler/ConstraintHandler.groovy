@@ -1,5 +1,5 @@
-package grails.buildtestdata.handler;
+package grails.buildtestdata.handler
 
-public interface ConstraintHandler {
-    public void handle( domain, propertyName, appliedConstraint, constrainedProperty, circularCheckList);
+interface ConstraintHandler {
+    void handle( domain, propertyName, appliedConstraint, constrainedProperty, circularCheckList)
 }
