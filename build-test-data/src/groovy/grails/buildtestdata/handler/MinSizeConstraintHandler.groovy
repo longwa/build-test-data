@@ -1,14 +1,14 @@
 package grails.buildtestdata.handler
 
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import static org.apache.commons.lang.StringUtils.*
 
+import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
 
-public class MinSizeConstraintHandler implements ConstraintHandler {
-    public void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {
+class MinSizeConstraintHandler implements ConstraintHandler {
+    void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {
         switch (domain."$propertyName".class) {
-            case String.class:
+            case String:
             // try not to mangle email addresses and urls
             def appliedConstraints = constrainedProperty?.appliedConstraints
             if (appliedConstraints?.find {it.name == ConstrainedProperty.URL_CONSTRAINT}) {
@@ -29,6 +29,6 @@ public class MinSizeConstraintHandler implements ConstraintHandler {
                     domain."addTo${capitalize(propertyName)}"(domainProp?.referencedPropertyType.buildWithoutSave([:], circularCheckList))
                 }
             }
-        }        
+        }
     }
 }

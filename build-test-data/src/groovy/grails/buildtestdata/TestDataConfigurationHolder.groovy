@@ -1,9 +1,8 @@
 package grails.buildtestdata
 
-import grails.util.GrailsUtil
-import groovy.util.ConfigObject
+import grails.util.Environment
+
 import org.apache.commons.logging.LogFactory
-import grails.buildtestdata.handler.NullableConstraintHandler
 
 class TestDataConfigurationHolder {
 
@@ -12,7 +11,7 @@ class TestDataConfigurationHolder {
     private static ConfigObject configFile
     private static Map sampleData
 
-    private static ConfigSlurper configSlurper = new ConfigSlurper(GrailsUtil.environment)
+    private static ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
 
     static sampleDataIndexer = [:]
 

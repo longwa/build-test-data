@@ -1,16 +1,14 @@
-grails.project.class.dir = "target/classes"
-grails.project.test.class.dir = "target/test-classes"
-grails.project.test.reports.dir = "target/test-reports"
-grails.project.target.level = 1.6
+grails.project.work.dir = "target"
 
 grails.project.dependency.resolution = {
-    inherits("global") {
-    }
-    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+
+    inherits "global"
+    log "warn"
+
     repositories {
         grailsCentral()
+        mavenLocal()
         mavenCentral()
-        grailsRepo "http://grails.org/plugins"
     }
 
     dependencies {
@@ -18,8 +16,8 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build ":release:2.0.3", {
+        build ":release:2.2.1", ":rest-client-builder:1.0.3", {
             export = false
-        } 
+        }
     }
 }

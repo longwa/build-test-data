@@ -1,21 +1,13 @@
+import grails.buildtestdata.DomainInstanceBuilder
+import grails.buildtestdata.MockErrors
+import grails.buildtestdata.handler.InListConstraintHandler
+import grails.buildtestdata.handler.MaxConstraintHandler
+import grails.buildtestdata.handler.MinConstraintHandler
+import grails.buildtestdata.handler.MinSizeConstraintHandler
+import grails.buildtestdata.handler.RangeConstraintHandler
+
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.springframework.validation.ObjectError
-import grails.buildtestdata.BuildTestDataService
-import grails.buildtestdata.handler.MinConstraintHandler
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.validation.Constraint
-import org.codehaus.groovy.grails.validation.MinConstraint
-import grails.buildtestdata.handler.MinSizeConstraintHandler
-import grails.buildtestdata.handler.MaxConstraintHandler
-import grails.buildtestdata.handler.RangeConstraintHandler
-import grails.buildtestdata.handler.InListConstraintHandler
-import grails.buildtestdata.handler.NullableConstraintHandler
-import grails.buildtestdata.DomainInstanceBuilder
-import grails.buildtestdata.DomainInstanceBuilder
-import org.codehaus.groovy.grails.commons.GrailsClass;
-
-import grails.buildtestdata.MockErrors
-
 
 class DomainTestDataServiceTests extends GroovyTestCase {
 
@@ -102,6 +94,4 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         // tests if we have an unknown constraint that fails validation that we return false
         assertFalse( domainInstanceBuilder.createProperty(mockDomainInstance, 'testProperty', mockConstrainedProperty, [:]) == true )
     }
-
-
 }
