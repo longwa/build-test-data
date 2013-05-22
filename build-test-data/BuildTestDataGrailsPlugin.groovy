@@ -4,22 +4,13 @@ import groovy.util.logging.Commons
 
 @Commons
 class BuildTestDataGrailsPlugin {
-    // the plugin version
     def version = "2.0.5"
-    // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0.0 > *"
-    def dependsOn = [:]
-    def pluginExcludes = [
-            "grails-app/views/error.gsp"
-    ]
-
-    def loadAfter = ['services', 'dataSource', 'hibernate', 'validation']
+    def loadAfter = ['services', 'dataSource', 'hibernate', 'hibernate4', 'validation']
     def watchedResources = ["file:./grails-app/domain/**.groovy"]
 
-    def author = "Ted Naleid"
-    def authorEmail = "contact@naleid.com"
     def title = "Build Test Data Plugin"
-    def description = '''\\
+    def description = '''\
 Enables the easy creation of test data by automatic inspection of constraints.  Any properties that are required have
 their constraints examined and a value is automatically provided for them.
 '''
@@ -27,7 +18,7 @@ their constraints examined and a value is automatically provided for them.
     def license = "APACHE"
 
     def developers = [
-            [ name: "Ted Naleid" ],
+            [ name: "Ted Naleid", email: "contact@naleid.com" ],
             [ name: "Joe Hoover" ],
             [ name: "Matt Sheehan" ],
             [ name: "Aaron Long" ]
@@ -45,29 +36,28 @@ their constraints examined and a value is automatically provided for them.
         decorateDomainClasses(application.domainClasses)
     }
 
-    def decorateDomainClasses(domainClasses) {
+    private decorateDomainClasses(domainClasses) {
         def buildTestDataService = new BuildTestDataService()
 
         log.debug("Loading config file (if present)")
         TestDataConfigurationHolder.loadTestDataConfig()
 
-        if (TestDataConfigurationHolder.isPluginEnabled()) {
-            log.debug('build-test-data plugin enabled, decorating domain classes with build methods')
-
-            domainClasses.each { domainClass ->
-                log.debug("decorating $domainClass with build-test-data 'build' methods")
-                try {
-                    buildTestDataService.decorateWithMethods(domainClass)
-                }
-                catch (Exception e) {
-                    log.error "Error decorating ${domainClass}. Message: [${e.getMessage()}]"
-                }
-            }
-
-            log.debug("done decorating domain classes with 'build' methods")
-        }
-        else {
+        if (!TestDataConfigurationHolder.isPluginEnabled()) {
             log.warn("build-test-data plugin is disabled in this environment")
         }
+
+        log.debug('build-test-data plugin enabled, decorating domain classes with build methods')
+
+        domainClasses.each { domainClass ->
+            log.debug("decorating $domainClass with build-test-data 'build' methods")
+            try {
+                buildTestDataService.decorateWithMethods(domainClass)
+            }
+            catch (Exception e) {
+                log.error "Error decorating ${domainClass}. Message: [${e.getMessage()}]"
+            }
+        }
+
+        log.debug("done decorating domain classes with 'build' methods")
     }
 }

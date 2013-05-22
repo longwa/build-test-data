@@ -2,7 +2,7 @@ package grails.buildtestdata
 
 import static org.codehaus.groovy.grails.commons.ApplicationHolder.getApplication
 
-public class DomainUtil {
+class DomainUtil {
     static boolean propertyIsDomainClass(clazz) {
         return propertyIsToOneDomainClass(clazz) || propertyIsToManyDomainClass(clazz)
     }
@@ -16,7 +16,7 @@ public class DomainUtil {
     }
 
     static boolean propertyIsToManyDomainClass(clazz) {
-        return java.util.Set.isAssignableFrom( clazz )
+        return Set.isAssignableFrom( clazz )
     }
 
 }

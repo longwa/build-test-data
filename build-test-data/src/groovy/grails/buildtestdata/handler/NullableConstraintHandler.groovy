@@ -1,22 +1,23 @@
 package grails.buildtestdata.handler
 
-import static org.apache.commons.lang.StringUtils.*
-import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import static grails.buildtestdata.DomainUtil.*
 import static grails.buildtestdata.TestDataConfigurationHolder.*
+import static org.apache.commons.lang.StringUtils.*
 
-public class NullableConstraintHandler implements ConstraintHandler {
+import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
+
+class NullableConstraintHandler implements ConstraintHandler {
     private static log = LogFactory.getLog(this)
 
-    public void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {
+    void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {
         def value = determineBasicValue(propertyName, constrainedProperty)
 
         if (value == null) {
             if (propertyIsDomainClass(constrainedProperty.propertyType)) {
                 populateDomainProperty(domain, propertyName, appliedConstraint, constrainedProperty, circularCheckList)
                 return
-            } 
+            }
             value = determineNonStandardValue(constrainedProperty)
         }
 
@@ -27,42 +28,42 @@ public class NullableConstraintHandler implements ConstraintHandler {
         }
     }
 
-    public determineBasicValue(propertyName, constrainedProperty) {
+    def determineBasicValue(propertyName, constrainedProperty) {
         switch(constrainedProperty.propertyType) {
-            case String.class:
+            case String:
                 return propertyName
-            case Calendar.class:
+            case Calendar:
                 return new GregorianCalendar()
-            case Currency.class:
+            case Currency:
                 return Currency.getInstance(Locale.default)
-            case TimeZone.class:
+            case TimeZone:
                 return TimeZone.default
-            case Locale.class:
+            case Locale:
                 return Locale.default
-            case java.sql.Date.class:
+            case java.sql.Date:
                 return new java.sql.Date(new Date().time)
-            case java.sql.Time.class:
+            case java.sql.Time:
                 return new java.sql.Time(new Date().time)
-            case Date.class:
+            case Date:
                 return new Date()
-            case Boolean.class:
-            case boolean.class:
+            case Boolean:
+            case boolean:
                 return false
             case { it in Number || it.isPrimitive() }:
                 return 0
-            case Byte[].class:
-            case byte[].class:
+            case Byte[]:
+            case byte[]:
                 // this is the binary for a tiny little gif image
                 byte[] inputBytes = [71, 73, 70, 56, 57, 97, 1, 0, 1, 0, -111, -1, 0, -1, -1, -1, 0, 0, 0, -1, -1, -1, 0, 0, 0, 33, -1, 11, 65, 68, 79, 66, 69, 58, 73, 82, 49, 46, 48, 2, -34, -19, 0, 33, -7, 4, 1, 0, 0, 2, 0, 44, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 2, 84, 1, 0, 59]
                 return inputBytes
-            case Enum.class:
+            case Enum:
                 return constrainedProperty.propertyType.values()[0]
             default:
                 log.debug "Unable to determine basic value type for ${constrainedProperty.propertyType}"
         }
     }
 
-    public void populateDomainProperty(domain, propertyName, appliedConstraint, constrainedProperty, circularCheckList){
+    void populateDomainProperty(domain, propertyName, appliedConstraint, constrainedProperty, circularCheckList){
         GrailsDomainClass defDomain = getDomainArtefact(domain.class)
         def domainProp = defDomain.propertyMap[propertyName]
 
@@ -101,7 +102,7 @@ public class NullableConstraintHandler implements ConstraintHandler {
         }
     }
 
-    public determineNonStandardValue(constrainedProperty) {
+    def determineNonStandardValue(constrainedProperty) {
         // probably something like JodaTime that can be configured to be saved
         // we don't want to have to have all kinds of jar files in our code, plus we couldn't handle user created classes
         Class propertyType = constrainedProperty.propertyType
