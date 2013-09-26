@@ -128,6 +128,6 @@ public class BuildTransformation extends TestForTransformation {
         for (ClassExpression targetClass : targetClasses) {
             args.addExpression(targetClass);
         }
-        methodBody.getStatements().add(0, new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "mockForBuild", args)));
+        methodBody.getStatements().add(0, new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), "mockForBuild", args)));
     }
 }
