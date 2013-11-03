@@ -152,7 +152,7 @@ class DomainInstanceBuilder {
             !domainInstance."$propName"
         }
 
-        log.debug "requiredMissingPropertyNames for ${domainClass.name} = ${requiredMissingPropertyNames}"
+        if (log.debugEnabled) log.debug "requiredMissingPropertyNames for ${domainClass.name} = ${requiredMissingPropertyNames}"
 
         for (propName in requiredMissingPropertyNames) {
             createMissingProperty(domainInstance, propName, constrainedProperties["$propName"], circularCheckList)
@@ -162,7 +162,7 @@ class DomainInstanceBuilder {
     }
 
     def setDomainPropertyValue(domainInstance, propertyName, value) {
-        log.debug "Setting ${domainClass.name}.$propertyName to $value"
+        if (log.debugEnabled) log.debug "Setting ${domainClass.name}.$propertyName to $value"
 
         if (propertyName.contains('.')) {
             setValueOnNestedProperty(domainInstance, propertyName, value)
@@ -191,29 +191,29 @@ class DomainInstanceBuilder {
     }
 
     def createMissingProperty(domainInstance, propertyName, constrainedProperty, circularCheckList) {
-        log.debug "creating missing property domain ${domainInstance?.class?.name}, propname $propertyName"
+        if (log.debugEnabled) log.debug "creating missing property domain ${domainInstance?.class?.name}, propname $propertyName"
         // first check if the default value satisfies the constraint
         // we could handle this like any other constraint except transient properties appear to be
         // non-nullable without actually having the nullable constraint
         new NullableConstraintHandler().handle(domainInstance, propertyName, null, constrainedProperty, circularCheckList)
 
         if (getErrors(constrainedProperty, domainInstance, propertyName).errorCount && !createProperty(domainInstance, propertyName, constrainedProperty, circularCheckList)) {
-            log.warn "failed to generate a valid value for $propertyName: ${domainInstance."$propertyName"} check for unsupported matches or custom validator constraint and supply a default value or may use a custom validator referencing other as yet unset properties on this domain - still trying"
+            if (log.warnEnabled) log.warn "failed to generate a valid value for $propertyName: ${domainInstance."$propertyName"} check for unsupported matches or custom validator constraint and supply a default value or may use a custom validator referencing other as yet unset properties on this domain - still trying"
         } else {
-            log.debug "${constrainedProperty.propertyName} - created value = ${domainInstance."$propertyName"}"
+            if (log.debugEnabled) log.debug "${constrainedProperty.propertyName} - created value = ${domainInstance."$propertyName"}"
         }
     }
 
     def createProperty(domainInstance, propertyName, constrainedProperty, circularCheckList) {
-        log.debug "building value for ${domainInstance?.class?.name}.${constrainedProperty?.propertyName}"
+        if (log.debugEnabled) log.debug "building value for ${domainInstance?.class?.name}.${constrainedProperty?.propertyName}"
         return sortedConstraints(constrainedProperty.appliedConstraints).find { appliedConstraint ->
-            log.debug "${domainInstance?.class?.name}.${appliedConstraint?.name} constraint, field before adjustment: ${domainInstance?."$propertyName"}"
+            if (log.debugEnabled) log.debug "${domainInstance?.class?.name}.${appliedConstraint?.name} constraint, field before adjustment: ${domainInstance?."$propertyName"}"
             ConstraintHandler handler = handlers[appliedConstraint.name]
             if (handler) {
                 handler.handle(domainInstance, propertyName, appliedConstraint, constrainedProperty, circularCheckList)
-                log.debug "${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}: ${domainInstance?."$propertyName"}"
+                if (log.debugEnabled) log.debug "${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}: ${domainInstance?."$propertyName"}"
             } else {
-                log.warn "Unable to find property generator handler for constraint ${appliedConstraint?.name}!"
+                if (log.warnEnabled) log.warn "Unable to find property generator handler for constraint ${appliedConstraint?.name}!"
             }
 
             if (!getErrors(constrainedProperty, domainInstance, propertyName).errorCount) {
@@ -232,7 +232,7 @@ class DomainInstanceBuilder {
         if (circularTrap.contains(domainInstance) || domainInstance instanceof Enum) return
 
         if (propsToSaveFirst) {
-            log.debug "${domainInstance.class.name} found domainProps that we need to save first: ${propsToSaveFirst}"
+            if (log.debugEnabled) log.debug "${domainInstance.class.name} found domainProps that we need to save first: ${propsToSaveFirst}"
             for (propertyName in propsToSaveFirst) {
                 domainInstance."$propertyName".buildCascadingSave(circularTrap + domainInstance)
             }
@@ -244,10 +244,10 @@ class DomainInstanceBuilder {
         }
 
         if (!(hasAssignedKey || domainInstance.ident() == null)) {
-            log.info "After ${domainInstance.class.name}.save() $domainInstance, skipped because it already has a key and isn't assigned"
+            if (log.infoEnabled) log.info "After ${domainInstance.class.name}.save() $domainInstance, skipped because it already has a key and isn't assigned"
         }
         else {
-            log.info "After ${domainInstance.class.name}.save() $domainInstance, success!"
+            if (log.infoEnabled) log.info "After ${domainInstance.class.name}.save() $domainInstance, success!"
         }
 
         return domainInstance
@@ -304,7 +304,7 @@ class DomainInstanceBuilder {
         if( domainArtefact.isAbstract() ) {
             def firstSubClass = domainArtefact.subClasses?.toList()?.first()
             if( firstSubClass ) {
-                log.debug("Getting first subclass ${firstSubClass.name} for abstract class ${domainArtefact.name}")
+                if (log.debugEnabled) log.debug("Getting first subclass ${firstSubClass.name} for abstract class ${domainArtefact.name}")
                 return findConcreteSubclass(firstSubClass)
             }
 
