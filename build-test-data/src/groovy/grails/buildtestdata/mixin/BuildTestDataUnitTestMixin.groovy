@@ -1,9 +1,9 @@
 package grails.buildtestdata.mixin
 
 import grails.buildtestdata.BuildTestDataService
+import grails.buildtestdata.DomainUtil
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.test.mixin.domain.DomainClassUnitTestMixin
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -53,7 +53,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      * @param classesToMock
      */
     void mockForBuild(List<Class> classesToMock) {
-        ApplicationHolder.application = grailsApplication // DomainUtil needs this reference
+        DomainUtil.setApplication(grailsApplication)
 
         if (!buildTestDataService) {
             buildTestDataService = new BuildTestDataService()

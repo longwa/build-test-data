@@ -1,8 +1,12 @@
 package grails.buildtestdata
 
-import static org.codehaus.groovy.grails.commons.ApplicationHolder.getApplication
-
 class DomainUtil {
+    static def grailsApplication 
+
+    static void setApplication(application) {
+        grailsApplication = application
+    }
+
     static boolean propertyIsDomainClass(clazz) {
         return propertyIsToOneDomainClass(clazz) || propertyIsToManyDomainClass(clazz)
     }
@@ -12,7 +16,7 @@ class DomainUtil {
     }
 
     static getDomainArtefact(clazz) {
-        return getApplication().getDomainClass(clazz.getName())
+        return grailsApplication.getDomainClass(clazz.getName())
     }
 
     static boolean propertyIsToManyDomainClass(clazz) {

@@ -1,4 +1,5 @@
 import grails.buildtestdata.BuildTestDataService
+import grails.buildtestdata.DomainUtil
 import grails.buildtestdata.TestDataConfigurationHolder
 import groovy.util.logging.Commons
 
@@ -28,7 +29,8 @@ their constraints examined and a value is automatically provided for them.
 
     def issueManagement = [ system: 'bitbucket', url: 'https://bitbucket.org/tednaleid/grails-test-data/issues' ]
 
-    def doWithDynamicMethods = { applicationContext ->
+    def doWithApplicationContext = { appCtx ->
+        DomainUtil.setApplication(appCtx.grailsApplication)
         decorateDomainClasses(application.domainClasses)
     }
 
