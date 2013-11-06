@@ -86,6 +86,13 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      * @param domainClassesToMock
      */
     private List<GrailsDomainClass> findDomainClassesToMock(List<GrailsDomainClass> domainClassesToMock) {
+        // Resolve any additional required classes from configuration
+        List<GrailsDomainClass> eagerClasses = []
+        domainClassesToMock.each {
+            eagerClasses.addAll(resolveEagerLoadClasses(it.fullName))
+        }
+        domainClassesToMock.addAll(eagerClasses)
+
         // Recursively find all the associated domain classes which are non-nullable
         Map<String, GrailsDomainClass> requiredDomains = [:]
         domainClassesToMock.each {
@@ -257,5 +264,22 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
         }
 
         list
+    }
+
+    private List<GrailsDomainClass> resolveEagerLoadClasses(String domainName) {
+        def classes = []
+        def eagerLoad = TestDataConfigurationHolder.getUnitEagerlyLoadedFor(domainName)
+        if (eagerLoad) {
+            eagerLoad.each {
+                classes.addAll resolveEagerLoadClasses(it.toString())
+            }
+            classes.addAll( eagerLoad.collect { property ->
+                if (!(property instanceof Class)) {
+                    property = grailsApplication.classLoader.loadClass(property as String)
+                }
+                getGrailsDomainClass(property as Class)
+            })
+        }
+        classes
     }
 }

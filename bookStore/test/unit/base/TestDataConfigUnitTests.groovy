@@ -1,16 +1,17 @@
 package base
 
+import bookstore.Author
+import config.Article
 import config.Hotel
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.test.GrailsUnitTestCase
 import grails.buildtestdata.mixin.Build
+import grails.test.mixin.TestMixin
 import org.junit.After
 
+@TestMixin(GrailsUnitTestCase)
 @Build(Hotel)
 class TestDataConfigUnitTests {
-
-    def buildTestDataService
-
     @After
     void tearDown() {
         // we should reset the config holder when feeding it values in tests as it could cause issues
@@ -54,5 +55,34 @@ class TestDataConfigUnitTests {
 
         def backToHolidayInn = Hotel.build()
         assertEquals "Holiday Inn", backToHolidayInn.name
+    }
+
+    void testEagerLoad() {
+        def hotel = Hotel.build()
+        assert hotel.name == 'Motel 6'
+
+        // Should also be able to build an article, even though we didn't
+        // specifically include it and Hotel doesn't require it.
+        def article = Article.build()
+        assert article.name =~ 'Article'
+
+        // Make sure we can use it
+        assert Article.list().size() == 1
+    }
+
+    void testRecursiveEagerLoad() {
+        def hotel = Hotel.build()
+        assert hotel.name == 'Motel 6'
+
+        // Should also be able to build an article, even though we didn't
+        // specifically include it and Hotel doesn't require it.
+        def article = Article.build()
+        assert article.name =~ 'Article'
+
+        // Make sure we can use it
+        assert Article.list().size() == 1
+
+        assert Author.build()
+        assert Author.list().size() == 1
     }
 }

@@ -5,7 +5,7 @@ import groovy.util.logging.Commons
 
 @Commons
 class BuildTestDataGrailsPlugin {
-    def version = "2.0.7"
+    def version = "2.0.7A"
     def grailsVersion = "2.0.0 > *"
     def loadAfter = ['services', 'dataSource', 'hibernate', 'hibernate4', 'validation']
     def watchedResources = ["file:./grails-app/domain/**.groovy"]

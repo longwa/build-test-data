@@ -1,6 +1,14 @@
+import bookstore.Author
 import embedded.Embedded
 
 testDataConfig {
+
+    // Whenever we need a hotel, we also need an Article
+    unitEagerlyLoad = [
+        'config.Hotel': ['config.Article'],
+        'config.Article': [Author]
+    ]
+
     sampleData {
         // Hotel class is in "config" package so we use a string in the builder
         'config.Hotel' {

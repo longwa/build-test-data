@@ -5,11 +5,11 @@ import grails.util.Environment
 import org.apache.commons.logging.LogFactory
 
 class TestDataConfigurationHolder {
-
     static log = LogFactory.getLog("grails.buildtestdata.TestDataConfigurationHolder")
 
     private static ConfigObject configFile
     private static Map sampleData
+    private static Map unitEagerlyLoad
 
     private static ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
 
@@ -25,9 +25,11 @@ class TestDataConfigurationHolder {
         if (testDataConfigClass) {
             configFile = configSlurper.parse(testDataConfigClass)
             setSampleData( configFile?.testDataConfig?.sampleData as Map )
+            unitEagerlyLoad = configFile?.testDataConfig?.unitEagerlyLoad
             log.debug "configFile loaded: ${configFile}"
         } else {
             setSampleData( [:] )
+            unitEagerlyLoad = [:]
         }
     }
 
@@ -35,8 +37,9 @@ class TestDataConfigurationHolder {
         GroovyClassLoader classLoader = new GroovyClassLoader(TestDataConfigurationHolder.classLoader)
         try {
             return classLoader.loadClass('TestDataConfig')
-        } catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ignored) {
             log.warn "TestDataConfig.groovy not found, build-test-data plugin proceeding without config file"
+            return null
         }
     }
 
@@ -60,6 +63,10 @@ class TestDataConfigurationHolder {
 
     static getConfigFor(String domainName) {
         return sampleData."$domainName"
+    }
+
+    static getUnitEagerlyLoadedFor(String domainName) {
+        unitEagerlyLoad."$domainName"
     }
 
     static getConfigPropertyNames(String domainName) {
