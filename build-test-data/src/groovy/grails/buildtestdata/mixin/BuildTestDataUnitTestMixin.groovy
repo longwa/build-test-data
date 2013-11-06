@@ -86,12 +86,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      * @param domainClassesToMock
      */
     private List<GrailsDomainClass> findDomainClassesToMock(List<GrailsDomainClass> domainClassesToMock) {
-        // Resolve any additional required classes from configuration
-        List<GrailsDomainClass> eagerClasses = []
-        domainClassesToMock.each {
-            eagerClasses.addAll(resolveEagerLoadClasses(it.fullName))
-        }
-        domainClassesToMock.addAll(eagerClasses)
+        addAdditionalBuildClasses(domainClassesToMock)
 
         // Recursively find all the associated domain classes which are non-nullable
         Map<String, GrailsDomainClass> requiredDomains = [:]
@@ -115,6 +110,9 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
 
         domainClassesToMock.addAll(subClasses)
         domainClassesToMock.addAll(superClasses)
+
+        // One last pass to pick up other transitive dependenices
+        addAdditionalBuildClasses(domainClassesToMock)
 
         // Make sure we don't have any duplicates, only want to mock once
         domainClassesToMock.unique { GrailsDomainClass gdc ->
@@ -266,12 +264,30 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
         list
     }
 
-    private List<GrailsDomainClass> resolveEagerLoadClasses(String domainName) {
+    /**
+     * Take the given list of domain classes and add an additional classes specified
+     * in the unitAdditionalBuild configuration.
+     *
+     * @param domainClasses this collection is modified to add additional classes
+     */
+    private void addAdditionalBuildClasses(List<GrailsDomainClass> domainClasses) {
+        def additionalClasses = []
+        domainClasses.each {
+            additionalClasses.addAll resolveAdditionalBuildClasses(it.fullName)
+        }
+        domainClasses.addAll(additionalClasses)
+    }
+
+    private List<GrailsDomainClass> resolveAdditionalBuildClasses(String domainName, List<GrailsDomainClass> circularList = []) {
         def classes = []
-        def eagerLoad = TestDataConfigurationHolder.getUnitEagerlyLoadedFor(domainName)
+        def eagerLoad = TestDataConfigurationHolder.getUnitAdditionalBuildFor(domainName)
         if (eagerLoad) {
-            eagerLoad.each {
-                classes.addAll resolveEagerLoadClasses(it.toString())
+            for(eagerDomain in eagerLoad) {
+                // Prevent looping forever
+                String eagerDomainName = eagerDomain instanceof Class ? eagerDomain.name : eagerDomain.toString()
+                if (!circularList.find { it.fullName == eagerDomainName } ) {
+                    classes.addAll resolveAdditionalBuildClasses(eagerDomainName, classes)
+                }
             }
             classes.addAll( eagerLoad.collect { property ->
                 if (!(property instanceof Class)) {

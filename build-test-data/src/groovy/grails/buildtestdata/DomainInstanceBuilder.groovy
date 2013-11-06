@@ -300,11 +300,28 @@ class DomainInstanceBuilder {
         assigned
     }
 
-    def findConcreteSubclass(domainArtefact) {
-        if( domainArtefact.isAbstract() ) {
-            def firstSubClass = domainArtefact.subClasses?.toList()?.first()
-            if( firstSubClass ) {
-                if (log.debugEnabled) log.debug("Getting first subclass ${firstSubClass.name} for abstract class ${domainArtefact.name}")
+    def findConcreteSubclass(GrailsDomainClass domainArtefact) {
+        if (domainArtefact.isAbstract()) {
+            // First see if we have a default defined for this domain class. If so,
+            // we will use this. This is handy if you have alot of polymorphic associations to a
+            // base class and want them to default to a certain type.
+            def abstractDefault = getAbstractDefaultFor(domainArtefact.fullName)
+            if (abstractDefault) {
+                return grailsApplication.getArtefact(
+                        "Domain",
+                        abstractDefault instanceof Class ? abstractDefault.name : abstractDefault.toString()
+                )
+            }
+
+            // Otherwise, let's see if we can just find a concrete subclass
+            List<GrailsDomainClass> subclasses = domainArtefact.subClasses?.toList()
+            if (subclasses) {
+                // Sort to make the selection deterministic, this helps prevent random test failures from choosing
+                // different concrete classes.
+                GrailsDomainClass firstSubClass = subclasses.sort { it.fullName }.first()
+                if (log.debugEnabled) {
+                    log.debug("Getting first subclass ${firstSubClass.name} for abstract class ${domainArtefact.name}")
+                }
                 return findConcreteSubclass(firstSubClass)
             }
 

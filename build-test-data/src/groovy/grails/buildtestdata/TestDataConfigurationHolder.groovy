@@ -9,7 +9,9 @@ class TestDataConfigurationHolder {
 
     private static ConfigObject configFile
     private static Map sampleData
-    private static Map unitEagerlyLoad
+
+    static Map unitAdditionalBuild
+    static Map abstractDefault
 
     private static ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
 
@@ -25,11 +27,13 @@ class TestDataConfigurationHolder {
         if (testDataConfigClass) {
             configFile = configSlurper.parse(testDataConfigClass)
             setSampleData( configFile?.testDataConfig?.sampleData as Map )
-            unitEagerlyLoad = configFile?.testDataConfig?.unitEagerlyLoad
+            unitAdditionalBuild = configFile?.testDataConfig?.unitAdditionalBuild ?: [:]
+            abstractDefault = configFile?.testDataConfig?.abstractDefault ?: [:]
             log.debug "configFile loaded: ${configFile}"
         } else {
             setSampleData( [:] )
-            unitEagerlyLoad = [:]
+            unitAdditionalBuild = [:]
+            abstractDefault = [:]
         }
     }
 
@@ -65,8 +69,12 @@ class TestDataConfigurationHolder {
         return sampleData."$domainName"
     }
 
-    static getUnitEagerlyLoadedFor(String domainName) {
-        unitEagerlyLoad."$domainName"
+    static getUnitAdditionalBuildFor(String domainName) {
+        unitAdditionalBuild."$domainName"
+    }
+
+    static getAbstractDefaultFor(String domainName) {
+        abstractDefault."${domainName}"
     }
 
     static getConfigPropertyNames(String domainName) {

@@ -1,6 +1,7 @@
 package base
 
 import abstractclass.AbstractClass
+import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
 import abstractclass.AbstractSubClass
@@ -15,7 +16,7 @@ class AbstractTests extends GroovyTestCase {
         def abstractSubClass = AbstractSubClass.build()
         assertNotNull abstractSubClass
         assertTrue abstractSubClass.ident() > 0
-        assertTrue abstractSubClass instanceof ConcreteSubClass
+        assertTrue abstractSubClass instanceof AnotherConcreteSubClass
 
         def concreteClass = ConcreteSubClass.build()
         assertNotNull concreteClass

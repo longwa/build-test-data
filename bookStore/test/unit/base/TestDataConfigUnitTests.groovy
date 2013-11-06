@@ -57,7 +57,7 @@ class TestDataConfigUnitTests {
         assertEquals "Holiday Inn", backToHolidayInn.name
     }
 
-    void testEagerLoad() {
+    void testAdditionalBuild() {
         def hotel = Hotel.build()
         assert hotel.name == 'Motel 6'
 
@@ -70,7 +70,7 @@ class TestDataConfigUnitTests {
         assert Article.list().size() == 1
     }
 
-    void testRecursiveEagerLoad() {
+    void testRecursiveAdditionalBuild() {
         def hotel = Hotel.build()
         assert hotel.name == 'Motel 6'
 

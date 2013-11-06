@@ -1,13 +1,20 @@
+import abstractclass.ConcreteSubClass
 import bookstore.Author
 import embedded.Embedded
 
 testDataConfig {
 
-    // Whenever we need a hotel, we also need an Article
-    unitEagerlyLoad = [
+    // For unit tests, this indicates an implicit @Build relationship. In this case, anytime a Hotel is used in @Build
+    // we also want to include Article and Author. This is useful if you define defaults in sampleData that explicitly
+    // build other objects.
+    unitAdditionalBuild = [
         'config.Hotel': ['config.Article'],
         'config.Article': [Author]
     ]
+
+    // For polymorphic associations, this allows you to default the concrete class that is built automatically.
+    // By default, BTD will find all concrete subclasses and build the first one alphabetically by name.
+    abstractDefault = ['abstractclass.AbstractClass': ConcreteSubClass]
 
     sampleData {
         // Hotel class is in "config" package so we use a string in the builder
