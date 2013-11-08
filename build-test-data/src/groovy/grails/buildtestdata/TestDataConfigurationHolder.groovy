@@ -27,8 +27,21 @@ class TestDataConfigurationHolder {
         if (testDataConfigClass) {
             configFile = configSlurper.parse(testDataConfigClass)
             setSampleData( configFile?.testDataConfig?.sampleData as Map )
+
             unitAdditionalBuild = configFile?.testDataConfig?.unitAdditionalBuild ?: [:]
             abstractDefault = configFile?.testDataConfig?.abstractDefault ?: [:]
+
+            // If we have abstract defaults, automatically add transitive dependencies
+            // for them since they may need to be built.
+            abstractDefault?.each { key, value ->
+                if (unitAdditionalBuild.containsKey(key)) {
+                    unitAdditionalBuild[key] << value
+                }
+                else {
+                    unitAdditionalBuild[key] = [value]
+                }
+            }
+
             log.debug "configFile loaded: ${configFile}"
         } else {
             setSampleData( [:] )
