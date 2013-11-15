@@ -25,9 +25,11 @@ their constraints examined and a value is automatically provided for them.
             [ name: "Aaron Long" ]
     ]
 
-    def documentation = "http://bitbucket.org/tednaleid/grails-test-data/wiki/Home"
+    def documentation = "http://www.slideshare.net/tednaleid/grails-buildtestdata-plugin-1723277"
 
-    def issueManagement = [ system: 'bitbucket', url: 'https://bitbucket.org/tednaleid/grails-test-data/issues' ]
+    def issueManagement = [ system: 'github', url: 'https://github.com/tednaleid/build-test-data/issues' ]
+
+    def scm = [url: 'https://github.com/tednaleid/build-test-data/']
 
     def doWithApplicationContext = { appCtx ->
         DomainUtil.setApplication(appCtx.grailsApplication)
