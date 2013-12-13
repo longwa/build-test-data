@@ -11,19 +11,23 @@ Using this additional information, we've created a grails plugin that makes it e
 This plugin is focused on creating test data for integration testing.  As of Grails 2.0.0, build-test-data also supports unit tests through annotations and mixins. 
 
 Once installed, all you have to do is call the new "build" method on your domain class and you'll be given a valid instance with all of the required constraints given values. 
-
-    def a = Author.build()
-
+```groovy
+def a = Author.build()
+```
 In a unit test, you'll just use an annotation to let it know what domain class you'd like to build 
+```groovy
+import grails.buildtestdata.mixin.Build
 
-    import grails.buildtestdata.mixin.Build
+@Build(Author)
+class AuthorUnitTests {
 
-    @Build(Author)
-    class AuthorUnitTests {
+void testAuthorStuff() {
+    def author = Author.build()
+    ...
+}
 
-        void testAuthorStuff() {
-            def author = Author.build()
-        ...
+}
+```
 
 ### Plugin Objectives 
 
