@@ -21,10 +21,10 @@ import grails.buildtestdata.mixin.Build
 @Build(Author)
 class AuthorUnitTests {
 
-void testAuthorStuff() {
-    def author = Author.build()
-    ...
-}
+    void testAuthorStuff() {
+        def author = Author.build()
+        ...
+    }
 
 }
 ```
@@ -43,6 +43,7 @@ void testAuthorStuff() {
 * [Basic Usage](http://github.com/tednaleid/build-test-data/wiki/BasicUsage)
 * [Unit Test Support](http://github.com/tednaleid/build-test-data/wiki/UnitTestSupport) - as of Grails 2.0
 * [Sample Code](http://github.com/tednaleid/build-test-data/wiki/SampleCode)
+* [Demo application](https://github.com/stokito/grails-fixtures-demo)
 * [Configuration using TestDataConfig](http://github.com/tednaleid/build-test-data/wiki/TestDataConfig)
 * [Other Test Data Creation Patterns](http://github.com/tednaleid/build-test-data/wiki/OtherTestDataCreationStrengthsWeaknesses)
 * [Release Notes/Upgrade Instructions](http://github.com/tednaleid/build-test-data/wiki/ReleaseNotes)
