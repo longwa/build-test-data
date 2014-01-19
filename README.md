@@ -43,7 +43,8 @@ class AuthorUnitTests {
 * [Basic Usage](http://github.com/tednaleid/build-test-data/wiki/BasicUsage)
 * [Unit Test Support](http://github.com/tednaleid/build-test-data/wiki/UnitTestSupport) - as of Grails 2.0
 * [Sample Code](http://github.com/tednaleid/build-test-data/wiki/SampleCode)
-* [Demo application](https://github.com/stokito/grails-fixtures-demo)
+* [Build Test Data Demo application](https://github.com/tednaleid/build-test-data/tree/master/bookStore)
+* [Fixtures Plugin + Build Test Data Demo application](https://github.com/stokito/grails-fixtures-demo)
 * [Configuration using TestDataConfig](http://github.com/tednaleid/build-test-data/wiki/TestDataConfig)
 * [Other Test Data Creation Patterns](http://github.com/tednaleid/build-test-data/wiki/OtherTestDataCreationStrengthsWeaknesses)
 * [Release Notes/Upgrade Instructions](http://github.com/tednaleid/build-test-data/wiki/ReleaseNotes)
