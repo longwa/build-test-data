@@ -13,16 +13,18 @@ class StandaloneUnitTests {
         assertNotNull standalone
         assertNotNull standalone.id
         assertNull standalone.parent
+        assert standalone.emailAddress != null
     }
 
     @Test
     void testBuildStandalonePassAllVariables() {
 		def created = new Date()
-		def obj = Standalone.build([name: "Foo", age: 14, created: created])
+		def obj = Standalone.build(name: "Foo", age: 14, created: created, emailAddress: "foo@bar.com")
 		assertValidDomainObject(obj)
 		assertEquals "Foo", obj.name
 		assertEquals 14, obj.age
 		assertEquals created, obj.created
+        assert "foo@bar.com" == obj.emailAddress
     }
 
     @Test

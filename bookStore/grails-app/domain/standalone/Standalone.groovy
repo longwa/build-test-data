@@ -4,13 +4,14 @@ class Standalone {
 	String name
 	Integer age
 	Date created
-
+    String emailAddress
 
     static belongsTo = [parent: Standalone] // shouldn't matter as it's nullable, so it shouldn't get created
 	
 	static constraints = {
 		name(nullable: false)
         parent(nullable: true)
+        emailAddress blank: false, unique: true, email: true
 	}
 	
 	String toString() { "$name" }
