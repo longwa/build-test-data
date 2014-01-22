@@ -2,10 +2,13 @@ package base
 
 import bookstore.Author
 import grails.buildtestdata.mixin.Build
+import org.junit.Test
 
 @Build(Author)
 class BuildLazyUnitTests {
 
+
+    @Test
     void testBuildLazyNoParamsCreatesNewWhenNoneExist() {
 		assertEquals 0, Author.count()
 		
@@ -14,6 +17,7 @@ class BuildLazyUnitTests {
 		assertEquals 1, Author.count()
     }
 
+    @Test
     void testBuildLazyNoParamsFindsExistingWithoutCreateNew() {
 		Author.build(firstName: "Foo", lastName: "Qux")
 		assertEquals 1, Author.count()
@@ -25,6 +29,7 @@ class BuildLazyUnitTests {
 		assertEquals 1, Author.count()
     }
 
+    @Test
     void testBuildLazyWithParamsCreatesNewWhenNoneExist() {
 		assertEquals 0, Author.count()
 		
@@ -33,6 +38,7 @@ class BuildLazyUnitTests {
 		assertEquals 1, Author.count()
     }
 
+    @Test
     void testBuildLazyWithParamsCreatesNewWhenNoMatchingExist() {
 		Author.build(firstName: "Foo")
 		assertEquals 1, Author.count()
@@ -42,6 +48,7 @@ class BuildLazyUnitTests {
 		assertEquals 2, Author.count()
     }
 
+    @Test
     void testBuildLazyWithParamsFindsExistingWithoutCreateNew() {
 		Author.build(firstName: "Foo", lastName: "Qux")
 		assertEquals 1, Author.count()
@@ -53,6 +60,7 @@ class BuildLazyUnitTests {
 		assertEquals 1, Author.count()
     }
 
+    @Test
     void testBuildLazyWithParamsCreatesNewWithOnlyPartialMatch() {
 		Author.build(firstName: "Foo", lastName: "Qux")
 		assertEquals 1, Author.count()

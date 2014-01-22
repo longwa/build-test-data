@@ -7,6 +7,7 @@ import abstractclass.ConcreteSubClass
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.mixin.BuildTestDataUnitTestMixin
 import grails.test.mixin.TestMixin
+import org.junit.Test
 
 // Include the mixin directly so we can control the mocking in the test instead of up front
 @TestMixin(BuildTestDataUnitTestMixin)
@@ -17,6 +18,7 @@ class AbstractDefaultUnitTests {
         TestDataConfigurationHolder.reset()
     }
 
+    @Test
     void testSuccessfulBuildNoDefault() {
         TestDataConfigurationHolder.abstractDefault = [:]
         mockForBuild([AbstractSubClass])
@@ -26,6 +28,7 @@ class AbstractDefaultUnitTests {
         assert obj instanceof AnotherConcreteSubClass
     }
 
+    @Test
     void testSuccessfulBuildWithDefault() {
         TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': ConcreteSubClass]
         mockForBuild([AbstractSubClass])
@@ -34,6 +37,7 @@ class AbstractDefaultUnitTests {
         assert obj instanceof ConcreteSubClass
     }
 
+    @Test
     void testSuccessfulBuildWithDifferentDefault() {
         TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': AnotherConcreteSubClass]
         mockForBuild([AbstractSubClass])
@@ -42,6 +46,7 @@ class AbstractDefaultUnitTests {
         assert obj instanceof AnotherConcreteSubClass
     }
 
+    @Test
     void testSuccessfulBuildWithDefaultAsString() {
         TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': 'abstractclass.ConcreteSubClass']
         mockForBuild([AbstractSubClass])
@@ -51,6 +56,7 @@ class AbstractDefaultUnitTests {
     }
 
     // The default short circuits the search, so it must be concrete
+    @Test
     void testFailureWithNonConcreteDefault() {
         TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': AbstractClass]
         mockForBuild([AbstractSubClass])

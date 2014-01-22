@@ -7,10 +7,12 @@ import grails.buildtestdata.handler.MinSizeConstraintHandler
 import grails.buildtestdata.handler.RangeConstraintHandler
 
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.junit.Test
 import org.springframework.validation.ObjectError
 
 class DomainTestDataServiceTests extends GroovyTestCase {
 
+    @Test
     void testMinCalendar() {
         def calendar = new GregorianCalendar()
         def minCalendar = new GregorianCalendar()
@@ -20,6 +22,7 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         assertEquals minCalendar, domainObject.testProperty
     }
 
+    @Test
     void testMinEmail() {
         def email = 'a@b.com'
         def domainObject = [testProperty: email]
@@ -33,6 +36,7 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         assertEquals domainObject.testProperty.size(), 100
     }
 
+    @Test
     void testMinUrl() {
         def url = 'http://www.carol.com'
         def domainObject = [testProperty: url]
@@ -46,6 +50,7 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         assertEquals domainObject.testProperty.size(), 100
     }
 
+    @Test
     void testMaxCalendar() {
         def calendar = new GregorianCalendar()
         def maxCalendar = new GregorianCalendar()
@@ -55,6 +60,7 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         assertEquals maxCalendar, domainObject.testProperty
     }
 
+    @Test
     void testRangeCalendar() {
         def calendar = new GregorianCalendar()
         def maxCalendar = new GregorianCalendar()
@@ -66,6 +72,7 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         assertEquals minCalendar, domainObject.testProperty
     }
 
+    @Test
     void testInListCalendar() {
         def calendar = new GregorianCalendar()
         def maxCalendar = new GregorianCalendar()
@@ -77,12 +84,14 @@ class DomainTestDataServiceTests extends GroovyTestCase {
         assertEquals minCalendar, domainObject.testProperty
     }
 
+    @Test
     void testUnhandledProperty() {
         String[] s = []
         def domainInstance = [testProperty: s]
         shouldFail {buildTestDataService.createMissingProperty(domainInstance, 'testProperty', [propertyType: String[].class])}
     }
 
+    @Test
     void testWeirdConstraint() {
         def mockValidate = {target, propertyValue, MockErrors errors -> errors.addError(new ObjectError("foo", "foo")) }
         def mockConstrainedProperty = [name: "weirdConstraint", validate: mockValidate, appliedConstraints: [[name: "weirdConstraint"]]]

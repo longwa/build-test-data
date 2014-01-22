@@ -1,3 +1,5 @@
+import org.junit.Test
+
 class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
 	
     protected void setUp() {
@@ -21,6 +23,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
 
     """
 
+    @Test
     void testNumberManuallySetValuesOk() {
         def value = 1
         def domainClass = createDomainClass("""
@@ -41,6 +44,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, value)
     }
 
+    @Test
     void testNumberManuallySetGroovyTruthFalseValuesOk() {
         def validValueButGroovyTruthFalse = 0
         def domainClass = createDomainClass("""
@@ -61,10 +65,11 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, validValueButGroovyTruthFalse)
     }
 
+    @Test
     void testNumberDefaultValueGroovyTruthFalseOk() {
         def defaultJavaValueButGroovyTruthFalse = 0
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNumberDefaultDomain {
                $fields
            }
         """)
@@ -73,10 +78,11 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, defaultJavaValueButGroovyTruthFalse)
     }
 
+    @Test
     void testNumberMin() {
         def minSize = 100
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNumberMinDomain {
                $fields
 
                 static constraints = {
@@ -95,10 +101,11 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, minSize)
     }
 
+    @Test
     void testNumberMax() {
         def maxSize = -100
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNumberMaxDomain {
                 $fields
 
                 static constraints = {
@@ -118,11 +125,12 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, maxSize)
     }
 
+    @Test
     void testNumberInList() {
         def numberOne = 100
         def numberTwo = 5
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNumberInListDomain {
                 $fields
 
                 static constraints = {
@@ -141,11 +149,12 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, numberOne)
     }
 
+    @Test
     void testNumberInRange() {
         def numberOne = 25
         def numberTwo = 35
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNumberInRangeDomain {
                 $fields
 
                 static constraints = {
@@ -164,13 +173,13 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         assertFieldsEqual(domainObject, numberOne)
     }
 
-    def assertFieldsEqual(domainObject, val) {
-		assertEquals val, domainObject.testInteger
-		assertEquals val, domainObject.testLong
-		assertEquals val, domainObject.testInt
-		assertEquals val, domainObject.testShort
-		assertEquals val, domainObject.testShortObject
-		assertEquals val, domainObject.testByte
-		assertEquals val, domainObject.testByteObject
+    static def assertFieldsEqual(domainObject, val) {
+		assert val == domainObject.testInteger
+		assert val == domainObject.testLong
+		assert val == domainObject.testInt
+		assert val == domainObject.testShort
+		assert val == domainObject.testShortObject
+		assert val == domainObject.testByte
+		assert val == domainObject.testByteObject
     }    
 }

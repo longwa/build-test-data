@@ -4,9 +4,7 @@ import org.junit.Test
 import org.junit.Ignore
 
 class SantaTests {
-
-    // @Test  // busted currently by http://jira.grails.org/browse/GRAILS-8815
-    @Ignore
+    @Test
     void testChildListOk() {
         def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
         assert santa.children == null

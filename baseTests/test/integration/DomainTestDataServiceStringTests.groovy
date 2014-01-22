@@ -1,3 +1,5 @@
+import org.junit.Test
+
 class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 	
     protected void setUp() {
@@ -8,6 +10,7 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
         super.tearDown()
     }
 
+    @Test
     void testStringMinSize() {
         def minSize = 200
         def domainClass = createDomainClass("""
@@ -24,11 +27,12 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty.size() >= minSize
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty.size() >= minSize
     }
 
+    @Test
     void testStringMaxSizeExceeded() {
         def maxSize = 2
         def domainClass = createDomainClass("""
@@ -45,11 +49,12 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty.size() <= maxSize
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty.size() <= maxSize
     }
 
+    @Test
     void testStringMaxSizeNotExceeded() {
         def maxSize = 200
         def domainClass = createDomainClass("""
@@ -66,11 +71,12 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty.size() <= maxSize
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty.size() <= maxSize
     }
 
+    @Test
     void testStringInList() {
         def firstInListItem = 'one'
         def domainClass = createDomainClass("""
@@ -87,11 +93,12 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty == firstInListItem
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty == firstInListItem
     }
 
+    @Test
     void testStringBlankFalse() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -107,10 +114,11 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
+		assert domainObject != null
+		assert domainObject.testProperty != null
     }
 
+    @Test
     void testStringCreditCardNumber() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -126,10 +134,11 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
+		assert domainObject != null
+		assert domainObject.testProperty != null
     }
 
+    @Test
     void testStringEmail() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -145,10 +154,11 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
 
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
+		assert domainObject != null
+		assert domainObject.testProperty != null
     }
 
+    @Test
     void testStringUrl() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -163,10 +173,11 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
         """)
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
+		assert domainObject != null
+		assert domainObject.testProperty != null
     }
 
+    @Test
     void testStringRange() {
         // appears to only check the first letter
         def domainClass = createDomainClass("""
@@ -182,11 +193,12 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
         """)
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty == 'x'
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty == 'x'
      }
 
+    @Test
     void testStringSizeShrink() {
         def least = 1
         def most = 3
@@ -203,11 +215,12 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
         """)
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty.size() == most
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty.size() == most
      }
 
+    @Test
     void testStringSizeExpand() {
         def least = 100
         def most = 300
@@ -224,10 +237,8 @@ class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
         """)
 		def domainObject = domainClass.build()
 
-		assertNotNull domainObject
-		assertNotNull domainObject.testProperty
-		assertTrue domainObject.testProperty.size() == least
+		assert domainObject != null
+		assert domainObject.testProperty != null
+		assert domainObject.testProperty.size() == least
      }
-
-
 }

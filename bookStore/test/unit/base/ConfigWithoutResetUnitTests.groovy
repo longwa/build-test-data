@@ -3,6 +3,7 @@ package base
 import config.Article
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.mixin.Build
+import org.junit.Test
 
 @Build(Article)
 class ConfigWithoutResetUnitTests {
@@ -10,6 +11,7 @@ class ConfigWithoutResetUnitTests {
     // the TestDataConfig file sets the name values for Article's unique name property
     // it has a variable in the config that increments if we don't reset() the config
 
+    @Test
     void testBuildFirstUniqueArticle() {
         TestDataConfigurationHolder.reset() // reset to a known state for these tests
 
@@ -17,6 +19,7 @@ class ConfigWithoutResetUnitTests {
         assertEquals "Article 1", a.name
     }
 
+    @Test
     void testBuildSecondUniqueArticle() {
         TestDataConfigurationHolder.reset()
         def a1 = Article.build()

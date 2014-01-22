@@ -3,12 +3,15 @@ package base
 import bookstore.Author
 import bookstore.Book
 import bookstore.Invoice
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
 import human.Arm
 import human.Face
 import magazine.Issue
 import magazine.Page
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 
+@TestMixin(IntegrationTestMixin)
 class RelationTests extends GroovyTestCase {
 
     protected void setUp() {

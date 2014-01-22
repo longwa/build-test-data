@@ -1,4 +1,5 @@
 import grails.buildtestdata.TestDataConfigurationHolder
+import org.junit.Test
 
 class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
     
@@ -11,9 +12,10 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
         TestDataConfigurationHolder.reset()
     }
 
+    @Test
     void testPropertyNullable() {
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNullableDomain {
                 Long id
                 Long version
                 String testProperty
@@ -25,13 +27,13 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
         
-        assertNotNull domainObject
-        assertNull domainObject.testProperty
+        assert domainObject != null
+        assert domainObject.testProperty == null
     }
 
     void testPropertyNotNullable() {
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestNotNullableDomain {
                 Long id
                 Long version
                 String testProperty
@@ -40,13 +42,14 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
     }
 
+    @Test
     void testFindRequiredPropertyNames() {
         def domainInstanceBuilder = createDomainInstanceBuilder("""
-            class TestDomain {
+            class TestRequiredDomain {
                 Long id
                 Long version
                 String nullableFalseProperty
@@ -57,14 +60,15 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
             }
         """)
 
-        assertEquals( ['nullableFalseProperty'], domainInstanceBuilder.requiredPropertyNames.asList() )
+        assert ['nullableFalseProperty'] == domainInstanceBuilder.requiredPropertyNames.asList()
 
     }
 
+    @Test
     void testPropertySuppliedUnchanged() {
         def testProperty = 'myTestProperty'
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestSuppliedDomain {
                 Long id
                 Long version
                 String testProperty
@@ -73,15 +77,16 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build(testProperty: testProperty)
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty == testProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == testProperty
     }
 
+    @Test
     void testDefaultPropertyUnchanged() {
         def testProperty = 'myTestProperty'
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestUnchangedDomain {
                 Long id
                 Long version
                 String testProperty = '$testProperty'
@@ -90,16 +95,17 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty == testProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == testProperty
     }
 
+    @Test
     void testDefaultPropertyOverridden() {
         def testProperty = 'myTestProperty'
         def overrideTestProperty = 'overrideTestProperty'
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestOverriddenDomain {
                 Long id
                 Long version
                 String testProperty = '$testProperty'
@@ -108,53 +114,56 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build(testProperty: overrideTestProperty)
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty == overrideTestProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == overrideTestProperty
     }
 
+    @Test
     void testDefaultPropertyOverriddenByConfig() {
         def testProperty = 'myTestProperty'
         def defaultTestProperty = 'defaultTestProperty'
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestOverriddenConfigDomain {
                 Long id
                 Long version
                 String testProperty = '$testProperty'
             }
         """)
 
-        TestDataConfigurationHolder.sampleData = [TestDomain: [testProperty: defaultTestProperty]]
+        TestDataConfigurationHolder.sampleData = [TestOverriddenConfigDomain: [testProperty: defaultTestProperty]]
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty == defaultTestProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == defaultTestProperty
     }
 
+    @Test
     void testDefaultPropertyOverriddenByConfigAndBuildParam() {
         def testProperty = 'myTestProperty'
         def overrideTestProperty = 'overrideTestProperty'
         def defaultTestProperty = 'defaultTestProperty'
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestConfigAndBuildParamDomain {
                 Long id
                 Long version
                 String testProperty = '$testProperty'
             }
         """)
 
-        TestDataConfigurationHolder.sampleData = [TestDomain: [testProperty: defaultTestProperty]]
+        TestDataConfigurationHolder.sampleData = [TestConfigAndBuildParamDomain: [testProperty: defaultTestProperty]]
         def domainObject = domainClass.build(testProperty: overrideTestProperty)
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty == overrideTestProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == overrideTestProperty
     }
 
+    @Test
     void testOddProperties() {
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestOddDomain {
                 Long id
                 Long version
                 Currency  currency
@@ -168,18 +177,19 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.currency
-        assertNotNull domainObject.calendar
-        assertNotNull domainObject.locale
-        assertNotNull domainObject.timeZone
-        assertNotNull domainObject.javaSqlDate
-        assertNotNull domainObject.javaSqlTime
+        assert domainObject != null
+        assert domainObject.currency != null
+        assert domainObject.calendar != null
+        assert domainObject.locale != null
+        assert domainObject.timeZone != null
+        assert domainObject.javaSqlDate != null
+        assert domainObject.javaSqlTime != null
     }
 
+    @Test
     void testMatchConstraintApplyMatchingValidOk() {
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestMatchDomain {
                 Long id
                 Long version
                 String testProperty
@@ -189,16 +199,17 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
             }
         """)
         
-        TestDataConfigurationHolder.sampleData = [TestDomain: [testProperty: "ABC"]]
+        TestDataConfigurationHolder.sampleData = [TestMatchDomain: [testProperty: "ABC"]]
         
         def domainObject = domainClass.build()
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty == 'ABC'
+        assert domainObject != null
+        assert domainObject.testProperty == 'ABC'
     }
 
+    @Test
     void testValidatorConstraintApplyValidatorValidOk() {
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestValidatorConstraintDomain {
                 Long id
                 Long version
                 String testProperty
@@ -208,13 +219,14 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
             }
         """)
         
-        TestDataConfigurationHolder.sampleData = [TestDomain: [testProperty: "ABC"]]
+        TestDataConfigurationHolder.sampleData = [TestValidatorConstraintDomain: [testProperty: "ABC"]]
         
         def domainObject = domainClass.build()
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty == 'ABC'
+        assert domainObject != null
+        assert domainObject.testProperty == 'ABC'
     }
 
+    @Test
     void testValidatorConstraintNotSupportedThrowsException() {
         def domainObject = [testProperty: 'testProperty']
         shouldFail {
@@ -225,9 +237,10 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
     }
 
+    @Test
     void testUniqueFalseConstraintOk() {
         def domainClass = createDomainClass("""
-            class TestDomain {
+            class TestUniqueFalseDomain {
                 Long id
                 Long version
                 String testProperty
@@ -239,11 +252,12 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
 
     }
 
+    @Test
     void testUniqueConstraintTrueNotSupportedThrowsException() {
         def domainObject = [testProperty: 'testProperty']
         shouldFail {buildTestDataService.uniqueHandler (domainObject, 'testProperty', [unique:true])}

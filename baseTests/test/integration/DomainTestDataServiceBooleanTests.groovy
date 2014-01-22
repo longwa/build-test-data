@@ -1,6 +1,8 @@
+import org.junit.Test
 
 class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
 
+    @Test
     void testBooleanDefaultGroovyTruthFalseOk() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -11,10 +13,11 @@ class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
         """)
 
         def domainObject = domainClass.build()
-        assertNotNull domainObject
+        assert domainObject != null
         assert domainObject.testProperty == false
     }
 
+    @Test
     void testBooleanManuallySetValues() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -25,15 +28,16 @@ class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
         """)
 
         def domainObject = domainClass.build(testProperty: true)
-        assertNotNull domainObject
+        assert domainObject != null
         assert domainObject.testProperty == true
 
         domainObject = domainClass.build(testProperty: false)
-        assertNotNull domainObject
+        assert domainObject != null
         assert domainObject.testProperty == false
 
     }
-    
+
+    @Test
     void testBooleanNullable() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -47,11 +51,12 @@ class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
         """)
 
         def domainObject = domainClass.build()
-		
-        assertNotNull domainObject
-        assertNull domainObject.testProperty
+
+        assert domainObject != null
+        assert domainObject.testProperty == null
     }
 
+    @Test
     void testBooleanNotNullable() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -63,7 +68,7 @@ class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
     }
 }

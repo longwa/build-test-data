@@ -1,6 +1,6 @@
 package base
 
-import grails.test.GrailsUnitTestCase
+import org.junit.Test
 import subclassing.RelatedClass
 import subclassing.SubClass
 import subclassing.SuperClass
@@ -8,6 +8,7 @@ import grails.buildtestdata.mixin.Build
 
 @Build([SubClass, RelatedClass, SuperClass])
 class SubclassUnitTests {
+    @Test
     void testSuccessfulBuildOfDomainSubclass() {
         def subClass = SubClass.build()
         assertNotNull subClass

@@ -1,4 +1,6 @@
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
+import org.junit.Test
+
 class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
 	
     protected void setUp() {
@@ -25,18 +27,13 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
         CircularOne.metaClass.ident = identMock
         CircularTwo.metaClass.ident = identMock
 
-        Owner.metaClass.static.create = {-> Owner.newInstance() }
-        Owned.metaClass.static.create = {-> Owned.newInstance() }
-        EmbeddedOwner.metaClass.static.create = {-> EmbeddedOwner.newInstance() }
-        CircularSelf.metaClass.static.create = {-> CircularSelf.newInstance() }
-        CircularOne.metaClass.static.create = {-> CircularOne.newInstance() }
-        CircularTwo.metaClass.static.create = {-> CircularTwo.newInstance() }
     }
 
     protected void tearDown() {
         super.tearDown()
     }
 
+    @Test
     void testCascadingBuildNonCircular() {
         def domainArtefact = registerDomainClass(Owner)
         buildTestDataService.decorateWithMethods(domainArtefact)
@@ -44,24 +41,26 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
         buildTestDataService.decorateWithMethods(domainArtefact)
 
         def domainObject = Owner.build()
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertNotNull domainObject.owned.testProperty
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.owned.testProperty != null
     }
 
+    @Test
     void testBuildCircularSelfReferential() {
         def domainArtefact = registerDomainClass(CircularSelf)
         buildTestDataService.decorateWithMethods(domainArtefact)
 
         def circDomainSelf = new DefaultGrailsDomainClass(CircularSelf)
         def domainProp = circDomainSelf.properties.find {it.name == 'circularSelf' }
-        assertTrue domainProp.isOneToOne()
+        assert domainProp.isOneToOne()
 
         def domainObject = CircularSelf.build()
-        assertNotNull domainObject
-        assertEquals domainObject.circularSelf, domainObject
+        assert domainObject != null
+        assert domainObject.circularSelf == domainObject
     }
 
+    @Test
     void testCascadingBuildCircularTwoClasses() {
         def domainArtefact = registerDomainClass(CircularOne)
         buildTestDataService.decorateWithMethods(domainArtefact)
@@ -70,16 +69,18 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
 
         def circDomainOne = new DefaultGrailsDomainClass(CircularOne)
         def domainProp = circDomainOne.properties.find {it.name == 'circularTwo' }
-        assertTrue domainProp.isOneToOne()
+        assert domainProp.isOneToOne()
 
         def circDomainTwo = new DefaultGrailsDomainClass(CircularTwo)
         domainProp = circDomainTwo.properties.find {it.type == CircularOne }
-        assertEquals domainProp.name, 'circularOne'
+        assert domainProp.name == 'circularOne'
+
         def domainObject = CircularOne.build()
-        assertNotNull domainObject
-        assertEquals domainObject.circularTwo.circularOne, domainObject
+        assert domainObject != null
+        assert domainObject.circularTwo.circularOne ==  domainObject
     }
 
+    @Test
     void testEmbeddedProperties() {
         def domainArtefact = registerDomainClass(EmbeddedOwner)
         buildTestDataService.decorateWithMethods(domainArtefact)
@@ -87,30 +88,35 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
         buildTestDataService.decorateWithMethods(domainArtefact)
 
         def domainObject = EmbeddedOwner.build('owned.testProperty':'I am embedded')
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertNotNull domainObject.owned.testProperty
-        assertEquals domainObject.owned.testProperty, 'I am embedded'
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.owned.testProperty != null
+        assert domainObject.owned.testProperty == 'I am embedded'
 
         shouldFail{ 
 		    EmbeddedOwner.build('tranProp':3)   //setting readonly property
-			 }
+         }
     }
-
-
-
-
-
 }
 
-class Owner {
+abstract class BaseMock {
+    def validate = { return true }
+    def ident = { delegate.id }
+    def save = { options = [:] ->
+        delegate.id = 1
+        return true
+    }
+}
+
+class Owner extends BaseMock {
     Long id
     Long version
     String testProperty
     Owned owned
+    public static create() { Owner.newInstance() }
 }
 
-class EmbeddedOwner {
+class EmbeddedOwner extends BaseMock {
    Long id
    Long version
    String testProperty
@@ -123,37 +129,38 @@ class EmbeddedOwner {
 	}
 	
    Owned owned = new Owned()
-
+   public static create() { EmbeddedOwner.newInstance() }
 }
 
 
-class Owned {
+class Owned extends BaseMock {
     Long id
     Long version
     String testProperty
+    public static create() { Owned.newInstance() }
 }
 
-class CircularSelf {
+class CircularSelf extends BaseMock {
     Long id
     Long version
     CircularSelf circularSelf
     static constraints = {
         circularSelf(nullable: false)
     }
+    public static create() { CircularSelf.newInstance() }
 }
 
-class CircularOne {
+class CircularOne extends BaseMock {
     Long id
     Long version
     CircularTwo circularTwo
+
+    public static create() { CircularOne.newInstance() }
 }
 
-class CircularTwo {
+class CircularTwo extends BaseMock {
     Long id
     Long version
     CircularOne circularOne
+    public static create() { CircularTwo.newInstance() }
 }
-
-
-
-

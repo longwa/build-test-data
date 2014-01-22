@@ -7,6 +7,7 @@ import abstractclass.RelatedToAbstract
 import abstractclass.AbstractSubClass
 
 class AbstractTests extends GroovyTestCase {
+
     void testSuccessfulBuildOfDomainAbstractClass() {
         def abstractClass = AbstractClass.build()
         assertNotNull abstractClass

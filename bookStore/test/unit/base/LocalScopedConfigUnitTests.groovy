@@ -3,9 +3,11 @@ package base
 import grails.buildtestdata.mixin.Build
 import magazine.Issue
 import magazine.Page
+import org.junit.Test
 
 @Build([Issue, Page])
 class LocalScopedConfigUnitTests {
+    @Test
     void testAddPagesToIssue() {
         def issue = Issue.build()
         issue.pages = (1..5).collect { Page.build(issue: issue, number: it) }.toSet() as SortedSet

@@ -1,8 +1,10 @@
-import grails.test.*
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import grails.buildtestdata.DomainInstanceBuilder
 
-class DomainTestDataServiceBase extends GrailsUnitTestCase {
+@TestMixin(IntegrationTestMixin)
+class DomainTestDataServiceBase {
     def grailsApplication
     def buildTestDataService
 

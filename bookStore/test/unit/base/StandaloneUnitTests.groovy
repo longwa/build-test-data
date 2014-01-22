@@ -1,11 +1,13 @@
 package base
 
 import grails.buildtestdata.mixin.Build
+import org.junit.Test
 import standalone.Standalone
 
 @Build(Standalone)
 class StandaloneUnitTests {
 
+    @Test
     void testNullableBelongsToNotFollowed() {
         def standalone = Standalone.build() // standalone.Standalone has a "parent" property on it that is nullable (otherwise it'd get in an infinite loop)
         assertNotNull standalone
@@ -13,6 +15,7 @@ class StandaloneUnitTests {
         assertNull standalone.parent
     }
 
+    @Test
     void testBuildStandalonePassAllVariables() {
 		def created = new Date()
 		def obj = Standalone.build([name: "Foo", age: 14, created: created])
@@ -22,6 +25,7 @@ class StandaloneUnitTests {
 		assertEquals created, obj.created
     }
 
+    @Test
     void testBuildStandalonePassNoVariables() {
 		def obj = Standalone.build()
 		assertValidDomainObject(obj)

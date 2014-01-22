@@ -1,15 +1,9 @@
 import grails.buildtestdata.TestDataConfigurationHolder
+import org.junit.Test
 
 class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
-    
-    protected void setUp() {
-        super.setUp()
-    }
 
-    protected void tearDown() {
-        super.tearDown()
-    }
-
+    @Test
     void testDateMin() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -25,11 +19,12 @@ class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty > new Date() + 99
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty > new Date() + 99
     }
 
+    @Test
     void testDateMax() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -45,11 +40,12 @@ class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty < new Date() - 99
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty < new Date() - 99
     }
 
+    @Test
     void testDateInList() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -65,12 +61,13 @@ class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
 
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty >= new Date() + 99
-        assertTrue domainObject.testProperty <= new Date() + 101
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty >= new Date() + 99
+        assert domainObject.testProperty <= new Date() + 101
     }
 
+    @Test
     void testDateRange() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -85,12 +82,13 @@ class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
         """)
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.testProperty
-        assertTrue domainObject.testProperty >= new Date() + 99
-        assertTrue domainObject.testProperty <= new Date() + 101
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty >= new Date() + 99
+        assert domainObject.testProperty <= new Date() + 101
     }
 
+    @Test
     void testNonStandardValueSpecified() {
         def domainClass = createDomainClass("""
             class TestDomain {
@@ -115,11 +113,10 @@ class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
         ]
         def domainObject = domainClass.build()
 
-        assertNotNull domainObject
-        assertNotNull domainObject.monetaryValue
-        println domainObject.monetaryValue.amount
-        assertTrue 2.0 == domainObject.monetaryValue.amount
-        assertNotNull domainObject.monetaryValue.currency
+        assert domainObject != null
+        assert domainObject.monetaryValue != null
+        assert 2.0 == domainObject.monetaryValue.amount
+        assert domainObject.monetaryValue.currency != null
     } 
 
 }
