@@ -25,7 +25,7 @@ their constraints examined and a value is automatically provided for them.
             [ name: "Aaron Long" ]
     ]
 
-    def documentation = "http://www.slideshare.net/tednaleid/grails-buildtestdata-plugin-1723277"
+    def documentation = "https://github.com/tednaleid/build-test-data/"
 
     def issueManagement = [ system: 'github', url: 'https://github.com/tednaleid/build-test-data/issues' ]
 
