@@ -25,7 +25,7 @@ their constraints examined and a value is automatically provided for them.
             [ name: "Aaron Long" ]
     ]
 
-    def documentation = "https://github.com/tednaleid/build-test-data/"
+    def documentation = "https://github.com/tednaleid/build-test-data"
 
     def issueManagement = [ system: 'github', url: 'https://github.com/tednaleid/build-test-data/issues' ]
 
