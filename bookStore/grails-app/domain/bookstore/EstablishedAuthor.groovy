@@ -4,11 +4,14 @@ import bookstore.Book
 
 class EstablishedAuthor {
 
-    static hasMany = [books: Book]
+    String name
+    Set<Book> hardcoverBooks
+    List<Book> paperbackBooks
+
+    static hasMany = [hardcoverBooks: Book, paperbackBooks: Book]
 
     static constraints = {
-        books(nullable: false, minSize: 5)
+        hardcoverBooks(nullable: false, minSize: 1)
+        paperbackBooks(nullable: false, minSize: 2)
     }
-
-
 }

@@ -20,7 +20,8 @@ class DomainUtil {
     }
 
     static boolean propertyIsToManyDomainClass(clazz) {
-        return Set.isAssignableFrom( clazz )
+        // if it's a Set, List, or Collection (bag), it's a hasMany
+        return Collection.isAssignableFrom( clazz )
     }
 
 }
