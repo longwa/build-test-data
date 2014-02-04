@@ -12,6 +12,6 @@ class EstablishedAuthor {
 
     static constraints = {
         hardcoverBooks(nullable: false, minSize: 1)
-        paperbackBooks(nullable: false, minSize: 2)
+        paperbackBooks(nullable: false, minSize: 1)
     }
 }
