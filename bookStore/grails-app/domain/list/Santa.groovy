@@ -5,9 +5,13 @@ class Santa {
     String lastName = "Claus"
 
     List children
+    List elves
 
-    static hasMany = [children: Child]
+    static hasMany = [children: Child, elves: Elf]
 
     static constraints = {
+        elves(nullable: false, minSize: 1, validator: { val, obj ->
+            val.every { it.validate() }
+        })
     }
 }

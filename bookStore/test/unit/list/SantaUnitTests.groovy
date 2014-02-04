@@ -22,4 +22,12 @@ class SantaUnitTests {
         assert santa.children.size() == 2
         assert santa.id > 0
     }
+
+    @Test
+    void testElvesListMinConstraintOk() {
+        def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
+        assert santa.children == null
+        assert santa.elves != null
+        assert santa.elves.size() == 1
+    }
 }

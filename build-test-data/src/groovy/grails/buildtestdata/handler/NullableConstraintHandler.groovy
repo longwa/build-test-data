@@ -96,7 +96,7 @@ class NullableConstraintHandler implements ConstraintHandler {
             } else {
                 ownedObject = domainProp?.referencedPropertyType.buildWithoutSave([:], circularCheckList)
             }
-            domain."addTo${capitalize(propertyName)}"(ownedObject)
+            addInstanceToOwningObjectCollection(domain, ownedObject, propertyName)
         } else {
             throw new Exception("can't cope with unset non-nullable property $propertyName of ${domain.class.name}")
         }
@@ -118,11 +118,19 @@ class NullableConstraintHandler implements ConstraintHandler {
 
     static addInstanceToOwningObjectCollection(owningObject, domain, domainProp) {
         def hasManyOfThisPropertyName = findHasManyPropertyName( domainProp.type, domain.class )
+
         if (hasManyOfThisPropertyName) {
-            owningObject."addTo${capitalize(hasManyOfThisPropertyName)}"(domain)
+            addInstanceToOwningObjectCollection(owningObject, domain, hasManyOfThisPropertyName)
         } else {
             log.warn "Unable to find hasMany property for $domain on ${domainProp.type}, ${domainProp.name} will only be populated on the belongsTo side"
         }
+    }
+
+    static addInstanceToOwningObjectCollection(owningObject, domain, String hasManyOfThisPropertyName) {
+        // could have already added it depending on the direction we came from, don't add again
+        if (owningObject."$hasManyOfThisPropertyName"?.contains(domain)) return
+
+        owningObject."addTo${capitalize(hasManyOfThisPropertyName)}"(domain)
     }
 
     static findHasManyPropertyName(domain, Class hasManyOfClass) {
