@@ -1,7 +1,7 @@
 package grails.buildtestdata
 
 import grails.util.Environment
-
+import grails.util.Holders
 import org.apache.commons.logging.LogFactory
 
 class TestDataConfigurationHolder {
@@ -52,10 +52,11 @@ class TestDataConfigurationHolder {
 
     static Class getDefaultTestDataConfigClass() {
         GroovyClassLoader classLoader = new GroovyClassLoader(TestDataConfigurationHolder.classLoader)
+        String testDataConfig = Holders.config?.grails?.buildtestdata?.testDataConfig ?: 'TestDataConfig'
         try {
-            return classLoader.loadClass('TestDataConfig')
+            return classLoader.loadClass(testDataConfig)
         } catch (ClassNotFoundException ignored) {
-            log.warn "TestDataConfig.groovy not found, build-test-data plugin proceeding without config file"
+            log.warn "${testDataConfig}.groovy not found, build-test-data plugin proceeding without config file"
             return null
         }
     }
