@@ -1,1 +1,1 @@
-include 'bookStore', 'baseTests', 'build-test-data', 'testOptionalJars'
+include 'bookStore', 'baseTests', 'build-test-data', 'testOptionalJars', 'alternativeConfig'
