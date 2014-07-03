@@ -1,0 +1,4 @@
+language: groovy
+jdk:
+  - oraclejdk7
+script: bin/test-all-grailsw.sh

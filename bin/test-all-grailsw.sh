@@ -1,0 +1,13 @@
+#! /bin/sh
+
+BASE_DIR=$(cd "$(dirname "$0")"; pwd -P)/..
+
+for DIR in build-test-data testOptionalJars bookStore baseTests alternativeConfig; do
+    cd $BASE_DIR/$DIR
+    ./grailsw refresh-dependencies
+    ./grailsw test-app
+    if [ $? -ne 0 ]; then
+        echo "Error(s) occurred building $DIR directory"
+        exit $1
+    fi
+done
