@@ -1,2 +1,3 @@
 language: groovy
 script: ./bin/test-all-grailsw
+install: /bin/true
