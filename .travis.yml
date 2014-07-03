@@ -1,2 +1,2 @@
 language: groovy
-script: "./bin/test-all-grailsw.sh"
+script: ./bin/test-all-grailsw
