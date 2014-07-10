@@ -58,36 +58,50 @@ public class BuildTransformation extends TestForTransformation {
                 domainClassNodes.add(classEx);
             }
         }
+
+        Boolean doGrailsMocking = true;
+        List<AnnotationNode> allAnnotations = parent.getAnnotations();
+        for (int a = 0; a < allAnnotations.size(); a++) {
+            Expression value = allAnnotations.get(a).getMember("value");
+            if (value instanceof ClassExpression) {
+                ClassNode annotationValueClassNode = ((ClassExpression)value).getType();
+                if ( annotationValueClassNode.getNameWithoutPackage().equals("HibernateTestMixin")) {
+                    doGrailsMocking = false;
+                    break;
+                }
+            }
+        }
+
         if(!domainClassNodes.isEmpty()) {
             weaveMixinClass(classNode, BuildTestDataUnitTestMixin.class);
-            addBuildCollaboratorToSetup(classNode, domainClassNodes);
+            addBuildCollaboratorToSetup(classNode, domainClassNodes, doGrailsMocking);
         }
     }
 
-    private void addBuildCollaboratorToSetup(ClassNode classNode, List<ClassExpression> targetClasses) {
+    private void addBuildCollaboratorToSetup(ClassNode classNode, List<ClassExpression> targetClasses, Boolean doGrailsMocking) {
         BlockStatement methodBody;
         if (isJunit3Test(classNode)) {
             methodBody = getOrCreateNoArgsMethodBody(classNode, SET_UP_METHOD);
-            addBuildCollaborator(targetClasses, methodBody);
+            addBuildCollaborator(targetClasses, methodBody, doGrailsMocking);
         } else {
-            addToJunit4BeforeMethods(classNode, targetClasses);
+            addToJunit4BeforeMethods(classNode, targetClasses, doGrailsMocking);
         }
     }
 
-    private void addToJunit4BeforeMethods(ClassNode classNode, List<ClassExpression> targetClasses) {
+    private void addToJunit4BeforeMethods(ClassNode classNode, List<ClassExpression> targetClasses, Boolean doGrailsMocking) {
         Map<String, MethodNode> declaredMethodsMap = classNode.getDeclaredMethodsMap();
         boolean weavedIntoBeforeMethods = false;
         for (MethodNode methodNode : declaredMethodsMap.values()) {
             if (isDeclaredBeforeMethod(methodNode)) {
                 Statement code = getMethodBody(methodNode);
-                addBuildCollaborator(targetClasses, (BlockStatement) code);
+                addBuildCollaborator(targetClasses, (BlockStatement) code, doGrailsMocking);
                 weavedIntoBeforeMethods = true;
             }
         }
 
         if (!weavedIntoBeforeMethods) {
             BlockStatement junit4Setup = getJunit4Setup(classNode);
-            addBuildCollaborator(targetClasses, junit4Setup);
+            addBuildCollaborator(targetClasses, junit4Setup, doGrailsMocking);
         }
     }
 
@@ -123,11 +137,12 @@ public class BuildTransformation extends TestForTransformation {
 
     }
 
-    protected void addBuildCollaborator(List<ClassExpression> targetClasses, BlockStatement methodBody) {
-        ListExpression args = new ListExpression();
+    protected void addBuildCollaborator(List<ClassExpression> targetClasses, BlockStatement methodBody, Boolean doGrailsMocking) {
+        ListExpression classes = new ListExpression();
         for (ClassExpression targetClass : targetClasses) {
-            args.addExpression(targetClass);
+            classes.addExpression(targetClass);
         }
-        methodBody.getStatements().add(0, new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), "mockForBuild", args)));
+        ArgumentListExpression methodArguments = new ArgumentListExpression(classes, new BooleanExpression(new ConstantExpression(doGrailsMocking)));
+        methodBody.getStatements().add(0, new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), "mockForBuild", methodArguments)));
     }
 }

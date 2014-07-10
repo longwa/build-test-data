@@ -52,7 +52,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      *
      * @param classesToMock
      */
-    void mockForBuild(List<Class> classesToMock) {
+    void mockForBuild(List<Class> classesToMock, Boolean doGrailsMocking) {
         DomainUtil.setApplication(grailsApplication)
 
         if (!buildTestDataService) {
@@ -71,7 +71,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
         // println "*** Resolved domains to mock: ${domainClassesToMock*.name}"
 
         // Do the actual Grails mocking
-        mockGrailsDomainClasses( domainClassesToMock.collect { it.clazz } )
+        if (doGrailsMocking) mockGrailsDomainClasses( domainClassesToMock.collect { it.clazz } )
 
         // Decorate with build*() methods
         domainClassesToMock.each {
