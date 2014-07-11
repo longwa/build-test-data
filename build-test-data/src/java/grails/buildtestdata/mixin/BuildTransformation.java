@@ -60,15 +60,23 @@ public class BuildTransformation extends TestForTransformation {
         }
 
         Boolean doGrailsMocking = true;
-        List<AnnotationNode> allAnnotations = parent.getAnnotations();
-        for (int a = 0; a < allAnnotations.size(); a++) {
-            Expression value = allAnnotations.get(a).getMember("value");
-            if (value instanceof ClassExpression) {
-                ClassNode annotationValueClassNode = ((ClassExpression)value).getType();
-                if ( annotationValueClassNode.getNameWithoutPackage().equals("HibernateTestMixin")) {
-                    doGrailsMocking = false;
-                    break;
+        AnnotatedNode spec = parent;
+        while (doGrailsMocking && spec != null) {
+            List<AnnotationNode> allAnnotations = spec.getAnnotations();
+            for (int a = 0; a < allAnnotations.size(); a++) {
+                Expression value = allAnnotations.get(a).getMember("value");
+                if (value instanceof ClassExpression) {
+                    ClassNode annotationValueClassNode = ((ClassExpression)value).getType();
+                    if (annotationValueClassNode.getNameWithoutPackage().equals("HibernateTestMixin")) {
+                        doGrailsMocking = false;
+                        break;
+                    }
                 }
+            }
+            if (spec instanceof ClassNode) {
+                spec = ((ClassNode)spec).getSuperClass();
+            } else {
+                spec = null;
             }
         }
 
