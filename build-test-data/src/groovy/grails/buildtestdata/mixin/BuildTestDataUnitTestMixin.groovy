@@ -52,6 +52,11 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      *
      * @param classesToMock
      */
+
+    void mockForBuild(List<Class> classesToMock) {
+        mockForBuild(classesToMock, true);
+    }
+
     void mockForBuild(List<Class> classesToMock, Boolean doGrailsMocking) {
         DomainUtil.setApplication(grailsApplication)
 

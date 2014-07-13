@@ -59,14 +59,28 @@ public class BuildTransformation extends TestForTransformation {
             }
         }
 
+        Boolean doGrailsMocking = shouldDoGrailsMocking(parent);
+
+        if(!domainClassNodes.isEmpty()) {
+            // TODO: when using HibernateTestMixin, we want to change this around so that it uses the @Domain mixin instead of @Mock
+            // TODO: probably want to create an alternate mixin that just does the build, then weave in the appropriate
+            // TODO: @Domain or @Mock mixin instead of having it do the `doGrailsMocking` as part of the BTD mixin
+            // TODO: but for right now, the HibernateTestMixin is broken anyway with https://jira.grails.org/browse/GRAILS-11579
+            weaveMixinClass(classNode, BuildTestDataUnitTestMixin.class);
+            addBuildCollaboratorToSetup(classNode, domainClassNodes, doGrailsMocking);
+        }
+    }
+
+    // we don't want to do the equivalent of @Mock if we are in a test using HibernateTestMixin
+    private Boolean shouldDoGrailsMocking(AnnotatedNode parent) {
         Boolean doGrailsMocking = true;
         AnnotatedNode spec = parent;
         while (doGrailsMocking && spec != null) {
             List<AnnotationNode> allAnnotations = spec.getAnnotations();
-            for (int a = 0; a < allAnnotations.size(); a++) {
-                Expression value = allAnnotations.get(a).getMember("value");
+            for (AnnotationNode allAnnotation : allAnnotations) {
+                Expression value = allAnnotation.getMember("value");
                 if (value instanceof ClassExpression) {
-                    ClassNode annotationValueClassNode = ((ClassExpression)value).getType();
+                    ClassNode annotationValueClassNode = ((ClassExpression) value).getType();
                     if (annotationValueClassNode.getNameWithoutPackage().equals("HibernateTestMixin")) {
                         doGrailsMocking = false;
                         break;
@@ -79,12 +93,9 @@ public class BuildTransformation extends TestForTransformation {
                 spec = null;
             }
         }
-
-        if(!domainClassNodes.isEmpty()) {
-            weaveMixinClass(classNode, BuildTestDataUnitTestMixin.class);
-            addBuildCollaboratorToSetup(classNode, domainClassNodes, doGrailsMocking);
-        }
+        return doGrailsMocking;
     }
+
 
     private void addBuildCollaboratorToSetup(ClassNode classNode, List<ClassExpression> targetClasses, Boolean doGrailsMocking) {
         BlockStatement methodBody;
