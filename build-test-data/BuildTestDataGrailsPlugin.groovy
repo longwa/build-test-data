@@ -5,7 +5,7 @@ import groovy.util.logging.Commons
 
 @Commons
 class BuildTestDataGrailsPlugin {
-    def version = "2.1.2"
+    def version = "2.2.0"
     def grailsVersion = "2.0.0 > *"
     def loadAfter = ['services', 'dataSource', 'hibernate', 'hibernate4', 'validation']
     def watchedResources = ["file:./grails-app/domain/**.groovy"]
@@ -23,7 +23,8 @@ their constraints examined and a value is automatically provided for them.
             [ name: "Joe Hoover" ],
             [ name: "Matt Sheehan" ],
             [ name: "Aaron Long" ],
-            [ name: "Søren Berg Glasius", email: "soeren@glasius.dk"]
+            [ name: "Søren Berg Glasius", email: "soeren@glasius.dk"],
+            [ name: "Gregor Petrin"]
     ]
 
     def documentation = "https://github.com/tednaleid/build-test-data/wiki"
