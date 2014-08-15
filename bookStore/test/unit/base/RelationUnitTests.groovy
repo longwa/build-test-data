@@ -9,14 +9,11 @@ import magazine.Issue
 import magazine.Page
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import grails.buildtestdata.mixin.Build
-import bookstore.Customer
-import org.junit.Ignore
 import org.junit.Test
 
 @Build([Face, Book, Invoice, Page, Arm])
 class RelationUnitTests {
 
-    @Ignore // TODO nose not saved due to http://jira.grails.org/browse/GRAILS-8590 after Grails 2.0.1 is out, this should be fixed
     @Test
     void testOneToOneCascades() {
         def domainObject = Face.build()

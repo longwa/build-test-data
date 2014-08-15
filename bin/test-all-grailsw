@@ -2,7 +2,7 @@
 
 BASE_DIR=$(cd "$(dirname "$0")"; pwd -P)/..
 
-for DIR in build-test-data testOptionalJars bookStore baseTests alternativeConfig hibernate4; do
+for DIR in build-test-data testOptionalJars bookStore baseTests alternativeConfig; do
     cd $BASE_DIR/$DIR
     ./grailsw refresh-dependencies
     ./grailsw test-app

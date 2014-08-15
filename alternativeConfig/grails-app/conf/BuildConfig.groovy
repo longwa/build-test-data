@@ -9,19 +9,22 @@ grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
 grails.project.fork = [
-    test: false //[maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+    test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+    run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+    war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+    console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
 ]
 
 grails.project.dependency.resolver = "maven" // or ivy
 grails.project.dependency.resolution = {
     inherits("global") {
     }
-    log "error"
-    checksums true
-    legacyResolve false
+    log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    checksums true // Whether to verify checksums on resolve
+    legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
 
     repositories {
-        inherits true
+        inherits true // Whether to inherit repository definitions from plugins
 
         grailsPlugins()
         grailsHome()
@@ -31,9 +34,10 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
+        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
     }
 
     plugins {
-        runtime ":hibernate:3.6.10.16" // or ":hibernate4:4.3.5.4"
+        runtime ":hibernate4:4.3.5.5" // or ":hibernate:3.6.10.17"
     }
 }
