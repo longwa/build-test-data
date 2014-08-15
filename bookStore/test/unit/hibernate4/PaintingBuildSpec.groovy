@@ -4,8 +4,6 @@ import grails.buildtestdata.mixin.Build
 import grails.test.mixin.Mock
 import spock.lang.Specification
 
-// Don't need this, but if someone has it, we still want to pass and not mess things up
-@Mock([Painting])
 @Build([Painting])
 class PaintingBuildSpec extends Specification {
 
