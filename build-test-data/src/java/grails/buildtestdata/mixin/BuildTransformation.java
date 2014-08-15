@@ -62,16 +62,12 @@ public class BuildTransformation extends TestForTransformation {
         Boolean doGrailsMocking = shouldDoGrailsMocking(parent);
 
         if(!domainClassNodes.isEmpty()) {
-            // TODO: when using HibernateTestMixin, we want to change this around so that it uses the @Domain mixin instead of @Mock
-            // TODO: probably want to create an alternate mixin that just does the build, then weave in the appropriate
-            // TODO: @Domain or @Mock mixin instead of having it do the `doGrailsMocking` as part of the BTD mixin
-            // TODO: but for right now, the HibernateTestMixin is broken anyway with https://jira.grails.org/browse/GRAILS-11579
             weaveMixinClass(classNode, BuildTestDataUnitTestMixin.class);
             addBuildCollaboratorToSetup(classNode, domainClassNodes, doGrailsMocking);
         }
     }
 
-    // we don't want to do the equivalent of @Mock if we are in a test using HibernateTestMixin
+    // we don't want to do the equivalent of @Mock if we are in a test using the @Domain annotation, or if someone already added @Mock
     private Boolean shouldDoGrailsMocking(AnnotatedNode parent) {
         Boolean doGrailsMocking = true;
         AnnotatedNode spec = parent;
@@ -81,7 +77,8 @@ public class BuildTransformation extends TestForTransformation {
                 Expression value = allAnnotation.getMember("value");
                 if (value instanceof ClassExpression) {
                     ClassNode annotationValueClassNode = ((ClassExpression) value).getType();
-                    if (annotationValueClassNode.getNameWithoutPackage().equals("HibernateTestMixin")) {
+                    String annotationName = annotationValueClassNode.getNameWithoutPackage();
+                    if (annotationName.equals("Domain") || annotationName.equals("Mock")) {
                         doGrailsMocking = false;
                         break;
                     }
