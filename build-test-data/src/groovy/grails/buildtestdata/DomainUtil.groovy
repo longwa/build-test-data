@@ -1,7 +1,7 @@
 package grails.buildtestdata
 
 class DomainUtil {
-    static def grailsApplication 
+    static grailsApplication
 
     static void setApplication(application) {
         grailsApplication = application

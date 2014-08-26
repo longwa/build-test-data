@@ -8,7 +8,7 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class BuildTestDataTestPlugin implements TestPlugin {
-    String[] requiredFeatures = ['domainClass', 'gorm']
+    String[] requiredFeatures = ['grailsApplication', 'coreBeans']
     String[] providedFeatures = ['buildTestData']
     int ordinal = 0
 
@@ -18,7 +18,16 @@ class BuildTestDataTestPlugin implements TestPlugin {
             case 'beforeClass':
                 beforeClass(event)
                 break
+            case 'before':
+                before(event)
+                break
         }
+    }
+
+    private void before(TestEvent event) {
+        MockDomainHelper helper = new MockDomainHelper(event.runtime)
+        helper.mockDomains(event.arguments.testInstance)
+        helper.decorate()
     }
 
     private void beforeClass(TestEvent event) {
@@ -34,9 +43,13 @@ class BuildTestDataTestPlugin implements TestPlugin {
             return
         }
 
-        // Mock using the proper strategy
-        MockDomainHelper helper = new MockDomainHelper(event.runtime, testClass)
-        helper.mockForBuild(buildClasses as List<Class>)
+        MockDomainHelper helper = new MockDomainHelper(event.runtime)
+        Collection<Class> allClasses = helper.resolveClasses(buildClasses as Set<Class>)
+        helper.registerPersistentClasses(allClasses)
+
+        // We need to recreate the runtime in order to properly register the beans during the
+        // before callback. For some reason, you can't register domain beans in a beforeClass callback
+        event.runtime.publishEvent("requestFreshRuntime")
     }
 
     @Override

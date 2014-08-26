@@ -3,7 +3,6 @@ package grails.buildtestdata.mixin
 import grails.buildtestdata.BuildTestDataService
 import grails.buildtestdata.DomainUtil
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.test.mixin.domain.DomainClassUnitTestMixin
 import grails.test.runtime.TestRuntime
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
@@ -11,7 +10,6 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.grails.plugins.web.ControllersGrailsPlugin
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.springframework.beans.factory.config.BeanDefinition
@@ -31,50 +29,90 @@ class MockDomainHelper {
     private static Map<String, List<GrailsDomainClass>> subClassCache = [:]
 
     private GrailsApplication grailsApplication
-    private Class testClass
     private TestRuntime runtime
-    private BuildTestDataService buildTestDataService
 
-    MockDomainHelper(TestRuntime runtime, Class testClass) {
+    MockDomainHelper(TestRuntime runtime) {
         this.runtime = runtime
-        this.testClass = testClass
-        this.grailsApplication = runtime.getValue("grailsApplication", GrailsApplication)
+        this.grailsApplication = grailsApplication ?: runtime.getValue("grailsApplication", GrailsApplication)
 
-        DomainUtil.grailsApplication = grailsApplication
+        DomainUtil.grailsApplication = this.grailsApplication
     }
 
     /**
-     * Mock the given classes for use by Grails and build-test-data.
-     *
-     * @param classes list of plain class objects to mock
+     * @param the initial set of classes (typically from the @Build annotation)
+     * @return all classes that should be mocked for the given input classes
      */
-    List<Class> mockForBuild(List<Class> classes) {
+    Collection<Class> resolveClasses(Set<Class> classes) {
         // Convert the list of classes given to GrailsDomainClass instances. We want to do this without
         // fully mocking so that we can get the full list of classes to mock and make a single
         // call to mockDomains() later with all the of the needed classes.
         List<GrailsDomainClass> initialDomainClassesToMock = classes.collect { getGrailsDomainClass(it) }
 
         // Resolve additional classes to mock
-        Collection<GrailsDomainClass> domainClassesToMock = findDomainClassesToMock(initialDomainClassesToMock)
+        findDomainClassesToMock(initialDomainClassesToMock)*.clazz
+    }
 
+    /**
+     * For simple domain class tests, perform the traditional mocking on DomainClassUnitTestMixin
+     *
+     * @param testInstance
+     * @param classes
+     */
+    void mockDomains(Object testInstance, Collection<Class> classes = null) {
+        if (!classes) {
+            classes = runtime.getValueIfExists(GormProvider.DomainClass.registeredName) as Set<Class>
+        }
+        if(classes) {
+            testInstance.invokeMethod("mockDomains", classes as Class[])
+            runtime.putValue(GormProvider.DomainClass.initializedName, classes)
+        }
+    }
+
+    /**
+     * Registers the given classes for mocking.
+     *
+     * @param testClass
+     * @param classes
+     */
+    void registerPersistentClasses(Collection<Class> classes) {
+        Collection<Class> allClasses = []
+        allClasses.addAll(classes)
+
+        // Add any existing that were added directly via @Domain
+        Set<Class> existing = runtime.getValueIfExists(gormProvider.registeredName) as Set<Class>
+        if(existing) {
+            allClasses.addAll(existing)
+        }
+        if(allClasses) {
+            runtime.putValue(gormProvider.registeredName, allClasses)
+        }
+    }
+
+    /**
+     * Mixin the build test data build() methods
+     * @param classes list of classes to decorate. If not given, the list of initialized classes is pulled from the context
+     */
+    void decorate(Collection<Class> classes = null) {
+        BuildTestDataService buildTestDataService = new BuildTestDataService()
+        if (!classes) {
+            classes = runtime.getValueIfExists(gormProvider.initializedName) as Set<Class>
+        }
+        classes?.each { Class clazz ->
+            GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, clazz.name) as GrailsDomainClass
+            assert domainClass, "Domain class ${clazz.name} should be registered but is missing"
+            buildTestDataService.decorateWithMethods(domainClass)
+        }
+    }
+
+    GormProvider getGormProvider() {
         if(runtime.features.contains("hibernateGorm")) {
-            runtime.publishEvent("hibernateDomain", [domains: domainClassesToMock*.clazz])
+            GormProvider.Hibernate
         }
         else if(runtime.features.contains("mongoDbGorm")) {
-            runtime.publishEvent("mongoDomain", [domains: domainClassesToMock*.clazz])
+            GormProvider.MongoDb
         }
         else {
-            // If this is a normal unit test, the test class should have mixed in
-            // the DomainClassUnitTestMixin, so this method is available.
-            (testClass as DomainClassUnitTestMixin).mockDomains(domainClassesToMock*.clazz as Class[])
-        }
-
-        buildTestDataService = buildTestDataService ?: new BuildTestDataService()
-
-        // Decorate with build*() methods and return the full list of classes
-        domainClassesToMock.collect {
-            buildTestDataService.decorateWithMethods(it)
-            it.clazz
+            GormProvider.DomainClass
         }
     }
 
@@ -84,7 +122,7 @@ class MockDomainHelper {
      *
      * @param domainClassesToMock
      */
-    Collection<GrailsDomainClass> findDomainClassesToMock(List<GrailsDomainClass> domainClassesToMock) {
+    private Collection<GrailsDomainClass> findDomainClassesToMock(List<GrailsDomainClass> domainClassesToMock) {
         addAdditionalBuildClasses(domainClassesToMock)
 
         // Recursively find all the associated domain classes which are non-nullable
@@ -143,7 +181,7 @@ class MockDomainHelper {
     }
 
     /**
-     * TODO - It would be nice to refactor the DomainClassUnitTestMixin to allow for better integration
+     * It would be nice to refactor the DomainClassUnitTestMixin to allow for better integration
      * with the new plugin infrastructure. That would allow us not to have to repeat code here.
      *
      * @param domainClassToMock
@@ -151,11 +189,8 @@ class MockDomainHelper {
      */
     private GrailsDomainClass registerGrailsDomainClass(Class<?> domainClassToMock) {
         GrailsDomainClass domain = (GrailsDomainClass) grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, domainClassToMock)
-
         MetaClass mc = GrailsClassUtils.getExpandoMetaClass(domainClassToMock)
-
         ControllersGrailsPlugin.enhanceDomainWithBinding(grailsApplication.mainContext, domain, mc)
-        DomainClassGrailsPlugin.registerConstraintsProperty(mc, domain)
         return domain
     }
 
@@ -283,5 +318,22 @@ class MockDomainHelper {
             })
         }
         classes
+    }
+}
+
+enum GormProvider {
+    Hibernate("hibernate"),
+    MongoDb("mongoDb"),
+    DomainClass("domainClass")
+
+    GormProvider(String prefix) { this.prefix = prefix }
+    final String prefix
+
+    String getInitializedName() {
+        "initialized${this.name()}PersistentClasses"
+    }
+
+    String getRegisteredName() {
+        "${prefix}PersistentClassesToRegister"
     }
 }

@@ -19,7 +19,7 @@ import grails.test.runtime.TestPluginUsage
  */
 @SuppressWarnings("GroovyUnusedDeclaration")
 class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin implements TestPluginRegistrar {
-    private static final Set<String> REQUIRED_FEATURES = (["buildTestData"] as Set<String>).asImmutable()
+    private static final Set<String> REQUIRED_FEATURES = (["domainClass", "buildTestData"] as Set<String>).asImmutable()
 
     BuildTestDataUnitTestMixin(Set<String> features) {
         super((REQUIRED_FEATURES + features) as Set<String>)
@@ -32,5 +32,16 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin implements Tes
     @SkipMethod
     Iterable<TestPluginUsage> getTestPluginUsages() {
         TestPluginUsage.createForActivating(BuildTestDataTestPlugin)
+    }
+
+    /**
+     * Programatically add classes to the mock list
+     * @param classesToMock
+     */
+    void mockForBuild(List<Class> classesToMock) {
+        MockDomainHelper helper = new MockDomainHelper(runtime)
+        Collection<Class> allClasses = helper.resolveClasses(classesToMock as Set<Class>)
+        helper.mockDomains(this, allClasses)
+        helper.decorate(allClasses)
     }
 }
