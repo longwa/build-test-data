@@ -33,7 +33,7 @@ class MockDomainHelper {
 
     MockDomainHelper(TestRuntime runtime) {
         this.runtime = runtime
-        this.grailsApplication = grailsApplication ?: runtime.getValue("grailsApplication", GrailsApplication)
+        this.grailsApplication = runtime.getValue("grailsApplication", GrailsApplication)
 
         DomainUtil.grailsApplication = this.grailsApplication
     }
