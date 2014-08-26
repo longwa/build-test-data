@@ -2,16 +2,12 @@ package hibernate4
 
 import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestMixin
-import grails.test.mixin.gorm.Domain
 import grails.test.mixin.hibernate.HibernateTestMixin
-import spock.lang.Ignore
 import spock.lang.Specification
 
 @Build([Painting, Gallery, Painter])
-@Domain([Painting, Gallery, Painter])
 @TestMixin(HibernateTestMixin)
 class PaintingBuildHibernateMixinSpec extends Specification {
-
     void "manually making a painting works"() {
         given:
         Painter painter = new Painter(name: "Pieter Bruegel").save(failOnError: true)
