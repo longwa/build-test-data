@@ -105,15 +105,7 @@ class MockDomainHelper {
     }
 
     GormProvider getGormProvider() {
-        if(runtime.features.contains("hibernateGorm")) {
-            GormProvider.Hibernate
-        }
-        else if(runtime.features.contains("mongoDbGorm")) {
-            GormProvider.MongoDb
-        }
-        else {
-            GormProvider.DomainClass
-        }
+        GormProvider.lookup(runtime)
     }
 
     /**
@@ -335,5 +327,17 @@ enum GormProvider {
 
     String getRegisteredName() {
         "${prefix}PersistentClassesToRegister"
+    }
+
+    static GormProvider lookup(TestRuntime runtime) {
+        if(runtime.features.contains("hibernateGorm")) {
+            Hibernate
+        }
+        else if(runtime.features.contains("mongoDbGorm")) {
+            MongoDb
+        }
+        else {
+            DomainClass
+        }
     }
 }
