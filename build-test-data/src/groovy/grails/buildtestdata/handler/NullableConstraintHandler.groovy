@@ -117,7 +117,7 @@ class NullableConstraintHandler implements ConstraintHandler {
     }
 
     static addInstanceToOwningObjectCollection(owningObject, domain, domainProp) {
-        def hasManyOfThisPropertyName = findHasManyPropertyName( domainProp.type, domain.class )
+        def hasManyOfThisPropertyName = (domainProp?.isManyToOne() && domainProp.otherSide?.type in Collection ? domainProp.otherSide?.name : null) ?: findHasManyPropertyName( domainProp.type, domain.class )
 
         if (hasManyOfThisPropertyName) {
             addInstanceToOwningObjectCollection(owningObject, domain, hasManyOfThisPropertyName)
