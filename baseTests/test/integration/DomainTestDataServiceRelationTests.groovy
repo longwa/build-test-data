@@ -81,6 +81,32 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
     }
 
     @Test
+    void testCascadingBuildCircularTwoClassesWithChildClass() {
+        def domainArtefact = registerDomainClass(CircularOne)
+        buildTestDataService.decorateWithMethods(domainArtefact)
+        domainArtefact = registerDomainClass(CircularOneChild)
+        buildTestDataService.decorateWithMethods(domainArtefact)
+        domainArtefact = registerDomainClass(CircularTwo)
+        buildTestDataService.decorateWithMethods(domainArtefact)
+
+        def circDomainOne = new DefaultGrailsDomainClass(CircularOne)
+        def domainProp = circDomainOne.properties.find {it.name == 'circularTwo' }
+        assert domainProp.isOneToOne()
+
+        def circDomainOneChild = new DefaultGrailsDomainClass(CircularOneChild)
+        domainProp = circDomainOneChild.properties.find {it.name == 'circularTwo' }
+        assert domainProp.isOneToOne()
+
+        def circDomainTwo = new DefaultGrailsDomainClass(CircularTwo)
+        domainProp = circDomainTwo.properties.find {it.type == CircularOne }
+        assert domainProp.name == 'circularOne'
+
+        def domainObject = CircularOneChild.build()
+        assert domainObject != null
+        assert domainObject.circularTwo.circularOne ==  domainObject
+    }
+
+    @Test
     void testEmbeddedProperties() {
         def domainArtefact = registerDomainClass(EmbeddedOwner)
         buildTestDataService.decorateWithMethods(domainArtefact)
@@ -156,6 +182,10 @@ class CircularOne extends BaseMock {
     CircularTwo circularTwo
 
     public static create() { CircularOne.newInstance() }
+}
+
+class CircularOneChild extends CircularOne {
+    public static create() { CircularOneChild.newInstance() }
 }
 
 class CircularTwo extends BaseMock {
