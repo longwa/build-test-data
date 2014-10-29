@@ -117,6 +117,23 @@ class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
         assert domainObject.monetaryValue != null
         assert 2.0 == domainObject.monetaryValue.amount
         assert domainObject.monetaryValue.currency != null
-    } 
+    }
+
+    @Test
+    void testTimestamp() {
+        def domainClass = createDomainClass("""
+            class TestDomain {
+                Long id
+                Long version
+                java.sql.Timestamp testProperty
+           }
+        """)
+
+        def domainObject = domainClass.build()
+
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty instanceof java.sql.Timestamp
+    }
 
 }

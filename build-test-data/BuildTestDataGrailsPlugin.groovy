@@ -23,8 +23,10 @@ their constraints examined and a value is automatically provided for them.
             [ name: "Joe Hoover" ],
             [ name: "Matt Sheehan" ],
             [ name: "Aaron Long" ],
-            [ name: "Søren Berg Glasius", email: "soeren@glasius.dk"],
-            [ name: "Gregor Petrin"]
+            [ name: "Søren Berg Glasius", email: "soeren@glasius.dk" ],
+            [ name: "Gregor Petrin" ],
+            [ name: "Michael Cameron" ],
+            [ name: "Jaime Garcia" ]
     ]
 
     def documentation = "https://github.com/tednaleid/build-test-data/wiki"

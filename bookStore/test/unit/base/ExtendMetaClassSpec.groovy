@@ -2,10 +2,12 @@ package base
 
 import config.Hotel
 import grails.buildtestdata.mixin.Build
+import grails.test.runtime.FreshRuntime
 import spock.lang.Ignore
 import spock.lang.Specification
 
 @Ignore  // this seems to be broken in 2.4.3, opened issue: https://jira.grails.org/browse/GRAILS-11661
+@FreshRuntime
 @Build(Hotel)
 class ExtendMetaClassSpec extends Specification {
 

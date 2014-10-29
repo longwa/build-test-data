@@ -44,6 +44,8 @@ class NullableConstraintHandler implements ConstraintHandler {
                 return new java.sql.Date(new Date().time)
             case java.sql.Time:
                 return new java.sql.Time(new Date().time)
+            case java.sql.Timestamp:
+                return new java.sql.Timestamp(new Date().time)
             case Date:
                 return new Date()
             case Boolean:
