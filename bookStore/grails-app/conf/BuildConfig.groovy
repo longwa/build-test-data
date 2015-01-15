@@ -34,10 +34,10 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
+        test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
     }
 
     plugins {
-        runtime ":hibernate4:4.3.5.5" // or ":hibernate:3.6.10.17"
+        runtime ":hibernate4:4.3.6.1" // or ":hibernate:3.6.10.18"
     }
 }
