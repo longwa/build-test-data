@@ -33,11 +33,12 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         compile("dk.brics.automaton:automaton:1.11-8")
-        compile("org.grails:grails-datastore-test-support:1.0.1-grails-2.4")
+        compile("org.grails:grails-datastore-test-support:1.0.2-grails-2.4")
     }
 
     plugins {
-        build(":release:3.0.1", ":rest-client-builder:1.0.3") {
+        build(":release:3.0.1",
+              ":rest-client-builder:2.0.3") {
             export = false
         }
     }
