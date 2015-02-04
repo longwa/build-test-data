@@ -41,8 +41,8 @@ environments {
 
 // log4j configuration
 log4j = {
-    debug   'grails.app'
-    debug   'grails.app.service.grails.buildtestdata.BuildTestDataService',
+    info   'grails.app'
+    info   'grails.app.service.grails.buildtestdata.BuildTestDataService',
             'grails.app.plugin.BuildTestDataGrailsPlugin',
             'grails.buildtestdata.DomainInstanceBuilder',
             'grails.buildtestdata.handler.NullableConstraintHandler'
