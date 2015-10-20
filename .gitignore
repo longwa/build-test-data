@@ -36,3 +36,6 @@ plugin.xml
 bookStore/web-app/plugins/*
 testOptionalJars/web-app/plugins/*
 .hg*
+
+build-test-data/build/*
+build-test-data/.gradle/*
