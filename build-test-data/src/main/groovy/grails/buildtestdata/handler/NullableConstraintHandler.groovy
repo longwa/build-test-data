@@ -5,7 +5,7 @@ import static grails.buildtestdata.TestDataConfigurationHolder.*
 import static org.apache.commons.lang.StringUtils.*
 
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import grails.core.GrailsDomainClass
 
 class NullableConstraintHandler implements ConstraintHandler {
     private static log = LogFactory.getLog(this)
@@ -119,7 +119,7 @@ class NullableConstraintHandler implements ConstraintHandler {
     }
 
     static addInstanceToOwningObjectCollection(owningObject, domain, domainProp) {
-        def hasManyOfThisPropertyName = (domainProp?.isManyToOne() && domainProp.otherSide?.type in Collection ? domainProp.otherSide?.name : null) ?: findHasManyPropertyName( domainProp.type, domain.class )
+        def hasManyOfThisPropertyName = findHasManyPropertyName( domainProp.type, domain.class )
 
         if (hasManyOfThisPropertyName) {
             addInstanceToOwningObjectCollection(owningObject, domain, hasManyOfThisPropertyName)

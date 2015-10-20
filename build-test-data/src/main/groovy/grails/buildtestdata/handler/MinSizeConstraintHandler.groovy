@@ -2,8 +2,8 @@ package grails.buildtestdata.handler
 
 import static org.apache.commons.lang.StringUtils.*
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.core.DefaultGrailsDomainClass
+import grails.validation.ConstrainedProperty
 
 class MinSizeConstraintHandler implements ConstraintHandler {
     void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {

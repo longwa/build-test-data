@@ -21,8 +21,8 @@ import grails.buildtestdata.handler.ValidatorConstraintHandler
 import java.lang.reflect.Modifier
 
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import grails.core.GrailsDomainClass
+import grails.validation.ConstrainedProperty
 
 class DomainInstanceBuilder {
     private static log = LogFactory.getLog(this)
