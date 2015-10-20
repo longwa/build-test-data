@@ -12,11 +12,8 @@ buildscript {
 }
 
 plugins {
-//    id "io.spring.dependency-management" version "0.4.0.RELEASE"
+   id "io.spring.dependency-management" version "0.4.0.RELEASE"
 }
-
-apply plugin: 'io.spring.dependency-management'
-
 
 version "0.1-SNAPSHOT"
 group "org.grails.plugins"
