@@ -12,26 +12,30 @@ buildscript {
 }
 
 plugins {
-   id "io.spring.dependency-management" version "0.4.0.RELEASE"
+    id "io.spring.dependency-management" version "0.5.2.RELEASE"
+    id "com.jfrog.bintray" version "1.2"
 }
 
-version "0.1-SNAPSHOT"
+version "2.0.0"
 group "org.grails.plugins"
 
 apply plugin: 'maven-publish'
+apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: "spring-boot"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-gsp"
+// Used for publishing to central repository, remove if not needed
+apply from:'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle'
+apply from:'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle'
 
 ext {
     grailsVersion = project.grailsVersion
     gradleWrapperVersion = project.gradleWrapperVersion
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
     mavenLocal()
@@ -56,11 +60,10 @@ dependencies {
     provided "org.grails:grails-dependencies"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
 
-    compile "org.grails:grails-plugin-testing"
+    testCompile "org.grails:grails-plugin-testing"
+    compile "dk.brics.automaton:automaton:1.11-8"
 
     console "org.grails:grails-console"
-
-    compile "dk.brics.automaton:automaton:1.11-8"
 }
 
 task wrapper(type: Wrapper) {
