@@ -25,6 +25,7 @@ apply plugin: 'idea'
 apply plugin: "spring-boot"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-gsp"
+
 // Used for publishing to central repository, remove if not needed
 apply from:'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle'
 apply from:'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle'
@@ -60,7 +61,7 @@ dependencies {
     provided "org.grails:grails-dependencies"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
 
-    testCompile "org.grails:grails-plugin-testing"
+    compile "org.grails:grails-plugin-testing"
     compile "dk.brics.automaton:automaton:1.11-8"
 
     console "org.grails:grails-console"
@@ -68,4 +69,17 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = gradleWrapperVersion
+}
+
+bintray {
+    pkg {
+        name = "$project.name"
+        userOrg = ''
+        issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
+        vcsUrl = "https://github.com/longwa/$project.name"
+        version {
+            attributes = ['grails-plugin': "$project.group:$project.name"]
+            name = project.version
+        }
+    }
 }
