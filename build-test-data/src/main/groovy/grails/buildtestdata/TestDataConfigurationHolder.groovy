@@ -66,16 +66,22 @@ class TestDataConfigurationHolder {
     }
 
     static Map getSampleData() {
-        if (sampleData == null) loadTestDataConfig()
-        return sampleData
+        if (sampleData == null) {
+            loadTestDataConfig()
+        }
+        sampleData
     }
 
-    static setSampleData(String configObjectText) {
-        setSampleData( configSlurper.parse(configObjectText) )
-    }
-
-    static setSampleData(Map configObjectMap) {
-        sampleData = configObjectMap
+    static void setSampleData(Object configObject) {
+        if (configObject instanceof String) {
+            sampleData = configSlurper.parse(configObject)
+        }
+        else if (configObject instanceof Map) {
+            sampleData = configObject
+        }
+        else {
+            throw new IllegalArgumentException("TestDataConfigurationHolder.sampleData should be either a String or a Map")
+        }
         sampleDataIndexer = [:]
     }
 

@@ -1,1 +1,1 @@
-include 'build-test-data'
+include 'baseTests', 'build-test-data'

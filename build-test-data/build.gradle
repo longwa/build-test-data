@@ -73,10 +73,13 @@ task wrapper(type: Wrapper) {
 
 bintray {
     pkg {
+        //noinspection GrReassignedInClosureLocalVar
         name = "$project.name"
         userOrg = ''
         issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
         vcsUrl = "https://github.com/longwa/$project.name"
+
+        //noinspection GroovyAssignabilityCheck
         version {
             attributes = ['grails-plugin': "$project.group:$project.name"]
             name = project.version

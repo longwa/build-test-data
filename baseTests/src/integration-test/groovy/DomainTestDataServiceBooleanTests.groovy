@@ -1,7 +1,9 @@
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
 import org.junit.Test
 
+@TestMixin(IntegrationTestMixin)
 class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
-
     @Test
     void testBooleanDefaultGroovyTruthFalseOk() {
         def domainClass = createDomainClass("""

@@ -1,8 +1,10 @@
 import grails.buildtestdata.TestDataConfigurationHolder
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
 import org.junit.Test
 
+@TestMixin(IntegrationTestMixin)
 class DomainTestDataServiceDateTests extends DomainTestDataServiceBase {
-
     @Test
     void testDateMin() {
         def domainClass = createDomainClass("""

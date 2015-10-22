@@ -1,11 +1,13 @@
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import grails.buildtestdata.DomainInstanceBuilder
+import org.grails.core.artefact.DomainClassArtefactHandler
 
-@TestMixin(IntegrationTestMixin)
+import javax.annotation.Resource
+
 class DomainTestDataServiceBase {
+    @Resource
     def grailsApplication
+
+    @Resource
     def buildTestDataService
 
     def saveMock = { options = [:] ->
@@ -50,12 +52,9 @@ class DomainTestDataServiceBase {
         grailsApplication.getArtefactHandlers().find { it.type == DomainClassArtefactHandler.TYPE }
     }
 
-
     DomainInstanceBuilder createDomainInstanceBuilder(String classText) {
         def domainArtefact = registerDomainClass( setUpDomainClass( classText ) )
         buildTestDataService.decorateWithMethods(domainArtefact)
         return buildTestDataService.getDomainInstanceBuilder(domainArtefact)
     }
-
-
 }

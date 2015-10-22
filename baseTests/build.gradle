@@ -51,6 +51,8 @@ dependencyManagement {
 }
 
 dependencies {
+    compile project(":build-test-data")
+
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-autoconfigure"
@@ -58,7 +60,7 @@ dependencies {
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
 
-    compile "org.grails.plugins:hibernate"
+    compile "org.grails.plugins:hibernate:4.3.10.7"
     compile "org.grails.plugins:cache"
     compile "org.hibernate:hibernate-ehcache"
     compile "org.grails.plugins:scaffolding"
@@ -77,3 +79,9 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = gradleWrapperVersion
 }
+
+// Rename test to unitTest
+tasks.test.name = "unitTest"
+
+// Wrap and run both
+task test(dependsOn:['unitTest', 'integrationTest'])

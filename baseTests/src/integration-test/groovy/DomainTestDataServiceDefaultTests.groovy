@@ -1,14 +1,11 @@
 import grails.buildtestdata.TestDataConfigurationHolder
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
 import org.junit.Test
 
+@TestMixin(IntegrationTestMixin)
 class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
-    
-    protected void setUp() {
-        super.setUp()
-    }
-
-    protected void tearDown() {
-        super.tearDown()
+    void tearDown() {
         TestDataConfigurationHolder.reset()
     }
 
@@ -229,12 +226,14 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
     @Test
     void testValidatorConstraintNotSupportedThrowsException() {
         def domainObject = [testProperty: 'testProperty']
-        shouldFail {
+        try {
             buildTestDataService.validatorHandler (
                 domainObject, 'testProperty', [ processValidate: { target, propertyValues, errors -> true } ]
             )
+            fail()
         }
-
+        catch(ignored) {
+        }
     }
 
     @Test
@@ -260,6 +259,11 @@ class DomainTestDataServiceDefaultTests extends DomainTestDataServiceBase {
     @Test
     void testUniqueConstraintTrueNotSupportedThrowsException() {
         def domainObject = [testProperty: 'testProperty']
-        shouldFail {buildTestDataService.uniqueHandler (domainObject, 'testProperty', [unique:true])}
+        try {
+            buildTestDataService.uniqueHandler (domainObject, 'testProperty', [unique:true])
+            fail()
+        }
+        catch(ignored) {
+        }
     }
 }

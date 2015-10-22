@@ -1,15 +1,9 @@
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
 import org.junit.Test
 
+@TestMixin(IntegrationTestMixin)
 class DomainTestDataServiceByteTests extends DomainTestDataServiceBase {
-	
-    protected void setUp() {
-        super.setUp()
-    }
-
-    protected void tearDown() {
-        super.tearDown()
-    }
-
     @Test
     void testByteNotNull() {
         def domainClass = createDomainClass("""
