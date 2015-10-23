@@ -1,33 +1,30 @@
 package triangle
 
 import grails.buildtestdata.mixin.Build
+import grails.test.mixin.TestMixin
+import grails.test.mixin.support.GrailsUnitTestMixin
 import org.junit.Test
 
+@TestMixin(GrailsUnitTestMixin)
 @Build([Worker, Manager, Director])
 class TriangleRelationshipUnitTests {
-
     @Test
     void testBuildTriangleRelationship() {
 		// director has many managers and workers
 		// manager belongsto director and has many workers
 		// workers belongs to a director and a manager, we should be able to build any one of these successfully
-		assertNotNull Worker.build()
-		assertNotNull Manager.build()
-		assertNotNull Director.build()
+		assert Worker.build()
+		assert Manager.build()
+		assert Director.build()
     }
 
 	void testBuildTriangleRelationshipPartiallyCompleteAlready() {
 		def manager = Manager.build()
-		
-		assertNotNull manager
+		assert manager
 		
 		def director = Director.build(managers: [manager])
-		
-		assertNotNull director
-		
-		assertNotNull Worker.build(manager: manager)
-		
-		assertNotNull Worker.build(director: director)
-		
+		assert director
+		assert Worker.build(manager: manager)
+		assert Worker.build(director: director)
 	}
 }

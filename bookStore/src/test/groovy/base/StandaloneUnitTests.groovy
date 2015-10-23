@@ -1,18 +1,20 @@
 package base
 
 import grails.buildtestdata.mixin.Build
+import grails.test.mixin.TestMixin
+import grails.test.mixin.support.GrailsUnitTestMixin
 import org.junit.Test
 import standalone.Standalone
 
+@TestMixin(GrailsUnitTestMixin)
 @Build(Standalone)
 class StandaloneUnitTests {
-
     @Test
     void testNullableBelongsToNotFollowed() {
         def standalone = Standalone.build() // standalone.Standalone has a "parent" property on it that is nullable (otherwise it'd get in an infinite loop)
-        assertNotNull standalone
-        assertNotNull standalone.id
-        assertNull standalone.parent
+        assert standalone
+        assert standalone.id
+        assert !standalone.parent
         assert standalone.emailAddress != null
     }
 
@@ -21,9 +23,10 @@ class StandaloneUnitTests {
 		def created = new Date()
 		def obj = Standalone.build(name: "Foo", age: 14, created: created, emailAddress: "foo@bar.com")
 		assertValidDomainObject(obj)
-		assertEquals "Foo", obj.name
-		assertEquals 14, obj.age
-		assertEquals created, obj.created
+
+		assert obj.name == "Foo"
+		assert obj.age == 14
+		assert obj.created == created
         assert "foo@bar.com" == obj.emailAddress
     }
 
@@ -31,14 +34,15 @@ class StandaloneUnitTests {
     void testBuildStandalonePassNoVariables() {
 		def obj = Standalone.build()
 		assertValidDomainObject(obj)
-		assertEquals "name", obj.name  // by default it just uses the property name for the value for strings
-		assertNotNull obj.created
-		assertEquals 0, obj.age
+
+		assert obj.name  // by default it just uses the property name for the value for strings == "name"
+		assert obj.created
+		assert obj.age == 0
     }
 
-    void assertValidDomainObject(domainObject) {
-	    assertNotNull domainObject
-	    assertNotNull domainObject.id
-	    assertEquals 0, domainObject.errors.errorCount
+    private void assertValidDomainObject(domainObject) {
+	    assert domainObject
+	    assert domainObject.id
+	    assert domainObject.errors.errorCount == 0
     }
 }

@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/tednaleid/build-test-data.png?branch=master)](https://travis-ci.org/tednaleid/build-test-data)
+[![Build Status](https://api.travis-ci.org/longwa/build-test-data.png?branch=master)](https://travis-ci.org/longwa/build-test-data)
 
 ## The Build Test Data Grails Plugin 
 
@@ -39,14 +39,14 @@ class AuthorUnitTests {
 - Changes to domain objects that do not affect the the code under test should not break the test.
 
 
-* [Features](http://github.com/tednaleid/build-test-data/wiki/Features)
 * [Overview Presentation](http://www.slideshare.net/tednaleid/grails-buildtestdata-plugin-1723277)
-* [Installation](http://github.com/tednaleid/build-test-data/wiki/Installation)
-* [Basic Usage](http://github.com/tednaleid/build-test-data/wiki/BasicUsage)
-* [Unit Test Support](http://github.com/tednaleid/build-test-data/wiki/UnitTestSupport) - as of Grails 2.0
-* [Sample Code](http://github.com/tednaleid/build-test-data/wiki/SampleCode)
-* [Build Test Data Demo application](https://github.com/tednaleid/build-test-data/tree/master/bookStore)
+* [Features](http://github.com/longwa/build-test-data/wiki/Features)
+* [Installation](http://github.com/longwa/build-test-data/wiki/Installation)
+* [Basic Usage](http://github.com/longwa/build-test-data/wiki/BasicUsage)
+* [Unit Test Support](http://github.com/longwa/build-test-data/wiki/UnitTestSupport) - as of Grails 2.0
+* [Sample Code](http://github.com/longwa/build-test-data/wiki/SampleCode)
+* [Build Test Data Demo application](https://github.com/longwa/build-test-data/tree/master/bookStore)
 * [Fixtures Plugin + Build Test Data Demo application](https://github.com/stokito/grails-fixtures-demo)
-* [Configuration using TestDataConfig](http://github.com/tednaleid/build-test-data/wiki/TestDataConfig)
-* [Other Test Data Creation Patterns](http://github.com/tednaleid/build-test-data/wiki/OtherTestDataCreationStrengthsWeaknesses)
-* [Release Notes/Upgrade Instructions](http://github.com/tednaleid/build-test-data/wiki/ReleaseNotes)
+* [Configuration using TestDataConfig](http://github.com/longwa/build-test-data/wiki/TestDataConfig)
+* [Other Test Data Creation Patterns](http://github.com/longwa/build-test-data/wiki/OtherTestDataCreationStrengthsWeaknesses)
+* [Release Notes/Upgrade Instructions](http://github.com/longwa/build-test-data/wiki/ReleaseNotes)

@@ -26,7 +26,7 @@ class TestDataConfigurationHolder {
 
         if (testDataConfigClass) {
             configFile = configSlurper.parse(testDataConfigClass)
-            setSampleData( configFile?.testDataConfig?.sampleData as Map )
+            setSampleData(configFile?.testDataConfig?.sampleData as Map)
 
             unitAdditionalBuild = configFile?.testDataConfig?.unitAdditionalBuild ?: [:]
             abstractDefault = configFile?.testDataConfig?.abstractDefault ?: [:]
@@ -43,8 +43,9 @@ class TestDataConfigurationHolder {
             }
 
             log.debug "configFile loaded: ${configFile}"
-        } else {
-            setSampleData( [:] )
+        }
+        else {
+            setSampleData([:])
             unitAdditionalBuild = [:]
             abstractDefault = [:]
         }
@@ -55,7 +56,8 @@ class TestDataConfigurationHolder {
         String testDataConfig = Holders.config?.grails?.buildtestdata?.testDataConfig ?: 'TestDataConfig'
         try {
             return classLoader.loadClass(testDataConfig)
-        } catch (ClassNotFoundException ignored) {
+        }
+        catch (ClassNotFoundException ignored) {
             log.warn "${testDataConfig}.groovy not found, build-test-data plugin proceeding without config file"
             return null
         }

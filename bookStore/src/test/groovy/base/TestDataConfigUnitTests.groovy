@@ -4,12 +4,12 @@ import bookstore.Author
 import config.Article
 import config.Hotel
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.test.GrailsUnitTestCase
 import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestMixin
+import grails.test.mixin.support.GrailsUnitTestMixin
 import org.junit.After
 
-@TestMixin(GrailsUnitTestCase)
+@TestMixin(GrailsUnitTestMixin)
 @Build(Hotel)
 class TestDataConfigUnitTests {
     @After
@@ -23,7 +23,7 @@ class TestDataConfigUnitTests {
         // uses the file in grails-app/conf/TestDataConfig.groovy
         TestDataConfigurationHolder.reset() // you can reset it if you want it to get to a known value
         Hotel testHotel = Hotel.build()
-        assertEquals "Motel 6", testHotel.name
+        assert "Motel 6" == testHotel.name
         assert "6125551111", testHotel.faxNumber.startsWith("612555") // 
     }
 
@@ -32,10 +32,10 @@ class TestDataConfigUnitTests {
         TestDataConfigurationHolder.sampleData = hotelNameAlwaysHilton
 
         def hilton = Hotel.build()
-        assertEquals "Hilton", hilton.name
+        assert "Hilton" == hilton.name
 
         def stillHilton = Hotel.build()
-        assertEquals "Hilton", stillHilton.name
+        assert "Hilton" == stillHilton.name
     }
 
     void testConfigClosure() {
@@ -48,13 +48,13 @@ class TestDataConfigUnitTests {
         TestDataConfigurationHolder.sampleData = hotelNameAlternates
         
         def holidayInn = Hotel.build()
-        assertEquals "Holiday Inn", holidayInn.name
+        assert holidayInn.name == "Holiday Inn"
 
         def hilton = Hotel.build()
-        assertEquals "Hilton", hilton.name
+        assert hilton.name == "Hilton"
 
         def backToHolidayInn = Hotel.build()
-        assertEquals "Holiday Inn", backToHolidayInn.name
+        assert backToHolidayInn.name == "Holiday Inn"
     }
 
     void testAdditionalBuild() {

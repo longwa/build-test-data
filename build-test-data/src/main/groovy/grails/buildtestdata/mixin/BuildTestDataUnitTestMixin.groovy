@@ -54,7 +54,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      */
 
     void mockForBuild(List<Class> classesToMock) {
-        mockForBuild(classesToMock, true);
+        mockForBuild(classesToMock, true)
     }
 
     void mockForBuild(List<Class> classesToMock, Boolean doGrailsMocking) {
@@ -132,18 +132,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
      * @param clazz
      */
     private mockGrailsDomainClasses(List<Class> classes) {
-        // Use the single method version if available, older Grails versions will fall back to the single mock method
-        if ( this.respondsTo("mockDomains") ) {
-            mockDomains(classes as Class[])
-        }
-        else {
-           classes.each {
-               // Pre 2.2.1, you mock each domain individually and you can't mock abstract classes
-               if( !Modifier.isAbstract(it.getModifiers()) ) {
-                   mockDomain(it)
-               }
-           }
-        }
+        mockDomains(classes as Class[])
     }
 
     /**
@@ -224,7 +213,7 @@ class BuildTestDataUnitTestMixin extends DomainClassUnitTestMixin {
             subClassList = subClassCache[domainClass.fullName]
         }
         else {
-            ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true)
+            ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false)
             provider.addIncludeFilter(new AssignableTypeFilter(domainClass.getClazz()))
 
             // Scan all packages
