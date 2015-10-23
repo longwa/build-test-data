@@ -24,8 +24,8 @@ class ExtendMetaClassSpec extends Specification {
         def hotel = Hotel.build()
 
         then:
-        assertNotNull hotel
-        assertEquals "baz", Hotel.baz()
+        assert hotel
+        assert Hotel.baz() == "baz"
     }
 
     void "metaClass build add qux but shouldn't have baz"() {
@@ -37,7 +37,7 @@ class ExtendMetaClassSpec extends Specification {
         def hotel = Hotel.build()
 
         then:
-        assertNotNull hotel
-        assertEquals "qux", Hotel.qux()
+        assert hotel
+        assert Hotel.qux() == "qux"
     }
 }

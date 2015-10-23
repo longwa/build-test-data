@@ -1,16 +1,20 @@
 package base
 
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 import org.junit.Test
 import standalone.Standalone
 
-class StandaloneTests extends GroovyTestCase {
-
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class StandaloneTests {
     @Test
     void testNullableBelongsToNotFollowed() {
         def standalone = Standalone.build() // standalone.Standalone has a "parent" property on it that is nullable (otherwise it'd get in an infinite loop)
-        assertNotNull standalone
-        assertNotNull standalone.id
-        assertNull standalone.parent
+        assert standalone
+        assert standalone.id
+        assert !standalone.parent
         assert standalone.emailAddress != null
     }
 
@@ -19,9 +23,10 @@ class StandaloneTests extends GroovyTestCase {
         def created = new Date()
         def obj = Standalone.build(name: "Foo", age: 14, created: created, emailAddress: "foo@bar.com")
         assertValidDomainObject(obj)
-        assertEquals "Foo", obj.name
-        assertEquals 14, obj.age
-        assertEquals created, obj.created
+
+        assert obj.name == "Foo"
+        assert obj.age == 14
+        assert obj.created == created
         assert "foo@bar.com" == obj.emailAddress
     }
 
@@ -29,9 +34,9 @@ class StandaloneTests extends GroovyTestCase {
     void testBuildStandalonePassNoVariables() {
         def obj = Standalone.build()
         assertValidDomainObject(obj)
-        assertEquals "name", obj.name  // by default it just uses the property name for the value for strings
-        assertNotNull obj.created
-        assertEquals 0, obj.age
+        assert obj.name  // by default it just uses the property name for the value for strings == "name"
+        assert obj.created
+        assert obj.age == 0
     }
 
     @Test
@@ -40,17 +45,21 @@ class StandaloneTests extends GroovyTestCase {
         assert first.emailAddress != null
         assert first.emailAddress == "a@b.com"
 
-        // to do this right you'd need to override in the TestDataConfig.groovy file with a custom closure
-        def second
-        shouldFail {
+        // To do this right you'd need to override in the TestDataConfig.groovy file with a custom closure
+        def second = null
+        try {
             second = Standalone.build()
+            fail()
         }
+        catch(ignored) {
+        }
+
         assert second == null
     }
 
     void assertValidDomainObject(domainObject) {
-        assertNotNull domainObject
-        assertNotNull domainObject.id
-        assertEquals 0, domainObject.errors.errorCount
+        assert domainObject
+        assert domainObject.id
+        assert domainObject.errors.errorCount == 0
     }
 }

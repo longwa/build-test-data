@@ -1,36 +1,29 @@
 package base
 
-import grails.test.*
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import bookstore.Address
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
+import org.grails.core.DefaultGrailsDomainClass
 
-class MinSizeTests extends GroovyTestCase {
-
-    protected void setUp() {
-        super.setUp()
-     }
-
-    protected void tearDown() {
-        super.tearDown()
-    }
-
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class MinSizeTests {
     void testEmailMinSize() {
         def addressDomain = new DefaultGrailsDomainClass(Address)
         def domainObject = Address.build()
-        assertNotNull domainObject
-        assertNotNull domainObject.id
-        assertNotNull domainObject.emailAddress
-        assertEquals domainObject.emailAddress.size(), 100
+        assert domainObject
+        assert domainObject.id
+        assert domainObject.emailAddress
+        assert domainObject.emailAddress.size() == 100
     }
 
     void testUrlMinSize() {
         def addressDomain = new DefaultGrailsDomainClass(Address)
         def domainObject = Address.build()
-        assertNotNull domainObject
-        assertNotNull domainObject.id
-        assertNotNull domainObject.webSite
-        assertEquals domainObject.webSite.size(), 100
+        assert domainObject
+        assert domainObject.id
+        assert domainObject.webSite
+        assert domainObject.webSite.size() == 100
     }
-
- 
 }

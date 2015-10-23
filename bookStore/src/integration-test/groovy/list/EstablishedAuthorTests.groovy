@@ -1,12 +1,14 @@
 package list
 
-import bookstore.Book
 import bookstore.EstablishedAuthor
-import grails.buildtestdata.mixin.Build
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 import org.junit.Test
 
+@Rollback
+@TestMixin(IntegrationTestMixin)
 class EstablishedAuthorTests {
-
     @Test
     void testRequiredListAndSetOk() {
         EstablishedAuthor establishedAuthor = EstablishedAuthor.build(name: "Steven King")

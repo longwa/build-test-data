@@ -1,11 +1,14 @@
 package base
 
-import grails.test.*
 import config.Article
 import grails.buildtestdata.TestDataConfigurationHolder
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 
-class ConfigWithoutResetTests extends GroovyTestCase {
-
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class ConfigWithoutResetTests {
     // test order isn't guaranteed with Java 7 but this way, with 2 tests, we know that reset is working because
     // one of the tests will run first, then the other, but both get the same articles
     void testBuildFirstUniqueArticle() {
@@ -19,9 +22,9 @@ class ConfigWithoutResetTests extends GroovyTestCase {
     private static resetAndBuildUniqueArticles() {
         TestDataConfigurationHolder.reset() // reset to a known state for these tests
         def a = Article.build()
-        assertEquals "Article 1", a.name
+        assert a.name == "Article 1"
 
         def b = Article.build()
-        assertEquals "Article 2", b.name
+        assert b.name == "Article 2"
     }
 }

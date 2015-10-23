@@ -1,10 +1,12 @@
 import grails.buildtestdata.TestDataConfigurationHolder as TDHC
+import grails.test.mixin.TestMixin
+import grails.test.mixin.support.GrailsUnitTestMixin
 
-class TestDataConfigurationHolderTests extends GroovyTestCase {
-
+@TestMixin(GrailsUnitTestMixin)
+class TestDataConfigurationHolderTests {
     void testSampleDataStaticValue() {
         TDHC.setSampleData([TestDomain:[testProperty:'ABC']])
-        assertEquals 'ABC', TDHC.getSuppliedPropertyValue([:], 'TestDomain', 'testProperty')
+        assert 'ABC' == TDHC.getSuppliedPropertyValue([:], 'TestDomain', 'testProperty')
     }
 
     void testSampleDataClosureValue() {
@@ -25,8 +27,8 @@ class TestDataConfigurationHolderTests extends GroovyTestCase {
                 firstProperty:{ -> 'closure1' },
                 secondProperty: { values -> values.firstProperty + 'andthensome' }
         ]])
-        assertEquals 'closure1', TDHC.getSuppliedPropertyValue([:], 'TestDomain', 'firstProperty')
-        assertEquals 'closure1andthensome', TDHC.getSuppliedPropertyValue([firstProperty:  'closure1'], 'TestDomain', 'secondProperty')
-    }
 
+        assert 'closure1' == TDHC.getSuppliedPropertyValue([:], 'TestDomain', 'firstProperty')
+        assert 'closure1andthensome' == TDHC.getSuppliedPropertyValue([firstProperty:  'closure1'], 'TestDomain', 'secondProperty')
+    }
 }

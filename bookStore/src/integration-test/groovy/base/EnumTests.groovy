@@ -4,17 +4,22 @@ import enumtest.Car
 import enumtest.CarStatus
 import enumtest.Door
 import enumtest.DoorStatus
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 
-class EnumTests extends GroovyTestCase {
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class EnumTests {
     void testCarStatusEnumPopulated() {
         Car car = Car.build()
-        assertNotNull car
-        assertEquals CarStatus.REVERSE, car.status
+        assert car
+        assert car.status == CarStatus.REVERSE
     }
 
     void testDoorStatusEnumPopulated() {
         Door door = Door.build()
-        assertNotNull door
-        assertEquals DoorStatus.OPEN, door.status
+        assert door
+        assert door.status == DoorStatus.OPEN
     }
 }

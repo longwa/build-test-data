@@ -1,36 +1,33 @@
 package base
 
-import grails.test.*
+import grails.core.GrailsDomainClass
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 
-class BuildAllTests extends GroovyTestCase {
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class BuildAllTests {
     def grailsApplication
 
-    protected void setUp() {
-        super.setUp()
-     }
-
-    protected void tearDown() {
-        super.tearDown()
-    }
-
     void testBuildAllDomains() {
-        def successful = true
-		def caughtError
-        grailsApplication.domainClasses.each { domainClass ->
-            log.info "Test of ${domainClass.name}.build()"
+        boolean successful = true
+        Exception caughtError = null
+
+        grailsApplication.domainClasses.each { GrailsDomainClass domainClass ->
             try {
-                def domainObject = domainClass.clazz.build()
-                assertNotNull domainObject."${domainClass.identifier.name}"
-                log.info "********** SUCCESSFUL BUILD OF $domainClass"
-            } catch (Exception e) {
-                log.severe "********** FAILED BUILD OF $domainClass: $e"
-				caughtError = e
+                if (!domainClass.isAbstract()) {
+                    def domainObject = domainClass.clazz.build()
+                    assert domainObject."${domainClass.identifier.name}"
+                }
+            }
+            catch (Exception e) {
+                caughtError = e
                 successful = false
             }
         }
-		if (!successful) {
-			throw new Exception("Caught exception while building all domain classes", caughtError)
-		}
+        if (!successful) {
+            throw new Exception("Caught exception while building all domain classes", caughtError)
+        }
     }
-
 }

@@ -5,31 +5,40 @@ import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
 import abstractclass.AbstractSubClass
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
+import org.junit.Test
 
-class AbstractTests extends GroovyTestCase {
-
+@TestMixin(IntegrationTestMixin)
+@Rollback
+class AbstractTests {
+    @Test
     void testSuccessfulBuildOfDomainAbstractClass() {
         def abstractClass = AbstractClass.build()
-        assertNotNull abstractClass
-        assertTrue abstractClass.ident() > 0
-        assertTrue abstractClass instanceof ConcreteSubClass
+        assert abstractClass
+        assert abstractClass.ident() > 0
+        assert abstractClass instanceof ConcreteSubClass
 
         def abstractSubClass = AbstractSubClass.build()
-        assertNotNull abstractSubClass
-        assertTrue abstractSubClass.ident() > 0
-        assertTrue abstractSubClass instanceof AnotherConcreteSubClass
+        assert abstractSubClass
+        assert abstractSubClass.ident() > 0
+
+        // This could be either one of these
+        assert abstractSubClass instanceof AnotherConcreteSubClass || abstractSubClass instanceof ConcreteSubClass
 
         def concreteClass = ConcreteSubClass.build()
-        assertNotNull concreteClass
-        assertTrue concreteClass.ident() > 0
+        assert concreteClass
+        assert concreteClass.ident() > 0
     }
 
+    @Test
     void testSuccessfulBuildOfRelatedAbstractClass() {
         def related = RelatedToAbstract.build()
-        assertNotNull related
-        assertTrue related.ident() > 0
-        assertNotNull related.genericParent
-        assertTrue related.genericParent.ident() > 0
-        assertTrue related.genericParent instanceof ConcreteSubClass
+        assert related
+        assert related.ident() > 0
+        assert related.genericParent
+        assert related.genericParent.ident() > 0
+        assert related.genericParent instanceof ConcreteSubClass
     }
 }

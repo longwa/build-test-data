@@ -1,7 +1,9 @@
 import grails.test.mixin.TestMixin
 import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 import org.junit.Test
 
+@Rollback
 @TestMixin(IntegrationTestMixin)
 class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
     @Test

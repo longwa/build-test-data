@@ -2,11 +2,13 @@ package base
 
 import config.Hotel
 import grails.buildtestdata.TestDataConfigurationHolder
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 
-class TestDataConfigTests extends GroovyTestCase {
-
-    def buildTestDataService
-
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class TestDataConfigTests {
     void tearDown() {
         // we should reset the config holder when feeding it values in tests as it could cause issues
         // for other tests later on that are expecting the default config if we do not 
@@ -17,7 +19,7 @@ class TestDataConfigTests extends GroovyTestCase {
         // uses the file in grails-app/conf/TestDataConfig.groovy
         TestDataConfigurationHolder.reset() // you can reset it if you want it to get to a known value
         Hotel testHotel = Hotel.build()
-        assertEquals "Motel 6", testHotel.name
+        assert testHotel.name == "Motel 6"
         assert "6125551111", testHotel.faxNumber.startsWith("612555") // 
     }
 
@@ -26,57 +28,57 @@ class TestDataConfigTests extends GroovyTestCase {
         TestDataConfigurationHolder.sampleData = hotelNameAlwaysHilton
 
         def hilton = Hotel.build()
-        assertEquals "Hilton", hilton.name
+        assert hilton.name == "Hilton"
 
         def stillHilton = Hotel.build()
-        assertEquals "Hilton", stillHilton.name
+        assert stillHilton.name == "Hilton"
     }
 
     void testConfigClosure() {
         def i = 0
         def hotelNameAlternates = [
-                ('config.Hotel'): [name: {->
-                    i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
-                }]
+            ('config.Hotel'): [name: { ->
+                i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
+            }]
         ]
         TestDataConfigurationHolder.sampleData = hotelNameAlternates
-        
+
         def holidayInn = Hotel.build()
-        assertEquals "Holiday Inn", holidayInn.name
+        assert holidayInn.name == "Holiday Inn"
 
         def hilton = Hotel.build()
-        assertEquals "Hilton", hilton.name
+        assert hilton.name == "Hilton"
 
         def backToHolidayInn = Hotel.build()
-        assertEquals "Holiday Inn", backToHolidayInn.name
+        assert backToHolidayInn.name == "Holiday Inn"
     }
 
     void testConfigClosureWithPassedInValues() {
         TestDataConfigurationHolder.sampleData = [
-                ('config.Hotel'): [faxNumber: { values ->
-                    "Fax number for $values.name"
-                }]
+            ('config.Hotel'): [faxNumber: { values ->
+                "Fax number for $values.name"
+            }]
         ]
         def holidayInn = Hotel.build(name: "Holiday Inn")
-        assertEquals "Fax number for Holiday Inn", holidayInn.faxNumber
+        assert holidayInn.faxNumber == "Fax number for Holiday Inn"
     }
 
     void testConfigClosureWithPassedInValuesFromEarlierClosure() {
         def i = 0
         TestDataConfigurationHolder.sampleData = [
-                ('config.Hotel'): [
-                        name: {->
-                            i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
-                        },
-                        faxNumber: { values ->
-                            "Fax number for $values.name"
-                        }
-                ]
+            ('config.Hotel'): [
+                name: { ->
+                    i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
+                },
+                faxNumber: { values ->
+                    "Fax number for $values.name"
+                }
+            ]
         ]
         def holidayInn = Hotel.build()
-        assertEquals "Fax number for Holiday Inn", holidayInn.faxNumber
+        assert holidayInn.faxNumber == "Fax number for Holiday Inn"
 
         def hilton = Hotel.build()
-        assertEquals "Fax number for Hilton", hilton.faxNumber
+        assert hilton.faxNumber == "Fax number for Hilton"
     }
 }

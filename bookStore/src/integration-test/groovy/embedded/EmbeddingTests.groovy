@@ -1,14 +1,12 @@
 package embedded
 
-class EmbeddingTests extends GroovyTestCase {
-    protected void setUp() {
-        super.setUp()
-    }
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 
-    protected void tearDown() {
-        super.tearDown()
-    }
-
+@Rollback
+@TestMixin(IntegrationTestMixin)
+class EmbeddingTests {
     void testPlugin() {
         Embedding e = Embedding.build()
         assert e.inner.someValue != null

@@ -1,8 +1,12 @@
 package list
 
+import grails.test.mixin.TestMixin
+import grails.test.mixin.integration.IntegrationTestMixin
+import grails.transaction.Rollback
 import org.junit.Test
-import org.junit.Ignore
 
+@Rollback
+@TestMixin(IntegrationTestMixin)
 class SantaTests {
     @Test
     void testChildListOk() {
