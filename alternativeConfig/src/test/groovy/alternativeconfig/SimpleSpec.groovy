@@ -1,8 +1,10 @@
 package alternativeconfig
+
 import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 import grails.util.Holders
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
