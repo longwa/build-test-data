@@ -3,10 +3,10 @@ package grails.buildtestdata
 import grails.util.Environment
 import grails.util.Holders
 import org.apache.commons.logging.LogFactory
+import org.springframework.beans.factory.annotation.Value
 
 class TestDataConfigurationHolder {
     static log = LogFactory.getLog("grails.buildtestdata.TestDataConfigurationHolder")
-
     private static ConfigObject configFile
     private static Map sampleData
 

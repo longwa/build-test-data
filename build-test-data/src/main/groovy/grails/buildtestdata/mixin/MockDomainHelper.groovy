@@ -178,10 +178,7 @@ class MockDomainHelper {
      * @return
      */
     private GrailsDomainClass registerGrailsDomainClass(Class<?> domainClassToMock) {
-        GrailsDomainClass domain = (GrailsDomainClass) grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, domainClassToMock)
-        // MetaClass mc = GrailsClassUtils.getExpandoMetaClass(domainClassToMock)
-        // ControllersGrailsPlugin.enhanceDomainWithBinding(grailsApplication.mainContext, domain, mc)
-        return domain
+        (GrailsDomainClass) grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, domainClassToMock)
     }
 
     /**

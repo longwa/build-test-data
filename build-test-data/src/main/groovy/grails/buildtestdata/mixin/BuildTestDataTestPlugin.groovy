@@ -31,6 +31,10 @@ class BuildTestDataTestPlugin implements TestPlugin {
     }
 
     private void beforeClass(TestEvent event) {
+        // Trigger runtime initialization by requesting the value
+        event.runtime.getValue("grailsApplication", event.arguments)
+
+        // Load BTD configuration
         TestDataConfigurationHolder.loadTestDataConfig()
 
         // Save the test class for later use

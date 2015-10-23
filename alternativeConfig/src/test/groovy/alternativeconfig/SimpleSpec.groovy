@@ -11,7 +11,6 @@ import spock.lang.Specification
 @TestFor(Simple)
 @Build(Simple)
 class SimpleSpec extends Specification {
-
     void "test that build is done with the alternative config file"() {
         expect:
         Holders.config.grails.buildtestdata.testDataConfig == "AlternativeTestDataConfig"
