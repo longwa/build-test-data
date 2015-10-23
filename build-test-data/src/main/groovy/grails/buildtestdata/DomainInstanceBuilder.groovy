@@ -354,7 +354,7 @@ class DomainInstanceBuilder {
                 return findConcreteSubclass(firstSubClass)
             }
 
-            throw new UnsupportedOperationException("Unable to create concreate instance for ${domainArtefact.name}")
+            throw new UnsupportedOperationException("Unable to create concrete instance for ${domainArtefact.name}")
         }
         else {
             return domainArtefact
