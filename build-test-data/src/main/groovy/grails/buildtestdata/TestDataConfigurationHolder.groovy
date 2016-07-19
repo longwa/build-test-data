@@ -121,4 +121,8 @@ class TestDataConfigurationHolder {
         }
         return propertyValues
     }
+
+    static String getDomainBasePackage() {
+        return configFile?.testDataConfig?.domainBasePackage ?: null
+    }
 }
