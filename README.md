@@ -1,7 +1,7 @@
 [![Build Status](https://api.travis-ci.org/longwa/build-test-data.png?branch=master)](https://travis-ci.org/longwa/build-test-data)
 
 ## The Build Test Data Grails Plugin 
-#### Note: Version 3.0.0 supports Grails 3.0.0 and higher, please continue to use 2.4.0 for Grails 2.4.x
+#### Note: Version 3.0.1 supports Grails 3.0 and higher, please continue to use 2.4.0 for Grails 2.4.x and 2.5.x
 
 Creating maintainable test data is hard.  Often an entire object graph needs to be created to support the instantiation of a single domain object.  This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we've grown over time and maintained as the domain objects change.  After a while, adding just one more Widget to that set of canned data ends up breaking tests just about every time.
 
