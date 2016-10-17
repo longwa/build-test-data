@@ -231,7 +231,8 @@ class MockDomainHelper {
             provider.addIncludeFilter(new AssignableTypeFilter(domainClass.getClazz()))
 
             // Scan all packages
-            Set<BeanDefinition> components = provider.findCandidateComponents("")
+            String domainBasePackage = TestDataConfigurationHolder.getDomainBasePackage() ?: ""
+            Set<BeanDefinition> components = provider.findCandidateComponents(domainBasePackage)
             for (BeanDefinition it in components) {
                 Class subClass = grailsApplication.classLoader.loadClass(it.beanClassName)
 
