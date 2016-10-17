@@ -29,11 +29,11 @@ class BuildTestDataGrailsPlugin {
 
     def doWithApplicationContext = { appCtx ->
         DomainUtil.setApplication(appCtx.grailsApplication)
-        decorateDomainClasses(application.domainClasses)
+        decorateDomainClasses(appCtx.grailsApplication.domainClasses)
     }
 
     def onChange = { event ->
-        decorateDomainClasses(application.domainClasses)
+        decorateDomainClasses(grailsApplication.domainClasses)
     }
 
     private decorateDomainClasses(domainClasses) {
