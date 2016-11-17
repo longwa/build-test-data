@@ -157,7 +157,9 @@ class DomainInstanceBuilder {
         }
 
         for (propName in requiredMissingPropertyNames) {
-            createMissingProperty(domainInstance, propName, constrainedProperties["$propName"], circularCheckList)
+            if (!propName.equals('dateCreated') && !propName.equals('lastUpdated')) {
+                createMissingProperty(domainInstance, propName, constrainedProperties["$propName"], circularCheckList)
+            }
         }
 
         return domainInstance
