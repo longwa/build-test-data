@@ -1,36 +1,74 @@
 buildscript {
-    ext {
-        grailsVersion = project.grailsVersion
-    }
     repositories {
         mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
     }
-    dependencies {        
+    dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.5.0'
-        classpath "org.grails.plugins:hibernate:4.3.10.5"
+        classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.6"
     }
 }
 
-plugins {
-    id "io.spring.dependency-management" version "0.5.2.RELEASE"
+version "0.1"
+group "baseTests"
+
+apply plugin:"eclipse"
+apply plugin:"idea"
+apply plugin:"war"
+apply plugin:"org.grails.grails-web"
+apply plugin:"asset-pipeline"
+apply plugin:"org.grails.grails-gsp"
+
+repositories {
+    mavenLocal()
+    maven { url "https://repo.grails.org/grails/core" }
 }
 
-version "0.1"
-group "basetests"
+grails {
+    plugins {
+        compile project(':build-test-data')
+    }
+}
 
-apply plugin: "spring-boot"
-apply plugin: "war"
-apply plugin: "asset-pipeline"
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: "org.grails.grails-web"
-apply plugin: "org.grails.grails-gsp"
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.grails:grails-core"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-tomcat"
+    compile "org.grails:grails-web-boot"
+    compile "org.grails:grails-logging"
+    compile "org.grails:grails-plugin-rest"
+    compile "org.grails:grails-plugin-databinding"
+    compile "org.grails:grails-plugin-i18n"
+    compile "org.grails:grails-plugin-services"
+    compile "org.grails:grails-plugin-url-mappings"
+    compile "org.grails:grails-plugin-interceptors"
+    compile "org.grails.plugins:cache"
+    compile "org.grails.plugins:async"
+    compile "org.grails.plugins:scaffolding"
+    compile "org.grails.plugins:events"
+    compile "org.grails.plugins:hibernate5"
+    compile "org.hibernate:hibernate-core:5.1.5.Final"
+    compile "org.grails.plugins:gsp"
 
-ext {
-    grailsVersion = project.grailsVersion
-    gradleWrapperVersion = project.gradleWrapperVersion
+    console "org.grails:grails-console"
+
+    profile "org.grails.profiles:web"
+
+    runtime "org.glassfish.web:el-impl:2.1.2-b03"
+    runtime "com.h2database:h2"
+    runtime "org.apache.tomcat:tomcat-jdbc"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.6"
+
+    testCompile "org.grails:grails-gorm-testing-support"
+    testCompile "org.grails:grails-web-testing-support"
+}
+
+bootRun {
+    jvmArgs('-Dspring.output.ansi.enabled=always')
+    addResources = true
 }
 
 assets {
@@ -38,50 +76,3 @@ assets {
     minifyCss = true
 }
 
-repositories {
-    mavenLocal()
-    maven { url "https://repo.grails.org/grails/core" }
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.grails:grails-bom:$grailsVersion"
-    }
-    applyMavenExclusions false
-}
-
-dependencies {
-    compile project(":build-test-data")
-
-    compile "org.springframework.boot:spring-boot-starter-logging"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
-    compile "org.springframework.boot:spring-boot-autoconfigure"
-    compile "org.springframework.boot:spring-boot-starter-tomcat"
-    compile "org.grails:grails-dependencies"
-    compile "org.grails:grails-web-boot"
-
-    compile "org.grails.plugins:hibernate:4.3.10.7"
-    compile "org.grails.plugins:cache"
-    compile "org.hibernate:hibernate-ehcache"
-    compile "org.grails.plugins:scaffolding"
-
-    runtime "org.grails.plugins:asset-pipeline"
-
-    testCompile "org.grails:grails-plugin-testing"
-    testCompile "org.grails.plugins:geb"
-
-    // Note: It is recommended to update to a more robust driver (Chrome, Firefox etc.)
-    testRuntime 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.44.0'
-
-    console "org.grails:grails-console"
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = gradleWrapperVersion
-}
-
-// Rename test to unitTest
-tasks.test.name = "unitTest"
-
-// Wrap and run both
-task test(dependsOn:['unitTest', 'integrationTest'])

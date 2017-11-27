@@ -1,7 +1,4 @@
 buildscript {
-    ext {
-        grailsVersion = project.grailsVersion
-    }
     repositories {
         mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
@@ -11,78 +8,57 @@ buildscript {
     }
 }
 
-plugins {
-    id "io.spring.dependency-management" version "0.5.2.RELEASE"
-    id "com.jfrog.bintray" version "1.2"
-}
-
-version "3.0.1"
+version "3.3.0"
 group "org.grails.plugins"
 
-apply plugin: 'maven-publish'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: "spring-boot"
+apply plugin: "eclipse"
+apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
-apply plugin: "org.grails.grails-gsp"
-
-// Used for publishing to central repository, remove if not needed
-apply from:'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle'
-apply from:'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle'
-
-ext {
-    grailsVersion = project.grailsVersion
-    gradleWrapperVersion = project.gradleWrapperVersion
-}
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+apply plugin: "org.grails.grails-plugin-publish"
 
 repositories {
     mavenLocal()
-    mavenCentral()
     maven { url "https://repo.grails.org/grails/core" }
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "org.grails:grails-bom:$grailsVersion"
-    }
-    applyMavenExclusions false
-}
-
 dependencies {
-    provided 'org.springframework.boot:spring-boot-starter-logging'
-    provided "org.springframework.boot:spring-boot-starter-actuator"
-    provided "org.springframework.boot:spring-boot-autoconfigure"
-    provided "org.springframework.boot:spring-boot-starter-tomcat"
+    profile "org.grails.profiles:plugin"
 
-    provided "org.grails:grails-web-boot"
-    provided "org.grails:grails-dependencies"
-    provided 'javax.servlet:javax.servlet-api:3.1.0'
-
-    compile "org.grails:grails-plugin-testing"
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.grails:grails-core"
     compile "dk.brics.automaton:automaton:1.11-8"
 
     console "org.grails:grails-console"
+
+    provided "org.grails:grails-plugin-services"
+    provided "org.grails:grails-plugin-domain-class"
+
+    testCompile "org.grails:grails-gorm-testing-support"
+    testCompile "org.grails:grails-plugin-testing"
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = gradleWrapperVersion
+bootRun {
+    jvmArgs('-Dspring.output.ansi.enabled=always')
+    addResources = true
 }
 
-bintray {
-    pkg {
-        //noinspection GrReassignedInClosureLocalVar
-        name = "$project.name"
-        userOrg = ''
-        issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
-        vcsUrl = "https://github.com/longwa/$project.name"
+// Enable if you wish to package this plugin as a standalone application
+bootRepackage.enabled = false
 
-        //noinspection GroovyAssignabilityCheck
-        version {
-            attributes = ['grails-plugin': "$project.group:$project.name"]
-            name = project.version
-        }
+grailsPublish {
+    user = 'longwa'
+    key = 'key'
+    githubSlug = 'foo/bar'
+
+    license {
+        name = 'Apache-2.0'
     }
+
+    title = "Build Test Data Plugin"
+    desc = "Enables the easy creation of test data by automatically satisfying most constraints"
+    developers = [longwa: "Aaron Long"]
+
+    issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
+    vcsUrl = "https://github.com/longwa/$project.name"
 }
