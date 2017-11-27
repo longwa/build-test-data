@@ -1,240 +1,219 @@
 package grails.buildtestdata
 
-import grails.buildtestdata.handler.BlankConstraintHandler
 import grails.buildtestdata.handler.ConstraintHandler
-import grails.buildtestdata.handler.CreditCardConstraintHandler
-import grails.buildtestdata.handler.EmailConstraintHandler
-import grails.buildtestdata.handler.InListConstraintHandler
-import grails.buildtestdata.handler.MatchesConstraintHandler
-import grails.buildtestdata.handler.MaxConstraintHandler
-import grails.buildtestdata.handler.MaxSizeConstraintHandler
-import grails.buildtestdata.handler.MinConstraintHandler
-import grails.buildtestdata.handler.MinSizeConstraintHandler
 import grails.buildtestdata.handler.NullableConstraintHandler
-import grails.buildtestdata.handler.RangeConstraintHandler
-import grails.buildtestdata.handler.SizeConstraintHandler
-import grails.buildtestdata.handler.UrlConstraintHandler
-import grails.buildtestdata.handler.ValidatorConstraintHandler
+import grails.core.GrailsApplication
 import grails.core.GrailsClass
-import grails.core.GrailsDomainClass
-import grails.validation.ConstrainedProperty
-import org.apache.commons.logging.LogFactory
+import grails.gorm.validation.ConstrainedProperty
+import grails.gorm.validation.Constraint
+import grails.gorm.validation.PersistentEntityValidator
+import grails.util.Holders
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.ManyToOne
+import org.grails.datastore.mapping.model.types.OneToOne
+import org.springframework.validation.Errors
 
-import java.lang.reflect.Modifier
-
-import static grails.buildtestdata.DomainUtil.*
+import static grails.buildtestdata.DomainUtil.getPersistentEntity
+import static grails.buildtestdata.DomainUtil.propertyIsToOneDomainClass
 import static grails.buildtestdata.TestDataConfigurationHolder.*
 
+@Slf4j
+@CompileStatic
 class DomainInstanceBuilder {
-    private static log = LogFactory.getLog(this)
+    GrailsApplication grailsApplication = Holders.grailsApplication
+    MappingContext mappingContext = Holders.grailsApplication.mappingContext
 
-    static CONSTRAINT_SORT_ORDER = [
-        ConstrainedProperty.IN_LIST_CONSTRAINT, // most important
-        ConstrainedProperty.EMAIL_CONSTRAINT,
-        ConstrainedProperty.CREDIT_CARD_CONSTRAINT,
-        ConstrainedProperty.URL_CONSTRAINT,
-        ConstrainedProperty.RANGE_CONSTRAINT,
-        ConstrainedProperty.SCALE_CONSTRAINT,
-        ConstrainedProperty.SIZE_CONSTRAINT,
-        ConstrainedProperty.MAX_CONSTRAINT,
-        ConstrainedProperty.MIN_CONSTRAINT,
-        ConstrainedProperty.MIN_SIZE_CONSTRAINT,
-        ConstrainedProperty.MAX_SIZE_CONSTRAINT,
-        ConstrainedProperty.MATCHES_CONSTRAINT,     // not implememnted, provide sample data
-        ConstrainedProperty.VALIDATOR_CONSTRAINT,   // not implememnted, provide sample data
-        ConstrainedProperty.BLANK_CONSTRAINT, // precluded by no '' default value applied in the nullable constraint handling
-    ].reverse() // reverse so that when we compare, missing items are -1, then we are orders 0 -> n least to most important
+    Class javaClass
+    GrailsClass grailsClass
+    PersistentEntity persistentEntity
+    PersistentEntityValidator entityValidator
 
-    // TODO: filter to actual list for this class, or possibly each property value?
-    def handlers = [
-        (ConstrainedProperty.MIN_SIZE_CONSTRAINT): new MinSizeConstraintHandler(),
-        (ConstrainedProperty.MAX_SIZE_CONSTRAINT): new MaxSizeConstraintHandler(),
-        (ConstrainedProperty.IN_LIST_CONSTRAINT): new InListConstraintHandler(),
-        (ConstrainedProperty.CREDIT_CARD_CONSTRAINT): new CreditCardConstraintHandler(),
-        (ConstrainedProperty.EMAIL_CONSTRAINT): new EmailConstraintHandler(),
-        (ConstrainedProperty.URL_CONSTRAINT): new UrlConstraintHandler(),
-        (ConstrainedProperty.RANGE_CONSTRAINT): new RangeConstraintHandler(),
-        (ConstrainedProperty.SIZE_CONSTRAINT): new SizeConstraintHandler(),
-        (ConstrainedProperty.MIN_CONSTRAINT): new MinConstraintHandler(),
-        (ConstrainedProperty.MAX_CONSTRAINT): new MaxConstraintHandler(),
-        (ConstrainedProperty.NULLABLE_CONSTRAINT): new NullableConstraintHandler(),
-        (ConstrainedProperty.MATCHES_CONSTRAINT): new MatchesConstraintHandler(),
-        (ConstrainedProperty.BLANK_CONSTRAINT): new BlankConstraintHandler(),
-        (ConstrainedProperty.VALIDATOR_CONSTRAINT): new ValidatorConstraintHandler()
-    ]
+    // All constrained properties
+    Map<String, ConstrainedProperty> constrainedProperties
 
-    def domainArtefact
-    def domainClass
-    def constrainedProperties
-    def requiredPropertyNames
-    def domainProperties
-    def requiredDomainPropertyNames
-    def propsToSaveFirst
+    // All constrained associations
+    Map<String, ConstrainedProperty> domainProperties
 
+    Set<String> requiredPropertyNames
+    Set<String> requiredDomainPropertyNames
+    Set<String> propsToSaveFirst
+
+    // Just for performance to avoid looking up the key types over and over
     Map<Class, Boolean> keyTypeCache = [:]
 
-    DomainInstanceBuilder(domainArtefact) {
+    DomainInstanceBuilder(Class<?> clazz) {
+        javaClass = clazz
+        grailsClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, clazz.name)
+
         // If this is an abstract class, what we really want to do is find a concrete subclass since
         // we can't actually do anything with this base class. This happens when a class has an association
         // to an abstract base class in the object graph.
-        if ((domainArtefact instanceof GrailsClass) && domainArtefact.isAbstract()) {
-            domainArtefact = findConcreteSubclass(domainArtefact)
+        if (grailsClass.isAbstract()) {
+            grailsClass = findConcreteSubclass(grailsClass)
+            javaClass = grailsClass.clazz
         }
 
-        this.domainArtefact = domainArtefact
-        this.domainClass = domainArtefact.clazz
-        this.constrainedProperties = domainArtefact.constrainedProperties
-        this.requiredPropertyNames = findRequiredPropertyNames(domainArtefact)
-        this.domainProperties = findDomainProperties(domainArtefact)
-        this.requiredDomainPropertyNames = findRequiredDomainPropertyNames(domainProperties, requiredPropertyNames)
-        this.propsToSaveFirst = findPropsToSaveFirst()
+        persistentEntity = mappingContext.getPersistentEntity(javaClass.name)
+        entityValidator = mappingContext.getEntityValidator(persistentEntity) as PersistentEntityValidator
+        constrainedProperties = entityValidator.constrainedProperties
+
+        requiredPropertyNames = findRequiredPropertyNames(constrainedProperties)
+        domainProperties = findDomainProperties(constrainedProperties)
+        requiredDomainPropertyNames = findRequiredDomainPropertyNames(domainProperties, requiredPropertyNames)
+        propsToSaveFirst = findPropsToSaveFirst()
     }
 
-    def findRequiredPropertyNames(domainArtefact) {
-        def constrainedProperties = domainArtefact.constrainedProperties
-        def allPropertyNames = constrainedProperties.keySet()
-        return allPropertyNames.findAll { propName ->
-            !constrainedProperties."$propName".isNullable()
-        }
-    }
-
-    def findDomainProperties(domainArtefact) {
-        domainArtefact.constrainedProperties.values().findAll { constrainedProperty ->
-            propertyIsToOneDomainClass(constrainedProperty.propertyType)
+    Set<String> findRequiredPropertyNames(Map<String, ConstrainedProperty> constrainedProperties) {
+        Set<String> allPropertyNames = constrainedProperties.keySet()
+        allPropertyNames.findAll { String propName ->
+            !constrainedProperties[propName].isNullable()
         }
     }
 
-    def findRequiredDomainPropertyNames(domainProperties, requiredPropertyNames) {
-        return domainProperties*.propertyName.intersect(requiredPropertyNames)
+    Map<String, ConstrainedProperty> findDomainProperties(Map<String, ConstrainedProperty> constrainedProperties) {
+        constrainedProperties.findAll { propertyIsToOneDomainClass(it.value.propertyType) }
     }
 
-    def findPropsToSaveFirst() {
-        if (domainClass.metaClass.properties.name.contains('hasOne') && domainClass.hasOne in Map) {
-            // this class is the owning side of the hasOne and should be saved before it
-            return requiredDomainPropertyNames.findAll { domainClass.hasOne[it] == null }
+    Set<String> findRequiredDomainPropertyNames(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
+        domainProperties.keySet().findAll { requiredPropertyNames.contains(it) }
+    }
+
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    Set<Class> findRequiredDomainClasses(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
+        domainProperties.findAll { requiredPropertyNames.contains(it.key) }.collect {
+            it.value.propertyType
+        } as Set<Class>
+    }
+
+    Set<String> findPropsToSaveFirst() {
+        if (persistentEntity.persistentProperties.any { it instanceof OneToOne && it.isOwningSide() }) {
+            return requiredPropertyNames.findAll {
+                PersistentProperty prop  = persistentEntity.getPropertyByName(it)
+                prop instanceof OneToOne && ((OneToOne)prop).isOwningSide()
+            }
         }
+
         requiredDomainPropertyNames
     }
 
-    def findExisting() {
-        // findWhere doesn't find any elements with an empty param map so we use list instead
-        def list = domainClass.list(limit: 1)
-        return list ? list.first() : null
+    GormEntity findExisting() {
+        List<GormEntity> list = javaClass.invokeMethod("list", [limit: 1]) as List<GormEntity>
+        list ? list.first() : null
     }
 
-    def findExisting(propValues) {
-        return domainClass.findWhere(propValues)
+    GormEntity findExisting(Map<String, Object> propValues) {
+        javaClass.invokeMethod("findWhere", propValues) as GormEntity
     }
 
-    def buildWithoutSave(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
-        def domainInstance = populateInstance(domainClass.create(), propValues, circularCheckList)
+    GormEntity buildWithoutSave(Map<String, Object> propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
+        GormEntity domainInstance = javaClass.invokeMethod("create", null) as GormEntity
+        populateInstance(domainInstance, propValues, circularCheckList)
         circularCheckList.update(domainInstance, domainInstance.validate())
-        return domainInstance
+        domainInstance
     }
 
-    def build(propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
-        def domainInstance = populateInstance(domainClass.create(), propValues, circularCheckList)
+    GormEntity build(Map<String, Object> propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
+        GormEntity domainInstance = javaClass.invokeMethod("create", null) as GormEntity
+        populateInstance(domainInstance, propValues, circularCheckList)
+
+        // Save the domain
         domainInstance = save(domainInstance)
 
-        // TODO: do we really need to validate here?  What does that add?
+        // Prevent circular dependencies
         circularCheckList.update(domainInstance, domainInstance.validate())
-        return domainInstance
+        domainInstance
     }
 
-    def populateInstance(domainInstance, Map propValues, CircularCheckList circularCheckList) {
+    GormEntity populateInstance(GormEntity domainInstance, Map<String, Object> propValues, CircularCheckList circularCheckList) {
         propValues = findMissingConfigValues(propValues) + propValues
 
         for (property in propValues.keySet()) {
             setDomainPropertyValue(domainInstance, property, propValues[property])
         }
 
-        def requiredMissingPropertyNames = (requiredPropertyNames - propValues.keySet()).findAll { propName ->
-            !domainInstance."$propName"
+        Set<String> requiredMissingPropertyNames = (requiredPropertyNames - propValues.keySet()).findAll { propName ->
+            !domainInstance.metaClass.getProperty(domainInstance, propName)
         }
 
-        if (log.debugEnabled) {
-            log.debug "requiredMissingPropertyNames for ${domainClass.name} = ${requiredMissingPropertyNames}"
-        }
+        log.debug("requiredMissingPropertyNames for {} = {}", javaClass.name, requiredMissingPropertyNames)
 
         for (propName in requiredMissingPropertyNames) {
-            createMissingProperty(domainInstance, propName, constrainedProperties["$propName"], circularCheckList)
+            createMissingProperty(domainInstance, propName, constrainedProperties[propName], circularCheckList)
         }
 
-        return domainInstance
+        domainInstance
     }
 
-    def setDomainPropertyValue(domainInstance, propertyName, value) {
-        if (log.debugEnabled) {
-            log.debug "Setting ${domainClass.name}.$propertyName to $value"
-        }
+    void setDomainPropertyValue(GormEntity domainInstance, String propertyName, Object value) {
+        log.debug("Setting {}.{} to {}", javaClass.name, propertyName, value)
 
         if (propertyName.contains('.')) {
             setValueOnNestedProperty(domainInstance, propertyName, value)
         }
         else {
-            domainInstance."$propertyName" = value
+            domainInstance.metaClass.setProperty(domainInstance, propertyName, value)
         }
 
-        GrailsDomainClass defDomain = getDomainArtefact(domainInstance.class) as GrailsDomainClass
-        def domainProp = defDomain.propertyMap[propertyName]
+        PersistentEntity defDomain = getPersistentEntity(domainInstance.class)
+        PersistentProperty domainProp = defDomain.getPropertyByName(propertyName)
 
-        if (domainProp?.isManyToOne()) {
-            // value is an Author and we're a Book, add us to the Author's set of books if there is one
-            NullableConstraintHandler.addInstanceToOwningObjectCollection(value, domainInstance, domainProp)
+        // If value is an Author and we're a Book, add us to the Author's set of books if there is one
+        if (domainProp instanceof ManyToOne && value instanceof GormEntity) {
+            ManyToOne manyToOneProp = domainProp as ManyToOne
+            GormEntity owningObject = value as GormEntity
+
+            owningObject.addTo(manyToOneProp.referencedPropertyName, domainInstance)
         }
     }
 
-    def setValueOnNestedProperty(domainInstance, propertyName, value) {
-        // this is an embedded property, i.e. 'bar.foo' = 23
-        def props = propertyName.split(/\./)
+    def setValueOnNestedProperty(GormEntity domainInstance, String propertyName, Object value) {
+        // This is an embedded property, i.e. 'bar.foo' = 23
+        String[] props = propertyName.split(/\./)
         props[0..-2].inject(domainInstance) { current, next -> current[next] }[props[-1]] = value
     }
 
-    def findMissingConfigValues(propValues) {
-        def missingProperties = getConfigPropertyNames(domainClass.name) - propValues.keySet()
-        return getPropertyValues(domainClass.name, missingProperties, propValues)
+    def findMissingConfigValues(Map<String, Object> propValues) {
+        Set<String> missingProperties = getConfigPropertyNames(javaClass.name) - propValues.keySet()
+        getPropertyValues(javaClass.name, missingProperties, propValues)
     }
 
-    def createMissingProperty(domainInstance, propertyName, constrainedProperty, circularCheckList) {
-        if (log.debugEnabled) {
-            log.debug "creating missing property domain ${domainInstance?.class?.name}, propname $propertyName"
-        }
+    void createMissingProperty(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
+        log.debug("Creating missing property domain {}, propname {}", domainInstance?.class?.name, propertyName)
+
         // first check if the default value satisfies the constraint
         // we could handle this like any other constraint except transient properties appear to be
         // non-nullable without actually having the nullable constraint
         new NullableConstraintHandler().handle(domainInstance, propertyName, null, constrainedProperty, circularCheckList)
 
         if (getErrors(constrainedProperty, domainInstance, propertyName).errorCount && !createProperty(domainInstance, propertyName, constrainedProperty, circularCheckList)) {
-            if (log.warnEnabled) {
-                log.warn "failed to generate a valid value for $propertyName: ${domainInstance."$propertyName"} check for unsupported matches or custom validator constraint and supply a default value or may use a custom validator referencing other as yet unset properties on this domain - still trying"
-            }
+            log.warn "Failed to generate a valid value for {}.{}", domainInstance?.class?.name, propertyName
         }
         else {
-            if (log.debugEnabled) {
-                log.debug "${constrainedProperty.propertyName} - created value = ${domainInstance."$propertyName"}"
-            }
+            log.debug "Property name: {} - Created value: {}", propertyName, domainInstance?.metaClass?.getProperty(domainInstance, propertyName)
         }
     }
 
-    def createProperty(domainInstance, propertyName, constrainedProperty, circularCheckList) {
-        if (log.debugEnabled) {
-            log.debug "building value for ${domainInstance?.class?.name}.${constrainedProperty?.propertyName}"
-        }
-        return sortedConstraints(constrainedProperty.appliedConstraints).find { appliedConstraint ->
-            if (log.debugEnabled) {
-                log.debug "${domainInstance?.class?.name}.${appliedConstraint?.name} constraint, field before adjustment: ${domainInstance?."$propertyName"}"
-            }
-            ConstraintHandler handler = handlers[appliedConstraint.name]
+    def createProperty(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
+        log.debug("Building value for {}.{}", domainInstance?.class?.name, propertyName)
+
+        sortedConstraints(constrainedProperty.appliedConstraints).find { Constraint appliedConstraint ->
+            log.debug("{}.{} constraint, field before adjustment: {}", domainInstance?.class?.name, appliedConstraint?.name, domainInstance?.metaClass?.getProperty(domainInstance, propertyName))
+
+            ConstraintHandler handler = ConstraintHandler.handlers[appliedConstraint.name]
             if (handler) {
                 handler.handle(domainInstance, propertyName, appliedConstraint, constrainedProperty, circularCheckList)
                 if (log.debugEnabled) {
-                    log.debug "${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}: ${domainInstance?."$propertyName"}"
+                    log.debug("${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}: ${domainInstance?."$propertyName"}")
                 }
             }
             else {
-                if (log.warnEnabled) {
-                    log.warn "Unable to find property generator handler for constraint ${appliedConstraint?.name}!"
-                }
+                log.warn("Unable to find a constraint handler for {} with constraint: {}", domainInstance?.class?.name, appliedConstraint?.name)
             }
 
             if (!getErrors(constrainedProperty, domainInstance, propertyName).errorCount) {
@@ -243,48 +222,44 @@ class DomainInstanceBuilder {
         }
     }
 
-    def getErrors(constrainedProperty, domain, propertyName) {
-        def errors = new MockErrors(this)
-        constrainedProperty.validate(domain, domain."$propertyName", errors)
-        return errors
+    Errors getErrors(ConstrainedProperty constrainedProperty, GormEntity domain, String propertyName) {
+        Errors errors = new MockErrors(this)
+        constrainedProperty.validate(domain, domain.metaClass.getProperty(domain, propertyName), errors)
+        errors
     }
 
-    def save(domainInstance, circularTrap = []) {
-        if (circularTrap.contains(domainInstance) || domainInstance instanceof Enum) {
-            return
+    GormEntity save(GormEntity domainInstance, CircularCheckList circularCheckList = new CircularCheckList()) {
+        if (circularCheckList.contains(domainInstance) || domainInstance instanceof Enum) {
+            return domainInstance
         }
 
         if (propsToSaveFirst) {
-            if (log.debugEnabled) {
-                log.debug "${domainInstance.class.name} found domainProps that we need to save first: ${propsToSaveFirst}"
-            }
+            log.debug("{} has these properties that we need to save first: {}", domainInstance.class.name, propsToSaveFirst)
             for (propertyName in propsToSaveFirst) {
-                domainInstance."$propertyName".buildCascadingSave(circularTrap + domainInstance)
+                save(domainInstance.metaClass.getProperty(domainInstance, propertyName) as GormEntity, circularCheckList.update(domainInstance))
             }
         }
 
-        boolean hasAssignedKey = isAssignedKey(domainInstance.getClass())
+        boolean hasAssignedKey = hasAssignedKey(domainInstance.getClass())
         if ((hasAssignedKey || domainInstance.ident() == null) && !domainInstance.save()) {
-            throw new Exception("Unable to build valid ${domainInstance.class.name} instance, errors: [${domainInstance.errors.collect { '\t' + it + '\n' }}]")
+            throw new RuntimeException("Unable to build valid ${domainInstance.class.name} instance, errors: [${domainInstance.errors.collect { "\t$it\n" }}]")
         }
 
-        if (!(hasAssignedKey || domainInstance.ident() == null)) {
-            if (log.infoEnabled) {
-                log.info "After ${domainInstance.class.name}.save() $domainInstance, skipped because it already has a key and isn't assigned"
+        if (log.isDebugEnabled()) {
+            if (!(hasAssignedKey || domainInstance.ident() == null)) {
+                log.debug "After ${domainInstance.class.name}.save() $domainInstance, skipped because it already has a key and isn't assigned"
             }
-        }
-        else {
-            if (log.infoEnabled) {
-                log.info "After ${domainInstance.class.name}.save() $domainInstance, success!"
+            else {
+                log.debug "After ${domainInstance.class.name}.save() $domainInstance, success!"
             }
         }
 
-        return domainInstance
+        domainInstance
     }
 
-    def sortedConstraints(appliedConstraints) {
-        return appliedConstraints.sort { a, b ->
-            CONSTRAINT_SORT_ORDER.indexOf(b.name) <=> CONSTRAINT_SORT_ORDER.indexOf(a.name)
+    Collection<Constraint> sortedConstraints(Collection<Constraint> appliedConstraints) {
+        appliedConstraints.sort { Constraint a, Constraint b ->
+            ConstraintHandler.CONSTRAINT_SORT_ORDER.indexOf(b.name) <=> ConstraintHandler.CONSTRAINT_SORT_ORDER.indexOf(a.name)
         }
     }
 
@@ -296,7 +271,7 @@ class DomainInstanceBuilder {
      * @param clazz
      * @return true if the class has a mapping block with an id(generator: '...') defined
      */
-    private boolean isAssignedKey(Class clazz) {
+    private boolean hasAssignedKey(Class clazz) {
         boolean assigned = false
 
         // See if we've already check this instance
@@ -304,16 +279,14 @@ class DomainInstanceBuilder {
             assigned = keyTypeCache[clazz]
         }
         else {
-            // If the instance has a mapping property, evaluate the closure to see if it has an id
-            // property which is assigned. This is done generically to avoid needing hibernate dependencies.
-            def hasMapping = clazz.declaredFields.find { it.name == 'mapping' && Modifier.isStatic(it.modifiers) }
-            if (hasMapping && clazz.mapping instanceof Closure) {
+            Object mappingProperty = clazz.metaClass.getProperty(clazz, 'mapping')
+            if (mappingProperty && mappingProperty instanceof Closure) {
                 MappingDelegate mappingDelegate = new MappingDelegate()
 
                 // Evaluate the mapping block
-                def mappingBlock = clazz.mapping.clone() as Closure
-                mappingBlock.delegate = mappingDelegate
-                mappingBlock.call()
+                Closure block = mappingProperty.clone() as Closure
+                block.delegate = mappingDelegate
+                block.call()
 
                 assigned = mappingDelegate.isAssigned
             }
@@ -321,7 +294,7 @@ class DomainInstanceBuilder {
 
         // Sometimes the mapping block is in a parent class, we'll check those as well
         if (!assigned && clazz.superclass) {
-            assigned = isAssignedKey(clazz.superclass)
+            assigned = hasAssignedKey(clazz.superclass)
         }
 
         // Remember this class so we don't have to check again
@@ -329,7 +302,7 @@ class DomainInstanceBuilder {
         assigned
     }
 
-    def findConcreteSubclass(GrailsClass domainArtefact) {
+    GrailsClass findConcreteSubclass(GrailsClass domainArtefact) {
         if (domainArtefact.isAbstract()) {
             // First see if we have a default defined for this domain class. If so,
             // we will use this. This is handy if you have alot of polymorphic associations to a
@@ -337,39 +310,33 @@ class DomainInstanceBuilder {
             def abstractDefault = getAbstractDefaultFor(domainArtefact.fullName)
             if (abstractDefault) {
                 return grailsApplication.getArtefact(
-                    "Domain",
+                    DomainClassArtefactHandler.TYPE,
                     abstractDefault instanceof Class ? abstractDefault.name : abstractDefault.toString()
                 )
             }
 
-            // Otherwise, let's see if we can just find a concrete subclass
-            List<GrailsDomainClass> subclasses = domainArtefact.subClasses?.toList()
-            if (subclasses) {
-                // Sort to make the selection deterministic, this helps prevent random test failures from choosing
-                // different concrete classes.
-                GrailsDomainClass firstSubClass = subclasses.sort { it.fullName }.first()
-                if (log.debugEnabled) {
-                    log.debug("Getting first subclass ${firstSubClass.name} for abstract class ${domainArtefact.name}")
-                }
-                return findConcreteSubclass(firstSubClass)
-            }
-
-            throw new UnsupportedOperationException("Unable to create concrete instance for ${domainArtefact.name}")
+            throw new UnsupportedOperationException("Unable to create concrete instance for ${domainArtefact.name}. Try adding an 'abstractDefault' section to TestDataConfig.")
         }
         else {
             return domainArtefact
         }
     }
 
-    // Evaluate the mapping block to see if there is an id mapping with a generator defined
-    // This is just a quick and dirty way to determine assigned keys without using hibernate
+    /**
+     * Evaluate the mapping block to see if there is an id mapping with a generator defined
+     * This is just a quick and dirty way to determine assigned keys without using hibernate
+     */
     static class MappingDelegate {
         boolean isAssigned = false
 
-        def invokeMethod(String name, args) {
-            if (name == "id" && args && (args[0] instanceof Map) && args[0].generator) {
-                isAssigned = true
+        Object invokeMethod(String name, Object args) {
+            if (name == "id" && args && args instanceof Object[]) {
+                Object[] argArray = args as Object[]
+                if(argArray[0] instanceof Map && argArray[0]['generator']) {
+                    isAssigned = true
+                }
             }
+            null
         }
     }
 }

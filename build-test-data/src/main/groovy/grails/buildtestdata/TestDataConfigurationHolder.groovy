@@ -63,10 +63,6 @@ class TestDataConfigurationHolder {
         }
     }
 
-    static boolean isPluginEnabled() {
-        return !(configFile?.testDataConfig?.enabled == false)
-    }
-
     static Map getSampleData() {
         if (sampleData == null) {
             loadTestDataConfig()
@@ -115,7 +111,7 @@ class TestDataConfigurationHolder {
         return value
     }
 
-    static getPropertyValues(domainName, propertyNames, Map propertyValues = [:]) {
+    static Map<String, Object> getPropertyValues(domainName, propertyNames, Map propertyValues = [:]) {
         for (propertyName in propertyNames) {
             propertyValues[propertyName] = getSuppliedPropertyValue(propertyValues, domainName, propertyName)
         }

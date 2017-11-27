@@ -20,8 +20,4 @@ class BuildTestDataGrailsPlugin extends Plugin {
 
     def issueManagement = [system: 'github', url: 'https://github.com/longwa/build-test-data/issues']
     def scm = [url: 'https://github.com/longwa/build-test-data/']
-
-    void doWithApplicationContext() {
-        DomainUtil.setApplication(grailsApplication)
-    }
 }

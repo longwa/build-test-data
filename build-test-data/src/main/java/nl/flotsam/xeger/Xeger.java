@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009 Wilfred Springer
  * Copyright 2012 Jason Pell
  * Copyright 2013 Antonio García-Domínguez
@@ -30,7 +30,6 @@ import dk.brics.automaton.Transition;
  * matcher: an instance of this class will produce text that is guaranteed to match the regular expression passed in.
  */
 public class Xeger {
-
     private final Automaton automaton;
     private Random random;
 

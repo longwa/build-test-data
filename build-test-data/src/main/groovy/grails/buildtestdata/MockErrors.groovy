@@ -1,5 +1,6 @@
 package grails.buildtestdata
 
+import groovy.transform.CompileStatic
 import org.springframework.validation.BeanPropertyBindingResult
 
 /**
@@ -7,8 +8,8 @@ import org.springframework.validation.BeanPropertyBindingResult
  * directly in build-test-data as GrailsMockErrors is part of a set of test
  * classes that aren't available in a war file in grails 2.0
  */
+@CompileStatic
 class MockErrors extends BeanPropertyBindingResult {
-
     static final ERROR_CODE_TABLE = Collections.unmodifiableMap([
         "blank":               "blank",
         "creditCard.invalid":  "creditCard",

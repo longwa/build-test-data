@@ -28,13 +28,14 @@ dependencies {
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"
     compile "dk.brics.automaton:automaton:1.11-8"
+    compile "org.grails:grails-gorm-testing-support"
+    compile "org.apache.commons:commons-lang3:3.7"
 
     console "org.grails:grails-console"
 
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
 
-    testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-plugin-testing"
 }
 

@@ -49,14 +49,3 @@ testDataConfig {
     }
 }
 
-
-// if you'd like to disable the build-test-data plugin in an environment, just set
-// the "enabled" property to false
-
-environments {
-    production {
-        testDataConfig {
-            enabled = false
-        }
-    }
-}
