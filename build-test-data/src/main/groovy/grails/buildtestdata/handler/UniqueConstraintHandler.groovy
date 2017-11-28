@@ -1,14 +1,21 @@
 package grails.buildtestdata.handler
 
+import grails.buildtestdata.CircularCheckList
 import grails.buildtestdata.MockErrors
+import grails.gorm.validation.ConstrainedProperty
+import grails.gorm.validation.Constraint
+import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEntity
 
+@SuppressWarnings("GroovyUnusedDeclaration")
+@CompileStatic
 class UniqueConstraintHandler implements ConstraintHandler {
-    void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {
-        // unique isn't supported, if the value we've got in there isn't valid by this point, throw an error letting
+    @Override
+    void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
+        // Unique isn't supported, if the value we've got in there isn't valid by this point, throw an error letting
         // the user know why we're not passing
-        if (appliedConstraint.unique && !constrainedProperty?.validate(domain, domain."$propertyName", new MockErrors(this))) {
-            String error = "unique constraint support not implemented: property $propertyName of ${domain.class.name}"
-            throw new ConstraintHandlerException(error)
+        if (!constrainedProperty?.validate(domain, domain.metaClass.getProperty(domain, propertyName), new MockErrors(this))) {
+            throw new ConstraintHandlerException("Unique constraint support not implemented: property $propertyName of ${domain.class.name}")
         }
     }
 }

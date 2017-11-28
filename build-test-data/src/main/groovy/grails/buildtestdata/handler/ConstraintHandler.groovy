@@ -48,5 +48,14 @@ interface ConstraintHandler {
         (ConstrainedProperty.VALIDATOR_CONSTRAINT)  : new ValidatorConstraintHandler()
     ]
 
+    /**
+     * Satisfy the given constraint for this domain object and property
+     *
+     * @param domain
+     * @param propertyName
+     * @param appliedConstraint
+     * @param constrainedProperty
+     * @param circularCheckList
+     */
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList)
 }

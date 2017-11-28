@@ -1,9 +1,28 @@
 package grails.buildtestdata.handler
 
+import grails.buildtestdata.CircularCheckList
+import grails.gorm.validation.ConstrainedProperty
+import grails.gorm.validation.Constraint
+import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.gorm.validation.constraints.SizeConstraint
+
+@CompileStatic
 class SizeConstraintHandler implements ConstraintHandler {
-    void handle(domain, propertyName, appliedConstraint, constrainedProperty = null, circularCheckList = null) {
-        def range = appliedConstraint.range
-        new MinSizeConstraintHandler().handle(domain, propertyName, [minSize:range.from], null, circularCheckList)
-        new MaxSizeConstraintHandler().handle(domain, propertyName, [maxSize:range.to], null, circularCheckList)
+    @Override
+    void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
+        SizeConstraint sizeConstraint = appliedConstraint as SizeConstraint
+        IntRange range = sizeConstraint.range
+
+        MinSizeConstraintHandler.padMinSize(
+            domain,
+            constrainedProperty.appliedConstraints,
+            propertyName,
+            domain.metaClass.getProperty(domain, propertyName),
+            range.from,
+            circularCheckList
+        )
+
+        MaxSizeConstraintHandler.padMaxSize(domain, propertyName, range.to)
     }
 }

@@ -1,7 +1,10 @@
 package grails.buildtestdata.handler
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class ConstraintHandlerException extends Exception {
-    ConstraintHandlerException(s) {
-        super(s)
+    ConstraintHandlerException(String message) {
+        super(message)
     }
 }
