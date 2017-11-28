@@ -21,10 +21,8 @@ import org.springframework.validation.Errors
 
 import static grails.buildtestdata.DomainUtil.getPersistentEntity
 import static grails.buildtestdata.DomainUtil.propertyIsToOneDomainClass
-import static grails.buildtestdata.TestDataConfigurationHolder.*
 
 @Slf4j
-@CompileStatic
 class DomainInstanceBuilder {
     GrailsApplication grailsApplication = Holders.grailsApplication
     MappingContext mappingContext = Holders.grailsApplication.mappingContext
@@ -40,6 +38,7 @@ class DomainInstanceBuilder {
     // All constrained associations
     Map<String, ConstrainedProperty> domainProperties
 
+    Set<Class> requiredDomainClasses
     Set<String> requiredPropertyNames
     Set<String> requiredDomainPropertyNames
     Set<String> propsToSaveFirst
@@ -55,7 +54,7 @@ class DomainInstanceBuilder {
         // we can't actually do anything with this base class. This happens when a class has an association
         // to an abstract base class in the object graph.
         if (grailsClass.isAbstract()) {
-            grailsClass = findConcreteSubclass(grailsClass)
+            grailsClass = DomainUtil.findConcreteSubclass(grailsClass)
             javaClass = grailsClass.clazz
         }
 
@@ -66,49 +65,51 @@ class DomainInstanceBuilder {
         requiredPropertyNames = findRequiredPropertyNames(constrainedProperties)
         domainProperties = findDomainProperties(constrainedProperties)
         requiredDomainPropertyNames = findRequiredDomainPropertyNames(domainProperties, requiredPropertyNames)
+        requiredDomainClasses = findRequiredDomainClasses(domainProperties, requiredPropertyNames)
+
         propsToSaveFirst = findPropsToSaveFirst()
     }
 
-    Set<String> findRequiredPropertyNames(Map<String, ConstrainedProperty> constrainedProperties) {
+    private Set<String> findRequiredPropertyNames(Map<String, ConstrainedProperty> constrainedProperties) {
         Set<String> allPropertyNames = constrainedProperties.keySet()
         allPropertyNames.findAll { String propName ->
             !constrainedProperties[propName].isNullable()
         }
     }
 
-    Map<String, ConstrainedProperty> findDomainProperties(Map<String, ConstrainedProperty> constrainedProperties) {
+    private Map<String, ConstrainedProperty> findDomainProperties(Map<String, ConstrainedProperty> constrainedProperties) {
         constrainedProperties.findAll { propertyIsToOneDomainClass(it.value.propertyType) }
     }
 
-    Set<String> findRequiredDomainPropertyNames(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
+    private Set<String> findRequiredDomainPropertyNames(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
         domainProperties.keySet().findAll { requiredPropertyNames.contains(it) }
     }
 
-    @SuppressWarnings("GroovyUnusedDeclaration")
-    Set<Class> findRequiredDomainClasses(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
+    private Set<Class> findRequiredDomainClasses(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
         domainProperties.findAll { requiredPropertyNames.contains(it.key) }.collect {
             it.value.propertyType
         } as Set<Class>
     }
 
-    Set<String> findPropsToSaveFirst() {
+    private Set<String> findPropsToSaveFirst() {
         if (persistentEntity.persistentProperties.any { it instanceof OneToOne && it.isOwningSide() }) {
             return requiredPropertyNames.findAll {
-                PersistentProperty prop  = persistentEntity.getPropertyByName(it)
-                prop instanceof OneToOne && ((OneToOne)prop).isOwningSide()
+                PersistentProperty prop = persistentEntity.getPropertyByName(it)
+                prop instanceof OneToOne && ((OneToOne) prop).isOwningSide()
             }
         }
 
         requiredDomainPropertyNames
     }
 
-    GormEntity findExisting() {
-        List<GormEntity> list = javaClass.invokeMethod("list", [limit: 1]) as List<GormEntity>
-        list ? list.first() : null
-    }
-
     GormEntity findExisting(Map<String, Object> propValues) {
-        javaClass.invokeMethod("findWhere", propValues) as GormEntity
+        if (propValues) {
+            List<GormEntity> list = javaClass.invokeMethod("list", [limit: 1]) as List<GormEntity>
+            list ? list.first() : null
+        }
+        else {
+            javaClass.invokeMethod("findWhere", propValues) as GormEntity
+        }
     }
 
     GormEntity buildWithoutSave(Map<String, Object> propValues, CircularCheckList circularCheckList = new CircularCheckList()) {
@@ -172,15 +173,15 @@ class DomainInstanceBuilder {
         }
     }
 
-    def setValueOnNestedProperty(GormEntity domainInstance, String propertyName, Object value) {
+    void setValueOnNestedProperty(GormEntity domainInstance, String propertyName, Object value) {
         // This is an embedded property, i.e. 'bar.foo' = 23
         String[] props = propertyName.split(/\./)
         props[0..-2].inject(domainInstance) { current, next -> current[next] }[props[-1]] = value
     }
 
-    def findMissingConfigValues(Map<String, Object> propValues) {
-        Set<String> missingProperties = getConfigPropertyNames(javaClass.name) - propValues.keySet()
-        getPropertyValues(javaClass.name, missingProperties, propValues)
+    Map<String, Object> findMissingConfigValues(Map<String, Object> propValues) {
+        Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(javaClass.name) - propValues.keySet()
+        TestDataConfigurationHolder.getPropertyValues(javaClass.name, missingProperties, propValues)
     }
 
     void createMissingProperty(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
@@ -209,7 +210,7 @@ class DomainInstanceBuilder {
             if (handler) {
                 handler.handle(domainInstance, propertyName, appliedConstraint, constrainedProperty, circularCheckList)
                 if (log.debugEnabled) {
-                    log.debug("${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}: ${domainInstance?."$propertyName"}")
+                    log.debug("${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}")
                 }
             }
             else {
@@ -279,16 +280,18 @@ class DomainInstanceBuilder {
             assigned = keyTypeCache[clazz]
         }
         else {
-            Object mappingProperty = clazz.metaClass.getProperty(clazz, 'mapping')
-            if (mappingProperty && mappingProperty instanceof Closure) {
-                MappingDelegate mappingDelegate = new MappingDelegate()
+            if (clazz.metaClass.hasProperty(clazz, 'mapping')) {
+                Object mappingProperty = clazz.metaClass.getProperty(clazz, 'mapping')
+                if (mappingProperty && mappingProperty instanceof Closure) {
+                    MappingDelegate mappingDelegate = new MappingDelegate()
 
-                // Evaluate the mapping block
-                Closure block = mappingProperty.clone() as Closure
-                block.delegate = mappingDelegate
-                block.call()
+                    // Evaluate the mapping block
+                    Closure block = mappingProperty.clone() as Closure
+                    block.delegate = mappingDelegate
+                    block.call()
 
-                assigned = mappingDelegate.isAssigned
+                    assigned = mappingDelegate.isAssigned
+                }
             }
         }
 
@@ -302,26 +305,6 @@ class DomainInstanceBuilder {
         assigned
     }
 
-    GrailsClass findConcreteSubclass(GrailsClass domainArtefact) {
-        if (domainArtefact.isAbstract()) {
-            // First see if we have a default defined for this domain class. If so,
-            // we will use this. This is handy if you have alot of polymorphic associations to a
-            // base class and want them to default to a certain type.
-            def abstractDefault = getAbstractDefaultFor(domainArtefact.fullName)
-            if (abstractDefault) {
-                return grailsApplication.getArtefact(
-                    DomainClassArtefactHandler.TYPE,
-                    abstractDefault instanceof Class ? abstractDefault.name : abstractDefault.toString()
-                )
-            }
-
-            throw new UnsupportedOperationException("Unable to create concrete instance for ${domainArtefact.name}. Try adding an 'abstractDefault' section to TestDataConfig.")
-        }
-        else {
-            return domainArtefact
-        }
-    }
-
     /**
      * Evaluate the mapping block to see if there is an id mapping with a generator defined
      * This is just a quick and dirty way to determine assigned keys without using hibernate
@@ -332,7 +315,7 @@ class DomainInstanceBuilder {
         Object invokeMethod(String name, Object args) {
             if (name == "id" && args && args instanceof Object[]) {
                 Object[] argArray = args as Object[]
-                if(argArray[0] instanceof Map && argArray[0]['generator']) {
+                if (argArray[0] instanceof Map && argArray[0]['generator']) {
                     isAssigned = true
                 }
             }

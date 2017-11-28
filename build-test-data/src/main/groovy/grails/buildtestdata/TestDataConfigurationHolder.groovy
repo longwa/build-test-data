@@ -2,38 +2,38 @@ package grails.buildtestdata
 
 import grails.util.Environment
 import grails.util.Holders
-import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.annotation.Value
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 
+@Slf4j
+@CompileStatic
 class TestDataConfigurationHolder {
-    static log = LogFactory.getLog("grails.buildtestdata.TestDataConfigurationHolder")
-    private static ConfigObject configFile
-    private static Map sampleData
-
-    static Map unitAdditionalBuild
-    static Map abstractDefault
-
     private static ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
+    private static ConfigObject  configFile
 
-    static sampleDataIndexer = [:]
+    static Map<String, Object> sampleData
+    static Map<String, List> unitAdditionalBuild
+    static Map<String, Class> abstractDefault
 
-    static reset() {
+    static void reset() {
         loadTestDataConfig()
     }
 
-    static loadTestDataConfig() {
+    static void loadTestDataConfig() {
         Class testDataConfigClass = getDefaultTestDataConfigClass()
-
         if (testDataConfigClass) {
             configFile = configSlurper.parse(testDataConfigClass)
-            setSampleData(configFile?.testDataConfig?.sampleData as Map)
 
-            unitAdditionalBuild = configFile?.testDataConfig?.unitAdditionalBuild ?: [:]
-            abstractDefault = configFile?.testDataConfig?.abstractDefault ?: [:]
+            // Process the sample data
+            setSampleData(configFile['testDataConfig']['sampleData'] as Map ?: [:])
+
+            // Process additional build for unit testing
+            unitAdditionalBuild = configFile['testDataConfig']['unitAdditionalBuild'] as Map ?: [:]
 
             // If we have abstract defaults, automatically add transitive dependencies
             // for them since they may need to be built.
-            abstractDefault?.each { key, value ->
+            abstractDefault = configFile['testDataConfig']['abstractDefault'] as Map ?: [:]
+            abstractDefault.each { key, value ->
                 if (unitAdditionalBuild.containsKey(key)) {
                     unitAdditionalBuild[key] << value
                 }
@@ -42,83 +42,65 @@ class TestDataConfigurationHolder {
                 }
             }
 
-            log.debug "configFile loaded: ${configFile}"
-        }
-        else {
-            setSampleData([:])
-            unitAdditionalBuild = [:]
-            abstractDefault = [:]
+            log.debug("Loaded configuration file: {}", configFile)
         }
     }
 
     static Class getDefaultTestDataConfigClass() {
         GroovyClassLoader classLoader = new GroovyClassLoader(TestDataConfigurationHolder.classLoader)
-        String testDataConfig = Holders.config?.grails?.buildtestdata?.testDataConfig ?: 'TestDataConfig'
+        String testDataConfig = Holders.flatConfig['grails.buildtestdata.testDataConfig'] ?: 'TestDataConfig'
         try {
             return classLoader.loadClass(testDataConfig)
         }
         catch (ClassNotFoundException ignored) {
-            log.warn "${testDataConfig}.groovy not found, build-test-data plugin proceeding without config file"
+            log.warn("{}.groovy not found, build-test-data plugin proceeding without config file", testDataConfig)
             return null
         }
     }
 
-    static Map getSampleData() {
-        if (sampleData == null) {
-            loadTestDataConfig()
-        }
-        sampleData
-    }
-
     static void setSampleData(Object configObject) {
         if (configObject instanceof String) {
-            sampleData = configSlurper.parse(configObject)
+            sampleData = configSlurper.parse(configObject as String) as Map
         }
         else if (configObject instanceof Map) {
-            sampleData = configObject
+            sampleData = configObject as Map
         }
         else {
             throw new IllegalArgumentException("TestDataConfigurationHolder.sampleData should be either a String or a Map")
         }
-        sampleDataIndexer = [:]
     }
 
-    static getConfigFor(String domainName) {
-        return sampleData."$domainName"
+    static Map<String, Object> getConfigFor(String domainName) {
+        sampleData[domainName] as Map
     }
 
-    static getUnitAdditionalBuildFor(String domainName) {
-        unitAdditionalBuild."$domainName"
+    static List getUnitAdditionalBuildFor(String domainName) {
+        unitAdditionalBuild[domainName]
     }
 
-    static getAbstractDefaultFor(String domainName) {
-        abstractDefault."${domainName}"
+    static Class getAbstractDefaultFor(String domainName) {
+        abstractDefault[domainName]
     }
 
-    static getConfigPropertyNames(String domainName) {
-        return getConfigFor(domainName)?.keySet() ?: []
+    static Set<String> getConfigPropertyNames(String domainName) {
+        getConfigFor(domainName)?.keySet() ?: [] as Set<String>
     }
 
-    static getSuppliedPropertyValue(propertyValues, domainName, propertyName) {
-        return retrievePropertyValue(propertyValues, sampleData."$domainName"?."$propertyName")
+    static Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
+        // Fetch both and either invoke the closure or just return raw values
+        Object value = sampleData[domainName][propertyName]
+        if (value instanceof Closure) {
+            Closure block = value as Closure
+            return block.maximumNumberOfParameters > 0 ? block.call(propertyValues) : block.call()
+        }
+
+        value
     }
 
-    private static retrievePropertyValue(propertyValues, Closure closure) {
-        return closure.maximumNumberOfParameters > 0 ? closure.call(propertyValues) : closure.call()
-    }
-
-    private static retrievePropertyValue(propertyValues, value) {
-        return value
-    }
-
-    static Map<String, Object> getPropertyValues(domainName, propertyNames, Map propertyValues = [:]) {
+    static Map<String, Object> getPropertyValues(String domainName, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
         for (propertyName in propertyNames) {
             propertyValues[propertyName] = getSuppliedPropertyValue(propertyValues, domainName, propertyName)
         }
         return propertyValues
-    }
-
-    static String getDomainBasePackage() {
-        return configFile?.testDataConfig?.domainBasePackage ?: null
     }
 }

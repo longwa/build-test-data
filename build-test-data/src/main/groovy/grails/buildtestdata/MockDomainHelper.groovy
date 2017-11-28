@@ -1,18 +1,12 @@
-package grails.buildtestdata.mixin
+package grails.buildtestdata
 
-import grails.buildtestdata.BuildTestDataService
-import grails.buildtestdata.DomainUtil
-import grails.buildtestdata.TestDataConfigurationHolder
 import grails.core.GrailsApplication
+import grails.core.GrailsClass
 import grails.core.GrailsDomainClass
 import grails.core.GrailsDomainClassProperty
-import grails.test.runtime.TestRuntime
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.springframework.beans.factory.config.BeanDefinition
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
-import org.springframework.core.type.filter.AssignableTypeFilter
 
 import java.lang.reflect.Modifier
 
@@ -22,18 +16,12 @@ import java.lang.reflect.Modifier
  *
  * @since 3.0.0
  */
-@CompileStatic
+@Deprecated
 class MockDomainHelper {
-    private static Map<String, List<GrailsDomainClass>> subClassCache = [:]
-
     private GrailsApplication grailsApplication
-    private TestRuntime runtime
 
-    MockDomainHelper(TestRuntime runtime) {
-        this.runtime = runtime
-        this.grailsApplication = runtime.getValue("grailsApplication", GrailsApplication)
-
-        DomainUtil.grailsApplication = this.grailsApplication
+    MockDomainHelper(GrailsApplication grailsApplication) {
+        this.grailsApplication = grailsApplication
     }
 
     /**
@@ -48,62 +36,6 @@ class MockDomainHelper {
 
         // Resolve additional classes to mock
         findDomainClassesToMock(initialDomainClassesToMock)*.clazz
-    }
-
-    /**
-     * For simple domain class tests, perform the traditional mocking on DomainClassUnitTestMixin
-     *
-     * @param testInstance
-     * @param classes
-     */
-    void mockDomains(Object testInstance, Collection<Class> classes = null) {
-        if (!classes) {
-            classes = runtime.getValueIfExists(GormProvider.DomainClass.registeredName) as Set<Class>
-        }
-        if (classes) {
-            testInstance.invokeMethod("mockDomains", classes as Class[])
-            runtime.putValue(GormProvider.DomainClass.initializedName, classes)
-        }
-    }
-
-    /**
-     * Registers the given classes for mocking.
-     *
-     * @param testClass
-     * @param classes
-     */
-    void registerPersistentClasses(Collection<Class> classes) {
-        Collection<Class> allClasses = []
-        allClasses.addAll(classes)
-
-        // Add any existing that were added directly via @Domain
-        Set<Class> existing = runtime.getValueIfExists(gormProvider.registeredName) as Set<Class>
-        if (existing) {
-            allClasses.addAll(existing)
-        }
-        if (allClasses) {
-            runtime.putValue(gormProvider.registeredName, allClasses)
-        }
-    }
-
-    /**
-     * Mixin the build test data build() methods
-     * @param classes list of classes to decorate. If not given, the list of initialized classes is pulled from the context
-     */
-    void decorate(Collection<Class> classes = null) {
-        BuildTestDataService buildTestDataService = new BuildTestDataService()
-        if (!classes) {
-            classes = runtime.getValueIfExists(gormProvider.initializedName) as Set<Class>
-        }
-        classes?.each { Class clazz ->
-            GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, clazz.name) as GrailsDomainClass
-            assert domainClass, "Domain class ${clazz.name} should be registered but is missing"
-            buildTestDataService.decorateWithMethods(domainClass)
-        }
-    }
-
-    GormProvider getGormProvider() {
-        GormProvider.lookup(runtime)
     }
 
     /**
@@ -126,7 +58,7 @@ class MockDomainHelper {
         List<GrailsDomainClass> subClasses = []
         domainClassesToMock.each {
             if (it.isAbstract()) {
-                subClasses.addAll(findDomainSubclasses(it))
+                subClasses.add(findDomainSubclasses(it))
             }
         }
         // Superclasses
@@ -220,34 +152,8 @@ class MockDomainHelper {
      * @param domainClass
      * @return list of subclasses for this parent
      */
-    private List<GrailsDomainClass> findDomainSubclasses(GrailsDomainClass domainClass) {
-        // Finding subclasses is expensive, only do this once if possible for the whole run
-        List<GrailsDomainClass> subClassList = []
-        if (subClassCache.containsKey(domainClass.fullName)) {
-            subClassList = subClassCache[domainClass.fullName]
-        }
-        else {
-            ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false)
-            provider.addIncludeFilter(new AssignableTypeFilter(domainClass.getClazz()))
-
-            // Scan all packages
-            String domainBasePackage = TestDataConfigurationHolder.getDomainBasePackage() ?: ""
-            Set<BeanDefinition> components = provider.findCandidateComponents(domainBasePackage)
-            for (BeanDefinition it in components) {
-                Class subClass = grailsApplication.classLoader.loadClass(it.beanClassName)
-
-                // If this is a domain class and it's not been registered, register it and setup subclasses
-                if (DomainClassArtefactHandler.isDomainClass(subClass)) {
-                    GrailsDomainClass domainSubClass = getGrailsDomainClass(subClass)
-                    subClassList << domainSubClass
-                }
-            }
-        }
-
-        // Add to the domain class so that the domain instance builder can use it later
-        domainClass.getSubClasses().addAll(subClassList)
-        subClassCache[domainClass.fullName] = subClassList
-        subClassList
+    private GrailsClass findDomainSubclasses(GrailsDomainClass domainClass) {
+        DomainUtil.findConcreteSubclass(domainClass)
     }
 
     /**
@@ -306,34 +212,5 @@ class MockDomainHelper {
             })
         }
         classes
-    }
-}
-
-enum GormProvider {
-    Hibernate("hibernate"),
-    MongoDb("mongoDb"),
-    DomainClass("domainClass")
-
-    GormProvider(String prefix) { this.prefix = prefix }
-    final String prefix
-
-    String getInitializedName() {
-        "initialized${this.name()}PersistentClasses"
-    }
-
-    String getRegisteredName() {
-        "${prefix}PersistentClassesToRegister"
-    }
-
-    static GormProvider lookup(TestRuntime runtime) {
-        if (runtime.features.contains("hibernateGorm")) {
-            Hibernate
-        }
-        else if (runtime.features.contains("mongoDbGorm")) {
-            MongoDb
-        }
-        else {
-            DomainClass
-        }
     }
 }
