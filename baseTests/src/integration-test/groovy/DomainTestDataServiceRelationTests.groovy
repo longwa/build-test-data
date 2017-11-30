@@ -1,10 +1,11 @@
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import org.grails.core.DefaultGrailsDomainClass
 import org.junit.Test
 
-@TestMixin(IntegrationTestMixin)
-class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
+@Rollback
+@Integration
+class DomainTestDataServiceRelationTests implements DomainTestDataServiceBase {
     void setUp() {
         Owner.metaClass.validate = validateMock
         Owned.metaClass.validate = validateMock
@@ -31,9 +32,7 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
     @Test
     void testCascadingBuildNonCircular() {
         def domainArtefact = registerDomainClass(Owner)
-        buildTestDataService.decorateWithMethods(domainArtefact)
         domainArtefact = registerDomainClass(Owned)
-        buildTestDataService.decorateWithMethods(domainArtefact)
 
         def domainObject = Owner.build()
         assert domainObject != null
@@ -44,7 +43,6 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
     @Test
     void testBuildCircularSelfReferential() {
         def domainArtefact = registerDomainClass(CircularSelf)
-        buildTestDataService.decorateWithMethods(domainArtefact)
 
         def circDomainSelf = new DefaultGrailsDomainClass(CircularSelf)
         def domainProp = circDomainSelf.properties.find { it.name == 'circularSelf' }
@@ -58,9 +56,7 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
     @Test
     void testCascadingBuildCircularTwoClasses() {
         def domainArtefact = registerDomainClass(CircularOne)
-        buildTestDataService.decorateWithMethods(domainArtefact)
         domainArtefact = registerDomainClass(CircularTwo)
-        buildTestDataService.decorateWithMethods(domainArtefact)
 
         def circDomainOne = new DefaultGrailsDomainClass(CircularOne)
         def domainProp = circDomainOne.properties.find { it.name == 'circularTwo' }
@@ -78,11 +74,8 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
     @Test
     void testCascadingBuildCircularTwoClassesWithChildClass() {
         def domainArtefact = registerDomainClass(CircularOne)
-        buildTestDataService.decorateWithMethods(domainArtefact)
         domainArtefact = registerDomainClass(CircularOneChild)
-        buildTestDataService.decorateWithMethods(domainArtefact)
         domainArtefact = registerDomainClass(CircularTwo)
-        buildTestDataService.decorateWithMethods(domainArtefact)
 
         def circDomainOne = new DefaultGrailsDomainClass(CircularOne)
         def domainProp = circDomainOne.properties.find { it.name == 'circularTwo' }
@@ -104,9 +97,7 @@ class DomainTestDataServiceRelationTests extends DomainTestDataServiceBase {
     @Test
     void testEmbeddedProperties() {
         def domainArtefact = registerDomainClass(EmbeddedOwner)
-        buildTestDataService.decorateWithMethods(domainArtefact)
         domainArtefact = registerDomainClass(Owned)
-        buildTestDataService.decorateWithMethods(domainArtefact)
 
         def domainObject = EmbeddedOwner.build('owned.testProperty': 'I am embedded')
         assert domainObject != null

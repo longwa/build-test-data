@@ -2,12 +2,11 @@ package base
 
 import config.Hotel
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class TestDataConfigTests {
     void tearDown() {
         // we should reset the config holder when feeding it values in tests as it could cause issues

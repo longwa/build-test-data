@@ -4,24 +4,28 @@ import enumtest.Car
 import enumtest.CarStatus
 import enumtest.Door
 import enumtest.DoorStatus
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-import org.junit.Test
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-@TestMixin(GrailsUnitTestMixin)
-@Build([Car, Door])
-class EnumUnitTests {
-    @Test
+class EnumUnitTests extends Specification implements UnitTestDataBuilder {
+    void setupSpec() {
+        mockDomains(Car, Door)
+    }
+
     void testCarStatusEnumPopulated() {
-        Car car = Car.build()
+        when:
+        Car car = build(Car)
+
+        then:
         assert car
         assert CarStatus.REVERSE == car.status
     }
 
-    @Test
     void testDoorStatusEnumPopulated() {
-        Door door = Door.build()
+        when:
+        Door door = build(Door)
+
+        then:
         assert door
         assert DoorStatus.OPEN == door.status
     }

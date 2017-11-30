@@ -1,67 +1,46 @@
 package base
 
-import abstractclass.AbstractClass
 import abstractclass.AbstractSubClass
 import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.mixin.BuildTestDataUnitTestMixin
-import grails.test.mixin.TestMixin
-import org.junit.Test
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-// Include the mixin directly so we can control the mocking in the test instead of up front
-@TestMixin(BuildTestDataUnitTestMixin)
-class AbstractDefaultUnitTests {
-    void tearDown() {
-        // we should reset the config holder when feeding it values in tests as it could cause issues
-        // for other tests later on that are expecting the default config if we do not
+class AbstractDefaultUnitTests extends Specification implements UnitTestDataBuilder {
+    void cleanup() {
         TestDataConfigurationHolder.reset()
     }
 
-    @Test
-    void testSuccessfulBuildNoDefault() {
-        TestDataConfigurationHolder.abstractDefault = [:]
-        mockForBuild([AbstractSubClass])
+    void testBuildWithNoDefault() {
+        mockDomain(AbstractSubClass)
 
-        // Chosen alphabetically since no default
-        def obj = AbstractSubClass.build()
-        assert obj instanceof AnotherConcreteSubClass
+        when:
+        build(AbstractSubClass)
+
+        then: "this is no longer supported in BTD 3.3 and later, specific default required"
+        thrown(IllegalStateException)
     }
 
-    @Test
     void testSuccessfulBuildWithDefault() {
         TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': ConcreteSubClass]
-        mockForBuild([AbstractSubClass])
+        mockDomain(AbstractSubClass)
 
-        def obj = AbstractSubClass.build()
-        assert obj instanceof ConcreteSubClass
+        when:
+        def obj = build(AbstractSubClass)
+
+        then:
+        obj instanceof ConcreteSubClass
     }
 
-    @Test
     void testSuccessfulBuildWithDifferentDefault() {
         TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': AnotherConcreteSubClass]
-        mockForBuild([AbstractSubClass])
+        mockDomain(AbstractSubClass)
 
-        def obj = AbstractSubClass.build()
-        assert obj instanceof AnotherConcreteSubClass
-    }
+        when:
+        def obj = build(AbstractSubClass)
 
-    @Test
-    void testSuccessfulBuildWithDefaultAsString() {
-        TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': 'abstractclass.ConcreteSubClass']
-        mockForBuild([AbstractSubClass])
-
-        def obj = AbstractSubClass.build()
-        assert obj instanceof ConcreteSubClass
-    }
-
-    // The default short circuits the search, so it must be concrete
-    @Test
-    void testFailureWithNonConcreteDefault() {
-        TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': AbstractClass]
-        mockForBuild([AbstractSubClass])
-        shouldFail(InstantiationException) {
-            AbstractSubClass.build()
-        }
+        then:
+        obj instanceof AnotherConcreteSubClass
     }
 }

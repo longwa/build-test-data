@@ -1,11 +1,10 @@
 package list
 
-import bookstore.Book
 import bookstore.EstablishedAuthor
-import grails.buildtestdata.mixin.Build
+
 import org.junit.Test
 
-@Build([EstablishedAuthor, Book])
+
 class EstablishedAuthorUnitTests {
 
     @Test

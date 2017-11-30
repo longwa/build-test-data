@@ -4,11 +4,12 @@ import grails.buildtestdata.CircularCheckList
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.MaxSizeConstraint
 
 @CompileStatic
-class MaxSizeConstraintHandler implements ConstraintHandler {
+class MaxSizeConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         MaxSizeConstraint maxSizeConstraint = appliedConstraint as MaxSizeConstraint
@@ -20,7 +21,7 @@ class MaxSizeConstraintHandler implements ConstraintHandler {
             Integer size = domain.invokeMethod('size', null) as Integer
             if (size > maxSize) {
                 Range range = (0..maxSize - 1)
-                domain.metaClass.setProperty(domain, propertyName, domain.invokeMethod('getAt', range))
+                InvokerHelper.setProperty(domain, propertyName, domain.invokeMethod('getAt', range))
             }
         }
     }

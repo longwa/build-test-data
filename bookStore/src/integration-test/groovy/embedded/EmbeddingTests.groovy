@@ -1,11 +1,10 @@
 package embedded
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class EmbeddingTests {
     void testPlugin() {
         Embedding e = Embedding.build()

@@ -1,10 +1,8 @@
 package hibernate4
 
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.Mock
 import spock.lang.Specification
 
-@Build([Painting])
+
 class PaintingBuildSpec extends Specification {
 
     void "building a Painting builds Gallery and Painter"() {

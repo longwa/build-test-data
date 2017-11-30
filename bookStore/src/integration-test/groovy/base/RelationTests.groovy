@@ -3,9 +3,8 @@ package base
 import bookstore.Author
 import bookstore.Book
 import bookstore.Invoice
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import human.Arm
 import human.Face
 import magazine.Issue
@@ -13,7 +12,7 @@ import magazine.Page
 import org.grails.core.DefaultGrailsDomainClass
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class RelationTests {
     void testOneToOneCascades() {
         def domainObject = Face.build()

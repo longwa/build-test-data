@@ -1,13 +1,12 @@
 package base
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import magazine.Issue
 import magazine.Page
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class LocalScopedConfigTests {
     void testAddPagesToIssue() {
         def issue = Issue.build()

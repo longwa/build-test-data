@@ -8,10 +8,10 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.MaxConstraint
 
 @CompileStatic
-class MaxConstraintHandler implements ConstraintHandler {
+class MaxConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         MaxConstraint maxConstraint = appliedConstraint as MaxConstraint
-        domain.metaClass.setProperty(domain, propertyName, maxConstraint.maxValue)
+        setProperty(domain, propertyName, maxConstraint.maxValue)
     }
 }

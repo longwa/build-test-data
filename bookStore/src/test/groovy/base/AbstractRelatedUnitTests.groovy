@@ -2,14 +2,17 @@ package base
 
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestFor
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-@TestFor(RelatedToAbstract)
-@Build([RelatedToAbstract])
-class AbstractRelatedUnitTests {
+class AbstractRelatedUnitTests extends Specification implements UnitTestDataBuilder {
     void testSuccessfulBuild() {
-        def theClass = RelatedToAbstract.build()
+        mockDomains(RelatedToAbstract, ConcreteSubClass)
+
+        when:
+        def theClass = build(RelatedToAbstract)
+
+        then:
         assert theClass != null
         assert theClass.ident() > 0
         assert theClass.genericParent != null

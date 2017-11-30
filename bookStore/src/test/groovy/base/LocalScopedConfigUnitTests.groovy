@@ -1,20 +1,21 @@
 package base
 
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
+import grails.buildtestdata.UnitTestDataBuilder
 import magazine.Issue
 import magazine.Page
-import org.junit.Test
+import spock.lang.Specification
 
-@TestMixin(GrailsUnitTestMixin)
-@Build([Issue, Page])
-class LocalScopedConfigUnitTests {
-    @Test
+class LocalScopedConfigUnitTests extends Specification implements UnitTestDataBuilder {
+    void setupSpec() {
+        mockDomains(Issue, Page)
+    }
+
     void testAddPagesToIssue() {
-        def issue = Issue.build()
-        issue.pages = (1..5).collect { Page.build(issue: issue, number: it) }.toSet() as SortedSet
-        
+        when:
+        def issue = build(Issue)
+        issue.pages = (1..5).collect { build(Page, [issue: issue, number: it]) }.toSet() as SortedSet
+
+        then:
         assert 5 == issue.pages.size()
         assert 1 == Issue.list().size() // don't build extra issues when building pages
     }

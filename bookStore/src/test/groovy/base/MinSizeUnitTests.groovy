@@ -1,29 +1,33 @@
 package base
 
 import bookstore.Address
-import grails.buildtestdata.mixin.Build
-import org.grails.core.DefaultGrailsDomainClass
-import org.junit.Test
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-@Build(Address)
-class MinSizeUnitTests {
-    @Test
+class MinSizeUnitTests extends Specification implements UnitTestDataBuilder {
+    void setupSpec() {
+        mockDomains(Address)
+    }
+
     void testEmailMinSize() {
-        def addressDomain = new DefaultGrailsDomainClass(Address)
-        def domainObject = Address.build()
+        when:
+        def domainObject = build(Address)
+
+        then:
         assert domainObject
         assert domainObject.id
         assert domainObject.emailAddress
-        assert domainObject.emailAddress.size() == 100
+        assert domainObject.emailAddress.size() == 40
     }
 
-    @Test
     void testUrlMinSize() {
-        def addressDomain = new DefaultGrailsDomainClass(Address)
-        def domainObject = Address.build()
+        when:
+        def domainObject = build(Address)
+
+        then:
         assert domainObject
         assert domainObject.id
         assert domainObject.webSite
-        assert domainObject.webSite.size() == 100
+        assert domainObject.webSite.size() == 40
     }
 }

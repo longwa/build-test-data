@@ -8,12 +8,12 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.InListConstraint
 
 @CompileStatic
-class InListConstraintHandler implements ConstraintHandler {
+class InListConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         if (appliedConstraint instanceof InListConstraint) {
             List list = ((InListConstraint)appliedConstraint).list
-            domain.metaClass.setProperty(domain, propertyName, list[0])
+            setProperty(domain, propertyName, list[0])
         }
     }
 }

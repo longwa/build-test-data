@@ -1,29 +1,37 @@
 package base
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-import org.junit.Test
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 import subclassing.RelatedClass
 import subclassing.SubClass
 import subclassing.SuperClass
-import grails.buildtestdata.mixin.Build
 
-@TestMixin(GrailsUnitTestMixin)
-@Build([SubClass, RelatedClass, SuperClass])
-class SubclassUnitTests {
-    @Test
+class SubclassUnitTests extends Specification implements UnitTestDataBuilder {
+    void setupSpec() {
+        mockDomains(SubClass, RelatedClass, SuperClass)
+    }
+
     void testSuccessfulBuildOfDomainSubclass() {
-        def subClass = SubClass.build()
+        when:
+        def subClass = build(SubClass)
+
+        then:
         assert subClass
         assert subClass.ident() > 0
 
         assert subClass.relatedClass.superClassInstances.contains(subClass)
 
-        def relatedClass = RelatedClass.build()
+        when:
+        def relatedClass = build(RelatedClass)
+
+        then:
         assert relatedClass
         assert relatedClass.ident() > 0
 
-        def superClass = SuperClass.build()
+        when:
+        def superClass = build(SuperClass)
+
+        then:
         assert superClass
         assert superClass.ident() > 0
     }

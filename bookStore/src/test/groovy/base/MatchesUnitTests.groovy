@@ -1,27 +1,37 @@
 package base
 
 import bookstore.Invoice
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestFor
-import org.junit.Test
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-@TestFor(Invoice)
-@Build(Invoice)
-class MatchesUnitTests {
+class MatchesUnitTests extends Specification implements UnitTestDataBuilder {
+    void setupSpec() {
+        mockDomains(Invoice)
+    }
+
     void testBuildNoArgs() {
-        def invoice = Invoice.build()
+        when:
+        def invoice = build(Invoice)
+
+        then:
         assert invoice != null
         assert invoice.departmentCode.matches("[A-Z]{2}[0-9]{4}")
     }
 
     void testBuildWithMatching() {
-        def invoice = Invoice.build(departmentCode: "AA1234")
+        when:
+        def invoice = build(Invoice, [departmentCode: "AA1234"])
+
+        then:
         assert invoice != null
         assert invoice.departmentCode == "AA1234"
     }
 
-    @Test(expected = Exception)
     void testBuildWithNonMatchingArg() {
-        Invoice.build(departmentCode: "Hmmmm?")
+        when:
+        build(Invoice, [departmentCode: "Hmmmm?"])
+
+        then:
+        thrown(RuntimeException)
     }
 }

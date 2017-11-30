@@ -8,7 +8,7 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.SizeConstraint
 
 @CompileStatic
-class SizeConstraintHandler implements ConstraintHandler {
+class SizeConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         SizeConstraint sizeConstraint = appliedConstraint as SizeConstraint
@@ -18,7 +18,7 @@ class SizeConstraintHandler implements ConstraintHandler {
             domain,
             constrainedProperty.appliedConstraints,
             propertyName,
-            domain.metaClass.getProperty(domain, propertyName),
+            getProperty(domain, propertyName),
             range.from,
             circularCheckList
         )

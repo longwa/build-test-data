@@ -1,9 +1,10 @@
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import org.junit.Test
 
-@TestMixin(IntegrationTestMixin)
-class DomainTestDataServiceByteTests extends DomainTestDataServiceBase {
+@Rollback
+@Integration
+class DomainTestDataServiceByteTests implements DomainTestDataServiceBase {
     @Test
     void testByteNotNull() {
         def domainClass = createDomainClass("""

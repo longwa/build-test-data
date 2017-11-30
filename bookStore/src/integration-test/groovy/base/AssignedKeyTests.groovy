@@ -1,12 +1,11 @@
 package base
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import standalone.AssignedKey
 import standalone.ChildWithAssignedKey
 
-@TestMixin(IntegrationTestMixin)
+@Integration
 @Rollback
 class AssignedKeyTests {
     void testBuildWithKey() {

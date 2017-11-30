@@ -5,36 +5,44 @@ import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
 import abstractclass.AbstractSubClass
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
-import org.junit.Test
+import grails.buildtestdata.TestDataBuilder
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
+import spock.lang.Specification
 
-@TestMixin(IntegrationTestMixin)
+@Integration
 @Rollback
-class AbstractTests {
-    @Test
+class AbstractTests extends Specification implements TestDataBuilder {
     void testSuccessfulBuildOfDomainAbstractClass() {
-        def abstractClass = AbstractClass.build()
+        when:
+        def abstractClass = build(AbstractClass)
+        then:
         assert abstractClass
         assert abstractClass.ident() > 0
         assert abstractClass instanceof ConcreteSubClass
 
-        def abstractSubClass = AbstractSubClass.build()
+        when:
+        def abstractSubClass = build(AbstractSubClass)
+        then:
         assert abstractSubClass
         assert abstractSubClass.ident() > 0
 
         // This could be either one of these
         assert abstractSubClass instanceof AnotherConcreteSubClass || abstractSubClass instanceof ConcreteSubClass
 
-        def concreteClass = ConcreteSubClass.build()
+        when:
+        def concreteClass = build(ConcreteSubClass)
+
+        then:
         assert concreteClass
         assert concreteClass.ident() > 0
     }
 
-    @Test
     void testSuccessfulBuildOfRelatedAbstractClass() {
-        def related = RelatedToAbstract.build()
+        when:
+        def related = build(RelatedToAbstract)
+
+        then:
         assert related
         assert related.ident() > 0
         assert related.genericParent

@@ -1,11 +1,10 @@
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import org.junit.Test
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
-class DomainTestDataServiceBooleanTests extends DomainTestDataServiceBase {
+@Integration
+class DomainTestDataServiceBooleanTests implements DomainTestDataServiceBase {
     @Test
     void testBooleanDefaultGroovyTruthFalseOk() {
         def domainClass = createDomainClass("""

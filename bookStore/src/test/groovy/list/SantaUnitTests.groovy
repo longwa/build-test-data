@@ -1,10 +1,9 @@
 package list
 
-import grails.buildtestdata.mixin.Build
-import org.junit.Test
-import org.junit.Ignore
 
-@Build([Santa, Child])
+import org.junit.Test
+
+
 class SantaUnitTests {
 
     @Test

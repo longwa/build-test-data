@@ -1,14 +1,13 @@
 package base
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import subclassing.RelatedClass
 import subclassing.SubClass
 import subclassing.SuperClass
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class SubclassTests {
     void testSuccessfulBuildOfDomainSubclass() {
         def subClass = SubClass.build()

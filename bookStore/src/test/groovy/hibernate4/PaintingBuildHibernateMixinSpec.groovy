@@ -1,12 +1,7 @@
 package hibernate4
 
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestMixin
-import grails.test.mixin.hibernate.HibernateTestMixin
 import spock.lang.Specification
 
-@Build([Painting])
-@TestMixin(HibernateTestMixin)
 class PaintingBuildHibernateMixinSpec extends Specification {
     void "manually making a painting works"() {
         given:
@@ -28,7 +23,7 @@ class PaintingBuildHibernateMixinSpec extends Specification {
     }
 
     void "building a Painting builds Gallery and Painter"() {
-        when: 
+        when:
         Painting painting = Painting.build(title: "The Hunters in the Snow")
 
         then:

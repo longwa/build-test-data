@@ -14,7 +14,10 @@ testDataConfig {
 
     // For polymorphic associations, this allows you to default the concrete class that is built automatically.
     // By default, BTD will find all concrete subclasses and build the first one alphabetically by name.
-    abstractDefault = ['abstractclass.AbstractClass': ConcreteSubClass]
+    abstractDefault = [
+        'abstractclass.AbstractClass': ConcreteSubClass,
+        'abstractclass.AbstractSubClass': ConcreteSubClass
+    ]
 
     sampleData {
         // Hotel class is in "config" package so we use a string in the builder

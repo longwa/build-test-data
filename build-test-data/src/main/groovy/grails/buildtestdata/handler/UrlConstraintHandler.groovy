@@ -7,9 +7,9 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEntity
 
 @CompileStatic
-class UrlConstraintHandler implements ConstraintHandler {
+class UrlConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
-        domain.metaClass.setProperty(domain, propertyName, 'http://www.example.com')
+        setProperty(domain, propertyName, 'http://www.example.com')
     }
 }

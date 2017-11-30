@@ -19,8 +19,8 @@ class Address {
         city(maxSize:30)
         state(maxSize:30)
         zip(matches:/\d{5}/, nullable:true)
-        emailAddress(email:true, minSize:100)
-        webSite(url: true, minSize:100)
+        emailAddress(email:true, minSize:40)
+        webSite(url: true, minSize:40)
         alternateLatLon(nullable: true)
     }
 

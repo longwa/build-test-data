@@ -1,9 +1,9 @@
 package embedded
 
-import grails.buildtestdata.mixin.Build
+
 import org.junit.Test
 
-@Build(Embedding)
+
 class EmbeddingUnitTests {
 
     @Test

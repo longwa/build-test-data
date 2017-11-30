@@ -1,23 +1,27 @@
 package base
 
-import grails.core.GrailsDomainClass
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.buildtestdata.TestDataBuilder
+import grails.core.GrailsApplication
+import grails.core.GrailsClass
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.junit.Test
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
-class BuildAllTests {
-    def grailsApplication
+@Integration
+class BuildAllTests implements TestDataBuilder {
+    GrailsApplication grailsApplication
 
+    @Test
     void testBuildAllDomains() {
         boolean successful = true
         Exception caughtError = null
 
-        grailsApplication.domainClasses.each { GrailsDomainClass domainClass ->
+        grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).each { GrailsClass domainClass ->
             try {
                 if (!domainClass.isAbstract()) {
-                    def domainObject = domainClass.clazz.build()
+                    def domainObject = build(domainClass.clazz)
                     assert domainObject."${domainClass.identifier.name}"
                 }
             }

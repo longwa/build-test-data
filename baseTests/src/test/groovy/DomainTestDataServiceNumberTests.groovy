@@ -1,9 +1,6 @@
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
 import org.junit.Test
 
-@TestMixin(IntegrationTestMixin)
-class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
+class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
     def fields = """
                 Long id
                 Long version
@@ -21,12 +18,13 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
     void testNumberManuallySetValuesOk() {
         def value = 1
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestDomain {
                $fields
            }
         """)
 
-		def domainObject = domainClass.build(
+		def domainObject = build(domainClass, [
                 testInteger: value,
                 testLong: value,
                 testInt: value,
@@ -34,7 +32,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
                 testShortObject: value,
                 testByte: value,
                 testByteObject: value
-        )
+        ])
         assertFieldsEqual(domainObject, value)
     }
 
@@ -42,12 +40,13 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
     void testNumberManuallySetGroovyTruthFalseValuesOk() {
         def validValueButGroovyTruthFalse = 0
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestDomain {
                $fields
            }
         """)
 
-		def domainObject = domainClass.build(
+		def domainObject = build(domainClass, [
                 testInteger: validValueButGroovyTruthFalse,
                 testLong: validValueButGroovyTruthFalse,
                 testInt: validValueButGroovyTruthFalse,
@@ -55,7 +54,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
                 testShortObject: validValueButGroovyTruthFalse,
                 testByte: validValueButGroovyTruthFalse,
                 testByteObject: validValueButGroovyTruthFalse
-        )
+        ])
         assertFieldsEqual(domainObject, validValueButGroovyTruthFalse)
     }
 
@@ -63,12 +62,13 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
     void testNumberDefaultValueGroovyTruthFalseOk() {
         def defaultJavaValueButGroovyTruthFalse = 0
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestNumberDefaultDomain {
                $fields
            }
         """)
 
-		def domainObject = domainClass.build()
+		def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, defaultJavaValueButGroovyTruthFalse)
     }
 
@@ -76,6 +76,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
     void testNumberMin() {
         def minSize = 100
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestNumberMinDomain {
                $fields
 
@@ -91,7 +92,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+		def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, minSize)
     }
 
@@ -99,6 +100,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
     void testNumberMax() {
         def maxSize = -100
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestNumberMaxDomain {
                 $fields
 
@@ -114,8 +116,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
-
+		def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, maxSize)
     }
 
@@ -124,6 +125,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         def numberOne = 100
         def numberTwo = 5
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestNumberInListDomain {
                 $fields
 
@@ -139,7 +141,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+		def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, numberOne)
     }
 
@@ -148,6 +150,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
         def numberOne = 25
         def numberTwo = 35
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestNumberInRangeDomain {
                 $fields
 
@@ -163,7 +166,7 @@ class DomainTestDataServiceNumberTests extends DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+		def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, numberOne)
     }
 

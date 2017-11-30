@@ -1,12 +1,11 @@
 package triangle
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import org.junit.Test
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class TriangleRelationshipTests {
     @Test
     void testBuildTriangleRelationship() {

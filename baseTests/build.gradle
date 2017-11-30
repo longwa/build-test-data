@@ -11,7 +11,7 @@ buildscript {
 }
 
 version "0.1"
-group "baseTests"
+group "basetests"
 
 apply plugin:"eclipse"
 apply plugin:"idea"

@@ -7,6 +7,7 @@ import grails.buildtestdata.DomainUtil
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.MinSizeConstraint
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -14,11 +15,11 @@ import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.ToMany
 
 @CompileStatic
-class MinSizeConstraintHandler implements ConstraintHandler {
+class MinSizeConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         MinSizeConstraint minSizeConstraint = appliedConstraint as MinSizeConstraint
-        Object propertyValue = domain.metaClass.getProperty(domain, propertyName)
+        Object propertyValue = getProperty(domain, propertyName)
 
         padMinSize(
             domain,
@@ -37,25 +38,25 @@ class MinSizeConstraintHandler implements ConstraintHandler {
 
                 // Try not to mangle email addresses and urls
                 if (appliedConstraints?.find { it.name == ConstrainedProperty.URL_CONSTRAINT }) {
-                    domain.metaClass.setProperty(
+                    InvokerHelper.setProperty(
                         domain, propertyName, 'http://' + 'a'.padRight(minSize - 11, 'a') + '.com'
                     )
                 }
                 else if (appliedConstraints?.find { it.name == ConstrainedProperty.EMAIL_CONSTRAINT }) {
-                    domain.metaClass.setProperty(
+                    InvokerHelper.setProperty(
                         domain, propertyName, stringValue.padLeft(minSize, 'a')
                     )
                 }
                 else {
-                    domain.metaClass.setProperty(
+                    InvokerHelper.setProperty(
                         domain, propertyName, stringValue.padRight(minSize, '.')
                     )
                 }
                 break
 
             default:
-                if (domain.respondsTo('size')) {
-                    Integer size = domain.invokeMethod('size', null) as Integer
+                if (propertyValue.respondsTo('size')) {
+                    Integer size = propertyValue.invokeMethod('size', null) as Integer
                     if (size < minSize) {
                         PersistentEntity entity = DomainUtil.getPersistentEntity(domain.class)
                         PersistentProperty property = entity.getPropertyByName(propertyName)
@@ -63,7 +64,7 @@ class MinSizeConstraintHandler implements ConstraintHandler {
                         // Only ToMany properties will have an addTo method
                         if (property instanceof ToMany) {
                             ToMany toManyProp = property as ToMany
-                            Class referencedClass = toManyProp?.associatedEntity?.getClass()
+                            Class referencedClass = toManyProp?.associatedEntity?.javaClass
                             DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(referencedClass)
 
                             // Build new instances until we reach the minimum size required

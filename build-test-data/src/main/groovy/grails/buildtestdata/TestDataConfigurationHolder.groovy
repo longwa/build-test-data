@@ -33,7 +33,11 @@ class TestDataConfigurationHolder {
             // If we have abstract defaults, automatically add transitive dependencies
             // for them since they may need to be built.
             abstractDefault = configFile['testDataConfig']['abstractDefault'] as Map ?: [:]
-            abstractDefault.each { key, value ->
+            abstractDefault.each { String key, Class value ->
+                if (DomainUtil.isAbstract(value)) {
+                    throw new IllegalArgumentException("Default value for 'abstractDefault.${key}' must be a concrete class")
+                }
+
                 if (unitAdditionalBuild.containsKey(key)) {
                     unitAdditionalBuild[key] << value
                 }

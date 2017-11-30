@@ -8,10 +8,10 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.RangeConstraint
 
 @CompileStatic
-class RangeConstraintHandler implements ConstraintHandler {
+class RangeConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         RangeConstraint rangeConstraint = appliedConstraint as RangeConstraint
-        domain.metaClass.setProperty(domain, propertyName, rangeConstraint.range.from)
+        setProperty(domain, propertyName, rangeConstraint.range.from)
     }
 }

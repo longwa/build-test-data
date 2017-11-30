@@ -42,11 +42,10 @@ interface ConstraintHandler {
         (ConstrainedProperty.SIZE_CONSTRAINT)       : new SizeConstraintHandler(),
         (ConstrainedProperty.MIN_CONSTRAINT)        : new MinConstraintHandler(),
         (ConstrainedProperty.MAX_CONSTRAINT)        : new MaxConstraintHandler(),
-        (ConstrainedProperty.NULLABLE_CONSTRAINT)   : new NullableConstraintHandler(),
         (ConstrainedProperty.MATCHES_CONSTRAINT)    : new MatchesConstraintHandler(),
         (ConstrainedProperty.BLANK_CONSTRAINT)      : new BlankConstraintHandler(),
         (ConstrainedProperty.VALIDATOR_CONSTRAINT)  : new ValidatorConstraintHandler()
-    ]
+    ] as Map<String, ConstraintHandler>
 
     /**
      * Satisfy the given constraint for this domain object and property

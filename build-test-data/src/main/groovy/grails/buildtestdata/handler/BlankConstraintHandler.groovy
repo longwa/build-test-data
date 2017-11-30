@@ -7,11 +7,11 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEntity
 
 @CompileStatic
-class BlankConstraintHandler implements ConstraintHandler {
+class BlankConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         // Shouldn't get here, as nullableHandler fires first and does not assign a blank value
         // though user could provide blank sample data
-        domain.metaClass.setProperty(domain, propertyName, 'x')
+        setProperty(domain, propertyName, 'x')
     }
 }

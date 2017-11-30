@@ -2,12 +2,11 @@ package base
 
 import config.Article
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class ConfigWithoutResetTests {
     // test order isn't guaranteed with Java 7 but this way, with 2 tests, we know that reset is working because
     // one of the tests will run first, then the other, but both get the same articles

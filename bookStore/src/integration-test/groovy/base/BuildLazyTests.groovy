@@ -1,12 +1,11 @@
 package base
 
 import bookstore.Author
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 
 @Rollback
-@TestMixin(IntegrationTestMixin)
+@Integration
 class BuildLazyTests {
     void testBuildLazyNoParamsCreatesNewWhenNoneExist() {
         assert Author.count() == 0

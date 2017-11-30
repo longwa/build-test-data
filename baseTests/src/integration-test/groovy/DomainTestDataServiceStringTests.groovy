@@ -1,9 +1,8 @@
-import grails.test.mixin.TestMixin
-import grails.test.mixin.integration.IntegrationTestMixin
+import grails.testing.mixin.integration.Integration
 import org.junit.Test
 
-@TestMixin(IntegrationTestMixin)
-class DomainTestDataServiceStringTests extends DomainTestDataServiceBase {
+@Integration
+class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
     @Test
     void testStringMinSize() {
         def minSize = 200

@@ -25,7 +25,7 @@ import static grails.buildtestdata.TestDataConfigurationHolder.getPropertyValues
 
 @Slf4j
 @CompileStatic
-class NullableConstraintHandler implements ConstraintHandler {
+class NullableConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         Object value = determineBasicValue(propertyName, constrainedProperty)
@@ -42,7 +42,7 @@ class NullableConstraintHandler implements ConstraintHandler {
         }
 
         if (domain.respondsTo(MetaProperty.getSetterName(propertyName))) {
-            domain.metaClass.setProperty(domain, propertyName, value)
+            setProperty(domain, propertyName, value)
         }
         else {
             log.warn("Unable to set value for {}.{}, property is immutable", domain, propertyName)
@@ -53,6 +53,10 @@ class NullableConstraintHandler implements ConstraintHandler {
         switch (constrainedProperty.propertyType) {
             case String:
                 return propertyName
+            case Integer:
+                return 0
+            case Long:
+                return 0L
             case Calendar:
                 return new GregorianCalendar()
             case Currency:
@@ -69,6 +73,14 @@ class NullableConstraintHandler implements ConstraintHandler {
                 return new Timestamp(new Date().time)
             case Date:
                 return new Date()
+            case BigDecimal:
+                return new BigDecimal(0)
+            case java.time.LocalDateTime:
+                return java.time.LocalDateTime.now()
+            case java.time.LocalDate:
+                return java.time.LocalDate.now()
+            case java.time.LocalTime:
+                return java.time.LocalTime.now()
             case Boolean:
             case boolean:
                 return false
@@ -95,13 +107,13 @@ class NullableConstraintHandler implements ConstraintHandler {
         // Ensure we don't loop on this domain
         circularCheckList.update(domain)
 
-        if (domainProp instanceof OneToOne || propertyFetcher.getStaticPropertyValue(domain.getClass(), 'embedded', Collection).contains(propertyName)) {
+        if (domainProp instanceof OneToOne || propertyFetcher.getStaticPropertyValue(domain.getClass(), 'embedded', Collection)?.contains(propertyName)) {
             if (circularCheckList[constrainedProperty?.propertyType?.name]) {
-                domain.metaClass.setProperty(domain, propertyName, circularCheckList[constrainedProperty?.propertyType?.name])
+                setProperty(domain, propertyName, circularCheckList[constrainedProperty?.propertyType?.name])
             }
             else {
                 DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(domainProp.type)
-                domain.metaClass.setProperty(domain, propertyName, builder.buildWithoutSave([:], circularCheckList))
+                setProperty(domain, propertyName, builder.buildWithoutSave([:], circularCheckList))
             }
         }
         else if (domainProp instanceof ManyToOne) {
@@ -121,7 +133,7 @@ class NullableConstraintHandler implements ConstraintHandler {
         }
         else if (domainProp instanceof ToMany) {
             ToMany toManyProp = domainProp as ToMany
-            Class referencedClass = toManyProp?.associatedEntity?.getClass()
+            Class referencedClass = toManyProp?.associatedEntity?.javaClass
 
             // Author has many books, and author isOneToMany books
             // the build invocation below will set the books author on build, by getting it from the cirularChecklist

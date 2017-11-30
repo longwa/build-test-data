@@ -1,14 +1,10 @@
 package base
 
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
+import grails.buildtestdata.UnitTestDataBuilder
 import org.junit.Test
 import standalone.Standalone
 
-@TestMixin(GrailsUnitTestMixin)
-@Build(Standalone)
-class StandaloneUnitTests {
+class StandaloneUnitTests implements UnitTestDataBuilder {
     @Test
     void testNullableBelongsToNotFollowed() {
         def standalone = Standalone.build() // standalone.Standalone has a "parent" property on it that is nullable (otherwise it'd get in an infinite loop)

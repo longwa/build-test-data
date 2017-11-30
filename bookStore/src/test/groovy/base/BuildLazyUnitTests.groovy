@@ -1,72 +1,84 @@
 package base
 
 import bookstore.Author
-import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-import org.junit.Test
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-@TestMixin(GrailsUnitTestMixin)
-@Build(Author)
-class BuildLazyUnitTests {
-    @Test
+class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
+    void setup() {
+        mockDomains(Author)
+    }
+
     void testBuildLazyNoParamsCreatesNewWhenNoneExist() {
 		assert Author.count() == 0
-		
-        def domainObject = Author.buildLazy()
+
+        when:
+        def domainObject = buildLazy(Author)
+
+        then:
         assert domainObject
 		assert Author.count() == 1
     }
 
-    @Test
     void testBuildLazyNoParamsFindsExistingWithoutCreateNew() {
-		Author.build(firstName: "Foo", lastName: "Qux")
+		build(Author, [firstName: "Foo", lastName: "Qux"])
 		assert Author.count() == 1
-		
-        def domainObject = Author.buildLazy()
+
+        when:
+        def domainObject = buildLazy(Author)
+
+        then:
         assert domainObject
 		assert domainObject.firstName == "Foo"
 		assert domainObject.lastName == "Qux"
 		assert Author.count() == 1
     }
 
-    @Test
     void testBuildLazyWithParamsCreatesNewWhenNoneExist() {
 		assert Author.count() == 0
-		
-        def domainObject = Author.buildLazy(firstName: "Bar")
+
+        when:
+        def domainObject = buildLazy(Author, [firstName: "Bar"])
+
+        then:
         assert domainObject
 		assert Author.count() == 1
     }
 
-    @Test
     void testBuildLazyWithParamsCreatesNewWhenNoMatchingExist() {
-		Author.build(firstName: "Foo")
+		build(Author, [firstName: "Foo"])
 		assert Author.count() == 1
-		
-        def domainObject = Author.buildLazy(firstName: "Bar")
+
+        when:
+        def domainObject = buildLazy(Author, [firstName: "Bar"])
+
+        then:
         assert domainObject
 		assert Author.count() == 2
     }
 
-    @Test
     void testBuildLazyWithParamsFindsExistingWithoutCreateNew() {
-		Author.build(firstName: "Foo", lastName: "Qux")
+		build(Author, [firstName: "Foo", lastName: "Qux"])
 		assert Author.count() == 1
-		
-        def domainObject = Author.buildLazy(firstName: "Foo")
+
+        when:
+        def domainObject = buildLazy(Author, [firstName: "Foo"])
+
+        then:
         assert domainObject
 		assert domainObject.firstName == "Foo"
 		assert domainObject.lastName == "Qux"
 		assert Author.count() == 1
     }
 
-    @Test
     void testBuildLazyWithParamsCreatesNewWithOnlyPartialMatch() {
-		Author.build(firstName: "Foo", lastName: "Qux")
+		build(Author, [firstName: "Foo", lastName: "Qux"])
 		assert Author.count() == 1
-		
-        def domainObject = Author.buildLazy(firstName: "Foo", lastName: "Bar")
+
+        when:
+        def domainObject = buildLazy(Author, [firstName: "Foo", lastName: "Bar"])
+
+        then:
         assert domainObject
 		assert domainObject.firstName == "Foo"
 		assert domainObject.lastName == "Bar"

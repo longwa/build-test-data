@@ -7,9 +7,9 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEntity
 
 @CompileStatic
-class CreditCardConstraintHandler implements ConstraintHandler {
+class CreditCardConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
-        domain.metaClass.setProperty(domain, propertyName, '378282246310005')
+        setProperty(domain, propertyName, '378282246310005')
     }
 }
