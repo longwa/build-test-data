@@ -1,14 +1,18 @@
 package embedded
 
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-import org.junit.Test
+class EmbeddingUnitTests extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Embedding]
+    }
 
-
-class EmbeddingUnitTests {
-
-    @Test
     void testPlugin() {
-        Embedding e = Embedding.build()
-        assert e.inner.someValue != null
+        when:
+        Embedding e = build(Embedding)
+        then:
+        e.inner.someValue != null
     }
 }

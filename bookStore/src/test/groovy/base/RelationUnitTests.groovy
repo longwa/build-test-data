@@ -12,7 +12,6 @@ import magazine.Page
 
 import spock.lang.Specification
 
-//@Build([Face, Book, Author, Invoice, Page, Issue, Arm])
 class RelationUnitTests extends Specification implements UnitTestDataBuilder {
     void setupSpec() {
         mockDomains(Face, Book, Author, Invoice, Page, Issue, Arm)
@@ -20,7 +19,7 @@ class RelationUnitTests extends Specification implements UnitTestDataBuilder {
 
     void testOneToOneCascades() {
         when:
-        def domainObject = Face.build()
+        def domainObject = build(Face)
 
         then:
         assert domainObject

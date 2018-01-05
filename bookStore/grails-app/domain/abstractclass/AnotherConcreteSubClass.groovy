@@ -5,6 +5,6 @@ class AnotherConcreteSubClass extends AbstractSubClass {
     String concreteClassAttribute
 
     String toString() {
-        "ConcreteSubClass: $concreteClassAttribute"
+        "AnotherConcreteSubClass: $concreteClassAttribute"
     }
 }

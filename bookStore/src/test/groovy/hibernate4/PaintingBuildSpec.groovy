@@ -1,19 +1,23 @@
 package hibernate4
 
+import grails.buildtestdata.UnitTestDataBuilder
 import spock.lang.Specification
 
-
-class PaintingBuildSpec extends Specification {
+class PaintingBuildSpec extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Painting]
+    }
 
     void "building a Painting builds Gallery and Painter"() {
         when: 
-        Painting painting = Painting.build(title: "The Hunters in the Snow")
+        Painting painting = build(Painting, [title: "The Hunters in the Snow"])
 
         then:
-        assert painting != null
-        assert painting.id != null
-        assert painting.title == "The Hunters in the Snow"
-        assert painting.painter.name != null
-        assert painting.gallery.name != null
+        painting != null
+        painting.id != null
+        painting.title == "The Hunters in the Snow"
+        painting.painter.name != null
+        painting.gallery.name != null
     }
 }

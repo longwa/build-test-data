@@ -1,39 +1,52 @@
 package base
 
 import grails.buildtestdata.UnitTestDataBuilder
+import grails.testing.gorm.DataTest
 import org.junit.Test
+import spock.lang.Specification
 import standalone.Standalone
 
-class StandaloneUnitTests implements UnitTestDataBuilder {
-    @Test
-    void testNullableBelongsToNotFollowed() {
-        def standalone = Standalone.build() // standalone.Standalone has a "parent" property on it that is nullable (otherwise it'd get in an infinite loop)
-        assert standalone
-        assert standalone.id
-        assert !standalone.parent
-        assert standalone.emailAddress != null
+class StandaloneUnitTests extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Standalone]
     }
 
-    @Test
+    void testNullableBelongsToNotFollowed() {
+        when:
+        def standalone = build(Standalone) // standalone.Standalone has a "parent" property on it that is nullable (otherwise it'd get in an infinite loop)
+
+        then:
+        standalone
+        standalone.id
+        !standalone.parent
+        standalone.emailAddress != null
+    }
+
     void testBuildStandalonePassAllVariables() {
 		def created = new Date()
-		def obj = Standalone.build(name: "Foo", age: 14, created: created, emailAddress: "foo@bar.com")
-		assertValidDomainObject(obj)
 
-		assert obj.name == "Foo"
-		assert obj.age == 14
-		assert obj.created == created
-        assert "foo@bar.com" == obj.emailAddress
+        when:
+		def obj = build(Standalone, [name: "Foo", age: 14, created: created, emailAddress: "foo@bar.com"])
+
+        then:
+        assertValidDomainObject(obj)
+		obj.name == "Foo"
+		obj.age == 14
+		obj.created == created
+        "foo@bar.com" == obj.emailAddress
     }
 
-    @Test
     void testBuildStandalonePassNoVariables() {
-		def obj = Standalone.build()
+        when:
+		def obj = build(Standalone)
+
+        then:
 		assertValidDomainObject(obj)
 
-		assert obj.name  // by default it just uses the property name for the value for strings == "name"
-		assert obj.created
-		assert obj.age == 0
+		obj.name  // by default it just uses the property name for the value for strings == "name"
+		obj.created
+		obj.age == 0
     }
 
     private void assertValidDomainObject(domainObject) {

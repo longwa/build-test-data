@@ -1,32 +1,42 @@
 package list
 
+import grails.buildtestdata.UnitTestDataBuilder
+import spock.lang.Specification
 
-import org.junit.Test
-
-
-class SantaUnitTests {
-
-    @Test
-    void testChildListOk() {
-        def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
-        assert santa.children == null
-
-        Child.build(name: 'ivan', grade: 2, dateOfBirth: new Date(), santa: santa)
-        assert santa.children.size() == 1
-
-        Child.build(name: 'hazel', grade: 0, dateOfBirth: new Date(), santa: santa)
-        assert santa.children.size() == 2
-
-        santa.save(flush: true)
-        assert santa.children.size() == 2
-        assert santa.id > 0
+class SantaUnitTests extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Santa, Child]
     }
 
-    @Test
+    void testChildListOk() {
+        when:
+        def santa = build(Santa, [firstName: 'Santa', lastName: 'Claus'])
+        then:
+        santa.children == null
+
+        when:
+        build(Child, [name: 'ivan', grade: 2, dateOfBirth: new Date(), santa: santa])
+        then:
+        santa.children.size() == 1
+
+        when:
+        build(Child, [name: 'hazel', grade: 0, dateOfBirth: new Date(), santa: santa])
+
+        then:
+        santa.children.size() == 2
+        santa.save(flush: true)
+        santa.children.size() == 2
+        santa.id > 0
+    }
+
     void testElvesListMinConstraintOk() {
-        def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
-        assert santa.children == null
-        assert santa.elves != null
-        assert santa.elves.size() == 1
+        when:
+        def santa = build(Santa, [firstName: 'Santa', lastName: 'Claus'])
+
+        then:
+        santa.children == null
+        santa.elves != null
+        santa.elves.size() == 1
     }
 }

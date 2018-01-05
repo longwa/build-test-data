@@ -1,19 +1,25 @@
 package list
 
 import bookstore.EstablishedAuthor
-
+import grails.buildtestdata.UnitTestDataBuilder
+import grails.testing.gorm.DataTest
 import org.junit.Test
+import spock.lang.Specification
 
+class EstablishedAuthorUnitTests extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [EstablishedAuthor]
+    }
 
-class EstablishedAuthorUnitTests {
-
-    @Test
     void testRequiredListAndSetOk() {
-        EstablishedAuthor establishedAuthor = EstablishedAuthor.build(name: "Steven King")
-        assert establishedAuthor.hardcoverBooks != null
-        assert establishedAuthor.hardcoverBooks.size() == 1
-        assert establishedAuthor.paperbackBooks != null
-        assert establishedAuthor.paperbackBooks.size() == 1
-        assert establishedAuthor.id > 0
+        when:
+        EstablishedAuthor establishedAuthor = build(EstablishedAuthor, [name: "Steven King"])
+        then:
+        establishedAuthor.hardcoverBooks != null
+        establishedAuthor.hardcoverBooks.size() == 1
+        establishedAuthor.paperbackBooks != null
+        establishedAuthor.paperbackBooks.size() == 1
+        establishedAuthor.id > 0
     }
 }
