@@ -1,7 +1,8 @@
 import org.junit.Test
+import spock.lang.Specification
 
 // These tests may not really be valid, not sure how to dynamically register these entities in Grails 3
-class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
+class DomainTestDataServiceNumberTests extends Specification implements DomainTestDataServiceBase {
     def fields = """
                 Long id
                 Long version
@@ -15,7 +16,6 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
 
     """
 
-    /*
     @Test
     void testNumberManuallySetValuesOk() {
         def value = 1
@@ -26,14 +26,14 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass, [
-                testInteger: value,
-                testLong: value,
-                testInt: value,
-                testShort: value,
-                testShortObject: value,
-                testByte: value,
-                testByteObject: value
+        def domainObject = build(domainClass, [
+            testInteger    : value,
+            testLong       : value,
+            testInt        : value,
+            testShort      : value,
+            testShortObject: value,
+            testByte       : value,
+            testByteObject : value
         ])
         assertFieldsEqual(domainObject, value)
     }
@@ -48,14 +48,14 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass, [
-                testInteger: validValueButGroovyTruthFalse,
-                testLong: validValueButGroovyTruthFalse,
-                testInt: validValueButGroovyTruthFalse,
-                testShort: validValueButGroovyTruthFalse,
-                testShortObject: validValueButGroovyTruthFalse,
-                testByte: validValueButGroovyTruthFalse,
-                testByteObject: validValueButGroovyTruthFalse
+        def domainObject = build(domainClass, [
+            testInteger    : validValueButGroovyTruthFalse,
+            testLong       : validValueButGroovyTruthFalse,
+            testInt        : validValueButGroovyTruthFalse,
+            testShort      : validValueButGroovyTruthFalse,
+            testShortObject: validValueButGroovyTruthFalse,
+            testByte       : validValueButGroovyTruthFalse,
+            testByteObject : validValueButGroovyTruthFalse
         ])
         assertFieldsEqual(domainObject, validValueButGroovyTruthFalse)
     }
@@ -70,7 +70,7 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass)
+        def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, defaultJavaValueButGroovyTruthFalse)
     }
 
@@ -94,7 +94,7 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass)
+        def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, minSize)
     }
 
@@ -118,7 +118,7 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass)
+        def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, maxSize)
     }
 
@@ -143,7 +143,7 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass)
+        def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, numberOne)
     }
 
@@ -168,18 +168,17 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = build(domainClass)
+        def domainObject = build(domainClass)
         assertFieldsEqual(domainObject, numberOne)
     }
 
     static def assertFieldsEqual(domainObject, val) {
-		assert val == domainObject.testInteger
-		assert val == domainObject.testLong
-		assert val == domainObject.testInt
-		assert val == domainObject.testShort
-		assert val == domainObject.testShortObject
-		assert val == domainObject.testByte
-		assert val == domainObject.testByteObject
+        assert val == domainObject.testInteger
+        assert val == domainObject.testLong
+        assert val == domainObject.testInt
+        assert val == domainObject.testShort
+        assert val == domainObject.testShortObject
+        assert val == domainObject.testByte
+        assert val == domainObject.testByteObject
     }
-    */
 }

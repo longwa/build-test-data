@@ -13,6 +13,7 @@ import spock.lang.Specification
 @Integration
 @Rollback
 class AbstractTests extends Specification implements TestDataBuilder {
+
     void testSuccessfulBuildOfDomainAbstractClass() {
         when:
         def abstractClass = build(AbstractClass)
