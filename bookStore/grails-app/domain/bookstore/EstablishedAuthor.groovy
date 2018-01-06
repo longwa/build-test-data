@@ -1,7 +1,5 @@
 package bookstore
 
-import bookstore.Book
-
 class EstablishedAuthor {
 
     String name

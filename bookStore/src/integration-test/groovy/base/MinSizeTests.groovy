@@ -12,21 +12,21 @@ class MinSizeTests {
 
     @Test
     void testEmailMinSize() {
-        def addressDomain = new DefaultGrailsDomainClass(Address)
+        //def addressDomain = new DefaultGrailsDomainClass(Address)
         def domainObject = Address.build()
         assert domainObject
         assert domainObject.id
         assert domainObject.emailAddress
-        assert domainObject.emailAddress.size() == 100
+        assert domainObject.emailAddress.size() == 40
     }
 
     @Test
     void testUrlMinSize() {
-        def addressDomain = new DefaultGrailsDomainClass(Address)
+        //def addressDomain = new DefaultGrailsDomainClass(Address)
         def domainObject = Address.build()
         assert domainObject
         assert domainObject.id
         assert domainObject.webSite
-        assert domainObject.webSite.size() == 100
+        assert domainObject.webSite.size() == 40
     }
 }

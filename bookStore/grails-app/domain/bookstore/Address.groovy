@@ -9,10 +9,10 @@ class Address {
     String zip
     String emailAddress
     String webSite
-//    LatLon latLon
-//    LatLon alternateLatLon
+    LatLon latLon
+    LatLon alternateLatLon
 
-    //static embedded = ['latLon', 'alternateLatLon']
+    static embedded = ['latLon', 'alternateLatLon']
 
     static constraints = {
         address1(maxSize:55)
@@ -22,7 +22,7 @@ class Address {
         zip(matches:/\d{5}/, nullable:true)
         emailAddress(email:true, minSize:40)
         webSite(url: true, minSize:40)
-        //alternateLatLon(nullable: true)
+        alternateLatLon(nullable: true)
     }
 
 }

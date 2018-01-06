@@ -27,9 +27,6 @@ class RelationTests {
 
     @Test
     void testBelongsToGetsHasMany() {
-        def bookDomain = new DefaultGrailsDomainClass(Book)
-        def domainProp = bookDomain.properties.find { it.name == 'author' }
-        assert domainProp.isManyToOne()
         def domainObject = Book.build()
         assert domainObject
         assert domainObject.author
@@ -42,14 +39,6 @@ class RelationTests {
 
     @Test
     void testHasManyNullableFalse() {
-        def authorDomain = new DefaultGrailsDomainClass(Author)
-        def domainProp = authorDomain.properties.find { it.name == 'books' }
-        assert domainProp.isOneToMany()
-        assert !domainProp.isOptional()
-
-        def bookConstrainedProperty = authorDomain.constrainedProperties['books']
-        assert bookConstrainedProperty.isNullable() == false
-
         def domainObject = Author.build()
         assert domainObject
         assert domainObject.id
@@ -63,14 +52,6 @@ class RelationTests {
 
     @Test
     void testManyToManyNullableFalse() {
-        def invoiceDomain = new DefaultGrailsDomainClass(Invoice)
-        def domainProp = invoiceDomain.properties.find { it.name == 'books' }
-        assert domainProp.isManyToMany()
-        assert !domainProp.isOptional()
-
-        def bookConstrainedProperty = invoiceDomain.constrainedProperties['books']
-        assert bookConstrainedProperty.isNullable() == false
-
         def domainObject = Invoice.build()
         assert domainObject
         assert domainObject.id
