@@ -1,6 +1,5 @@
 package basetests
 
-import org.junit.Test
 import spock.lang.Specification
 
 class DomainTestDataServiceStringTests extends Specification implements DomainTestDataServiceBase {
