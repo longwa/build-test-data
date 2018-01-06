@@ -1,33 +1,43 @@
 package list
 
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
-import org.junit.Test
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class SantaTests {
-    @Test
+class SantaTests extends Specification implements TestDataBuilder {
     void testChildListOk() {
-        def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
-        assert santa.children == null
+        when:
+        def santa = build(Santa, [firstName: 'Santa', lastName: 'Claus'])
+        then:
+        santa.children == null
 
-        Child.build(name: 'ivan', grade: 2, dateOfBirth: new Date(), santa: santa)
-        assert santa.children.size() == 1
+        when:
+        build(Child, [name: 'ivan', grade: 2, dateOfBirth: new Date(), santa: santa])
+        then:
+        santa.children.size() == 1
 
-        Child.build(name: 'hazel', grade: 0, dateOfBirth: new Date(), santa: santa)
-        assert santa.children.size() == 2
+        when:
+        build(Child, [name: 'hazel', grade: 0, dateOfBirth: new Date(), santa: santa])
+        then:
+        santa.children.size() == 2
 
+        when:
         santa.save(flush: true)
-        assert santa.children.size() == 2
-        assert santa.id > 0
+
+        then:
+        santa.children.size() == 2
+        santa.id > 0
     }
 
-    @Test
     void testElvesListMinConstraintOk() {
-        def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
-        assert santa.children == null
-        assert santa.elves != null
-        assert santa.elves.size() == 1
+        when:
+        def santa = build(Santa, [firstName: 'Santa', lastName: 'Claus'])
+        then:
+        santa.children == null
+        santa.elves != null
+        santa.elves.size() == 1
     }
 }

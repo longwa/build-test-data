@@ -17,25 +17,25 @@ class AbstractTests extends Specification implements TestDataBuilder {
         when:
         def abstractClass = build(AbstractClass)
         then:
-        assert abstractClass
-        assert abstractClass.ident() > 0
-        assert abstractClass instanceof ConcreteSubClass
+        abstractClass
+        abstractClass.ident() > 0
+        abstractClass instanceof ConcreteSubClass
 
         when:
         def abstractSubClass = build(AbstractSubClass)
         then:
-        assert abstractSubClass
-        assert abstractSubClass.ident() > 0
+        abstractSubClass
+        abstractSubClass.ident() > 0
 
         // This could be either one of these
-        assert abstractSubClass instanceof AnotherConcreteSubClass || abstractSubClass instanceof ConcreteSubClass
+        abstractSubClass instanceof AnotherConcreteSubClass || abstractSubClass instanceof ConcreteSubClass
 
         when:
         def concreteClass = build(ConcreteSubClass)
 
         then:
-        assert concreteClass
-        assert concreteClass.ident() > 0
+        concreteClass
+        concreteClass.ident() > 0
     }
 
     void testSuccessfulBuildOfRelatedAbstractClass() {
@@ -43,10 +43,10 @@ class AbstractTests extends Specification implements TestDataBuilder {
         def related = build(RelatedToAbstract)
 
         then:
-        assert related
-        assert related.ident() > 0
-        assert related.genericParent
-        assert related.genericParent.ident() > 0
-        assert related.genericParent instanceof ConcreteSubClass
+        related
+        related.ident() > 0
+        related.genericParent
+        related.genericParent.ident() > 0
+        related.genericParent instanceof ConcreteSubClass
     }
 }

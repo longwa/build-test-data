@@ -1,77 +1,50 @@
+import basetests.TestDomain
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
-import org.junit.Test
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class DomainTestDataServiceBooleanTests implements DomainTestDataServiceBase {
-    @Test
+class DomainTestDataServiceBooleanTests extends Specification implements TestDataBuilder {
     void testBooleanDefaultGroovyTruthFalseOk() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Boolean testProperty
-            }
-        """)
-
-        def domainObject = domainClass.build()
-        assert domainObject != null
-        assert domainObject.testProperty == false
+        when:
+        def domainObject = build(TestDomain)
+        then:
+        domainObject != null
+        domainObject.testBoolean == false
     }
 
-    @Test
     void testBooleanManuallySetValues() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Boolean testProperty
-            }
-        """)
+        when:
+        def domainObject = build(TestDomain, [testBoolean: true])
+        then:
+        domainObject != null
+        domainObject.testBoolean == true
 
-        def domainObject = domainClass.build(testProperty: true)
-        assert domainObject != null
-        assert domainObject.testProperty == true
-
-        domainObject = domainClass.build(testProperty: false)
-        assert domainObject != null
-        assert domainObject.testProperty == false
-
+        when:
+        domainObject = build(TestDomain, [testBoolean: false])
+        then:
+        domainObject != null
+        domainObject.testBoolean == false
     }
 
-    @Test
     void testBooleanNullable() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Boolean testProperty
-                static constraints = {
-                    testProperty(nullable: true)
-                }
-            }
-        """)
+        when:
+        def domainObject = build(TestDomain)
 
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty == null
+        then:
+        domainObject != null
+        domainObject.testBooleanNull == null
     }
 
-    @Test
     void testBooleanNotNullable() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Boolean testProperty
-            }
-        """)
+        when:
+        def domainObject = build(TestDomain)
 
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty != null
+        then:
+        domainObject != null
+        domainObject.testBoolean != null
     }
 }
+

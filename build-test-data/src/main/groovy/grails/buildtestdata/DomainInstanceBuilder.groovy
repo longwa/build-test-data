@@ -51,7 +51,7 @@ class DomainInstanceBuilder {
 
         MappingContext mappingContext = persistentEntity.mappingContext
         PersistentEntityValidator entityValidator = mappingContext.getEntityValidator(persistentEntity) as PersistentEntityValidator
-        constrainedProperties = entityValidator?.constrainedProperties ?: [:]
+        constrainedProperties = (entityValidator?.constrainedProperties ?: [:]) as Map<String, ConstrainedProperty>
 
         requiredPropertyNames = findRequiredPropertyNames(constrainedProperties)
         domainProperties = findDomainProperties(constrainedProperties)

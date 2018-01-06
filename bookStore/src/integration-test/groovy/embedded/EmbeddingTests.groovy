@@ -1,13 +1,18 @@
 package embedded
 
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class EmbeddingTests {
+class EmbeddingTests extends Specification implements TestDataBuilder {
     void testPlugin() {
-        Embedding e = Embedding.build()
-        assert e.inner.someValue != null
+        when:
+        Embedding e = build(Embedding)
+
+        then:
+        e.inner.someValue != null
     }
 }

@@ -1,4 +1,5 @@
-package bookstore
+package embedded
+
 class LatLon {
     BigDecimal longitude
     BigDecimal latitude

@@ -1,30 +1,36 @@
 package triangle
 
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
-import org.junit.Test
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class TriangleRelationshipTests {
-    @Test
+class TriangleRelationshipTests extends Specification implements TestDataBuilder {
     void testBuildTriangleRelationship() {
         // Director has many managers and workers
         // manager belongsto director and has many workers
         // workers belongs to a director and a manager, we should be able to build any one of these successfully
-        assert Worker.build()
-        assert Manager.build()
-        assert Director.build()
+        expect:
+        build(Worker)
+        build(Manager)
+        build(Director)
     }
 
     void testBuildTriangleRelationshipPartiallyCompleteAlready() {
-        def manager = Manager.build()
-        assert manager
+        when:
+        def manager = build(Manager)
 
-        def director = Director.build(managers: [manager])
-        assert director
-        assert Worker.build(manager: manager)
-        assert Worker.build(director: director)
+        then:
+        manager
+
+        when:
+        def director = build(Director, [managers: [manager]])
+        then:
+        director
+        build(Worker, [manager: manager])
+        build(Worker, [director: director])
 
     }
 }

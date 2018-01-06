@@ -13,15 +13,16 @@ class MaxSizeConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         MaxSizeConstraint maxSizeConstraint = appliedConstraint as MaxSizeConstraint
-        padMaxSize(domain, propertyName, maxSizeConstraint.maxSize)
+        Object propertyValue = getProperty(domain, propertyName)
+        padMaxSize(domain, propertyName, propertyValue, maxSizeConstraint.maxSize)
     }
 
-    static void padMaxSize(GormEntity domain, String propertyName, Integer maxSize) {
-        if (domain.respondsTo('size')) {
-            Integer size = domain.invokeMethod('size', null) as Integer
+    static void padMaxSize(GormEntity domain, String propertyName, Object propertyValue, Integer maxSize) {
+        if (propertyValue?.respondsTo('size')) {
+            Integer size = propertyValue.invokeMethod('size', null) as Integer
             if (size > maxSize) {
                 Range range = (0..maxSize - 1)
-                InvokerHelper.setProperty(domain, propertyName, domain.invokeMethod('getAt', range))
+                InvokerHelper.setProperty(domain, propertyName, propertyValue.invokeMethod('getAt', range))
             }
         }
     }

@@ -4,21 +4,27 @@ import enumtest.Car
 import enumtest.CarStatus
 import enumtest.Door
 import enumtest.DoorStatus
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class EnumTests {
+class EnumTests extends Specification implements TestDataBuilder {
     void testCarStatusEnumPopulated() {
-        Car car = Car.build()
-        assert car
-        assert car.status == CarStatus.REVERSE
+        when:
+        Car car = build(Car)
+        then:
+        car
+        car.status == CarStatus.REVERSE
     }
 
     void testDoorStatusEnumPopulated() {
-        Door door = Door.build()
-        assert door
-        assert door.status == DoorStatus.OPEN
+        when:
+        Door door = build(Door)
+        then:
+        door
+        door.status == DoorStatus.OPEN
     }
 }

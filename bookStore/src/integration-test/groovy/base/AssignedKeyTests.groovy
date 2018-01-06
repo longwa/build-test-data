@@ -1,43 +1,48 @@
 package base
 
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import spock.lang.Specification
 import standalone.AssignedKey
 import standalone.ChildWithAssignedKey
 
 @Integration
 @Rollback
-class AssignedKeyTests {
+class AssignedKeyTests extends Specification implements TestDataBuilder {
     void testBuildWithKey() {
-        AssignedKey.withSession { session ->
-            AssignedKey.build(id: "FOO")
-            session.flush()
+        when:
+        def obj = build(AssignedKey, [id: "FOO"])
 
-            def obj = AssignedKey.get("FOO")
-            assert obj != null
-            assert obj.attribute == "attribute"
-        }
+        then:
+        obj != null
+        obj.attribute == "attribute"
+
+        def o2 = AssignedKey.get("FOO")
+        o2 != null
     }
 
     void testBuildWithoutKey() {
-        AssignedKey.withSession { session ->
-            AssignedKey.build()
-            session.flush()
+        when:
+        def obj = build(AssignedKey)
 
-            def obj = AssignedKey.get("id")
-            assert obj != null
-            assert obj.attribute == "attribute"
-        }
+        then:
+        obj != null
+        obj.attribute == "attribute"
+
+        def o2 = AssignedKey.get(obj.id)
+        o2 != null
     }
 
     void testBuildChildWithAssignedKeyInParent() {
-        ChildWithAssignedKey.withSession { session ->
-            ChildWithAssignedKey.build(id: 'FOO')
-            session.flush()
+        when:
+        def obj = build(ChildWithAssignedKey, [id: 'FOO'])
 
-            def obj = ChildWithAssignedKey.get("FOO")
-            assert obj != null
-            assert obj.attribute == "attribute"
-        }
+        then:
+        obj != null
+        obj.attribute == "attribute"
+
+        def o2 = ChildWithAssignedKey.get('FOO')
+        o2 != null
     }
 }

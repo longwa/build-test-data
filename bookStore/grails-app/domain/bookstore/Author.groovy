@@ -1,4 +1,5 @@
 package bookstore
+
 class Author {
     String firstName
     String middleInitial
@@ -6,7 +7,7 @@ class Author {
     Date dateOfBirth
     String gender
     Address address
- 
+
     static hasMany = [books: Book]
 
     static constraints = {
@@ -17,6 +18,4 @@ class Author {
         address(nullable: false)
         books(nullable: false, minSize: 2)
     }
-
-
 }

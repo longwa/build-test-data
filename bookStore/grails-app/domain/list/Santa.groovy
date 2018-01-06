@@ -4,9 +4,6 @@ class Santa {
     String firstName = "Santa"
     String lastName = "Claus"
 
-    List children
-    List elves
-
     static hasMany = [children: Child, elves: Elf]
 
     static constraints = {

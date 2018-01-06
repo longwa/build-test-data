@@ -1,27 +1,37 @@
 package base
 
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import spock.lang.Specification
 import subclassing.RelatedClass
 import subclassing.SubClass
 import subclassing.SuperClass
 
 @Rollback
 @Integration
-class SubclassTests {
+class SubclassTests extends Specification implements TestDataBuilder {
     void testSuccessfulBuildOfDomainSubclass() {
-        def subClass = SubClass.build()
-        assert subClass
-        assert subClass.ident() > 0
+        when:
+        def subClass = build(SubClass)
 
-        assert subClass.relatedClass.superClassInstances.contains(subClass)
+        then:
+        subClass
+        subClass.ident() > 0
+        subClass.relatedClass.superClassInstances.contains(subClass)
 
-        def relatedClass = RelatedClass.build()
-        assert relatedClass
-        assert relatedClass.ident() > 0
+        when:
+        def relatedClass = build(RelatedClass)
 
-        def superClass = SuperClass.build()
-        assert superClass
-        assert superClass.ident() > 0
+        then:
+        relatedClass
+        relatedClass.ident() > 0
+
+        when:
+        def superClass = build(SuperClass)
+
+        then:
+        superClass
+        superClass.ident() > 0
     }
 }

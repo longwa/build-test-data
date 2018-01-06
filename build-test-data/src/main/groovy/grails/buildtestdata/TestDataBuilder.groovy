@@ -49,12 +49,12 @@ trait TestDataBuilder {
     }
 
     @BeforeClass
-    static void setupUnitTestDataBuilder() {
+    static void setupTestDataBuilder() {
         TestDataConfigurationHolder.loadTestDataConfig()
     }
 
     @AfterClass
-    static void cleanupUnitTestDataBuilder() {
+    static void cleanupTestDataBuilder() {
         DomainInstanceRegistry.clear()
     }
 }

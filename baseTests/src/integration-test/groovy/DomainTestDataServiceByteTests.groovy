@@ -1,25 +1,19 @@
+import basetests.TestDomain
+import grails.buildtestdata.TestDataBuilder
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
-import org.junit.Test
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class DomainTestDataServiceByteTests implements DomainTestDataServiceBase {
-    @Test
+class DomainTestDataServiceByteTests extends Specification implements TestDataBuilder {
     void testByteNotNull() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Byte[] testByteObject
-                byte[] testBytePrimitive
-           }
-        """)
+        when:
+		def domainObject = build(TestDomain)
 
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testByteObject != null
-		assert domainObject.testBytePrimitive != null
+        then:
+		domainObject != null
+		domainObject.testByteObject != null
+		domainObject.testBytePrimitive != null
     }
 }

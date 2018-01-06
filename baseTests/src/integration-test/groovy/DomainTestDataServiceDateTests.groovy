@@ -1,142 +1,88 @@
+import basetests.TestDateDomain
+import grails.buildtestdata.TestDataBuilder
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
-import org.junit.Test
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class DomainTestDataServiceDateTests implements DomainTestDataServiceBase {
-    @Test
+class DomainTestDataServiceDateTests extends Specification implements TestDataBuilder {
+    void testDateNonNull() {
+        when:
+        def domainObject = build(TestDateDomain)
+
+        then:
+        domainObject != null
+        domainObject.testDate != null
+    }
+
     void testDateMin() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Date testProperty
+        when:
+        def domainObject = build(TestDateDomain)
 
-                static constraints = {
-                    testProperty(min: new Date() + 100)
-                }
-           }
-        """)
-
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty != null
-        assert domainObject.testProperty > new Date() + 99
+        then:
+        domainObject != null
+        domainObject.testMinDate != null
+        domainObject.testMinDate > new Date() + 99
     }
 
-    @Test
     void testDateMax() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Date testProperty
+        when:
+        def domainObject = build(TestDateDomain)
 
-                static constraints = {
-                    testProperty(max: new Date() - 100)
-                 }
-           }
-        """)
-
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty != null
-        assert domainObject.testProperty < new Date() - 99
+        then:
+        domainObject != null
+        domainObject.testMaxDate != null
+        domainObject.testMaxDate < new Date() - 99
     }
 
-    @Test
     void testDateInList() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Date testProperty
+        when:
+        def domainObject = build(TestDateDomain)
 
-                static constraints = {
-                    testProperty(inList: [new Date() + 100, new Date() + 200])
-                }
-           }
-        """)
-
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty != null
-        assert domainObject.testProperty >= new Date() + 99
-        assert domainObject.testProperty <= new Date() + 101
+        then:
+        domainObject != null
+        domainObject.testInListDate != null
+        domainObject.testInListDate >= new Date() + 99
+        domainObject.testInListDate <= new Date() + 101
     }
 
-    @Test
     void testDateRange() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                Date testProperty
+        when:
+        def domainObject = build(TestDateDomain)
 
-                static constraints = {
-                    testProperty(range: new Date() + 100..new Date() + 200)
-                }
-           }
-        """)
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty != null
-        assert domainObject.testProperty >= new Date() + 99
-        assert domainObject.testProperty <= new Date() + 101
+        then:
+        domainObject != null
+        domainObject.testRangeDate != null
+        domainObject.testRangeDate >= new Date() + 99
+        domainObject.testRangeDate <= new Date() + 101
     }
 
-    @Test
     void testNonStandardValueSpecified() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-
-                MonetaryValue monetaryValue
-
-                static embedded = ['monetaryValue']
-            }
-
-            class MonetaryValue {
-                Currency currency
-                BigDecimal amount
-            }
-        """)
-
         def testValue = 1
-        TestDataConfigurationHolder.sampleData = [MonetaryValue: [
+        TestDataConfigurationHolder.sampleData = ['basetests.MonetaryValue': [
                 currency: Currency.getInstance('USD'),
                 amount: {-> (++testValue) }]
         ]
-        def domainObject = domainClass.build()
 
-        assert domainObject != null
-        assert domainObject.monetaryValue != null
-        assert 2.0 == domainObject.monetaryValue.amount
-        assert domainObject.monetaryValue.currency != null
+        when:
+        def domainObject = build(TestDateDomain)
+
+        then:
+        domainObject != null
+        domainObject.monetaryValue != null
+        2.0 == domainObject.monetaryValue.amount
+        domainObject.monetaryValue.currency != null
     }
 
-    @Test
     void testTimestamp() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                java.sql.Timestamp testProperty
-           }
-        """)
+        when:
+        def domainObject = build(TestDateDomain)
 
-        def domainObject = domainClass.build()
-
-        assert domainObject != null
-        assert domainObject.testProperty != null
-        assert domainObject.testProperty instanceof java.sql.Timestamp
+        then:
+        domainObject != null
+        domainObject.testTimestamp != null
+        domainObject.testTimestamp instanceof java.sql.Timestamp
     }
-
 }

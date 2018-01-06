@@ -1,6 +1,6 @@
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.TestDataBuilder
 
-trait DomainTestDataServiceBase extends UnitTestDataBuilder {
+trait DomainTestDataServiceBase extends TestDataBuilder {
     def saveMock = { options = [:] ->
         delegate.id = 1
         return true

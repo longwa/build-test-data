@@ -23,6 +23,6 @@ class SizeConstraintHandler extends AbstractConstraintHandler {
             circularCheckList
         )
 
-        MaxSizeConstraintHandler.padMaxSize(domain, propertyName, range.to)
+        MaxSizeConstraintHandler.padMaxSize(domain, propertyName, getProperty(domain, propertyName), range.to)
     }
 }

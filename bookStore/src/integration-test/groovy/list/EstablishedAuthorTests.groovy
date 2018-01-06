@@ -1,20 +1,22 @@
 package list
 
 import bookstore.EstablishedAuthor
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
-import org.junit.Test
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class EstablishedAuthorTests {
-    @Test
+class EstablishedAuthorTests extends Specification implements TestDataBuilder {
     void testRequiredListAndSetOk() {
-        EstablishedAuthor establishedAuthor = EstablishedAuthor.build(name: "Steven King")
-        assert establishedAuthor.hardcoverBooks != null
-        assert establishedAuthor.hardcoverBooks.size() == 1
-        assert establishedAuthor.paperbackBooks != null
-        assert establishedAuthor.paperbackBooks.size() == 1
-        assert establishedAuthor.id > 0
+        when:
+        EstablishedAuthor establishedAuthor = build(EstablishedAuthor, [name: "Steven King"])
+        then:
+        establishedAuthor.hardcoverBooks != null
+        establishedAuthor.hardcoverBooks.size() == 1
+        establishedAuthor.paperbackBooks != null
+        establishedAuthor.paperbackBooks.size() == 1
+        establishedAuthor.id > 0
     }
 }

@@ -1,237 +1,95 @@
+import basetests.TestDomain
+import grails.buildtestdata.TestDataBuilder
+import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
-import org.junit.Test
+import spock.lang.Specification
 
 @Integration
-class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
-    @Test
+@Rollback
+class DomainTestDataServiceStringTests extends Specification implements TestDataBuilder {
     void testStringMinSize() {
-        def minSize = 200
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(minSize: $minSize)
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() >= minSize
+        then:
+        domainObject != null
+        domainObject.testMinProperty != null
+        domainObject.testMinProperty.size() >= 200
     }
 
-    @Test
-    void testStringMaxSizeExceeded() {
-        def maxSize = 2
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
-
-                static constraints = {
-                    testProperty(maxSize: $maxSize)
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() <= maxSize
-    }
-
-    @Test
     void testStringMaxSizeNotExceeded() {
-        def maxSize = 200
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(maxSize: $maxSize)
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() <= maxSize
+        then:
+        domainObject != null
+        domainObject.testMaxProperty != null
+        domainObject.testMaxProperty.size() <= 2
     }
 
-    @Test
     void testStringInList() {
-        def firstInListItem = 'one'
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(inList: ['$firstInListItem', 'two'])
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty == firstInListItem
+        then:
+        domainObject != null
+        domainObject.testInListProperty != null
+        domainObject.testInListProperty == "one"
     }
 
-    @Test
     void testStringBlankFalse() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(blank: false)
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        then:
+        domainObject != null
+        domainObject.testBlankProperty != null
     }
 
-    @Test
     void testStringCreditCardNumber() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(creditCard: true)
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        then:
+        domainObject != null
+        domainObject.testCCProperty != null
     }
 
-    @Test
     void testStringEmail() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(email: true)
-                }
-           }
-        """)
-
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        then:
+        domainObject != null
+        domainObject.testEmailProperty != null
     }
 
-    @Test
     void testStringUrl() {
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(url: true)
-                }
-           }
-        """)
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        then:
+        domainObject != null
+        domainObject.testURLProperty != null
     }
 
-    @Test
     void testStringRange() {
-        // appears to only check the first letter
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(range: 'x'..'z')
-                }
-           }
-        """)
-		def domainObject = domainClass.build()
+        then:
+        domainObject != null
+        domainObject.testRangeProperty != null
+        domainObject.testRangeProperty == 'x'
+    }
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty == 'x'
-     }
-
-    @Test
     void testStringSizeShrink() {
-        def least = 1
-        def most = 3
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
+        when:
+        def domainObject = build(TestDomain)
 
-                static constraints = {
-                    testProperty(size: $least..$most)
-                }
-           }
-        """)
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() == most
-     }
-
-    @Test
-    void testStringSizeExpand() {
-        def least = 100
-        def most = 300
-        def domainClass = createDomainClass("""
-            class TestDomain {
-                Long id
-                Long version
-                String testProperty
-
-                static constraints = {
-                    testProperty(size: $least..$most)
-                }
-           }
-        """)
-		def domainObject = domainClass.build()
-
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() == least
-     }
+        then:
+        domainObject != null
+        domainObject.testProperty != null
+        domainObject.testStringSizeProperty.size() == 3
+    }
 }

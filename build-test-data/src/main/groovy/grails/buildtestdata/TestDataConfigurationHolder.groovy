@@ -11,15 +11,19 @@ class TestDataConfigurationHolder {
     private static ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
     private static ConfigObject  configFile
 
-    static Map<String, Object> sampleData
-    static Map<String, List> unitAdditionalBuild
-    static Map<String, Class> abstractDefault
+    static Map<String, Object> sampleData = [:]
+    static Map<String, List> unitAdditionalBuild = [:]
+    static Map<String, Class> abstractDefault = [:]
 
     static void reset() {
         loadTestDataConfig()
     }
 
     static void loadTestDataConfig() {
+        sampleData = [:]
+        unitAdditionalBuild = [:]
+        abstractDefault = [:]
+
         Class testDataConfigClass = getDefaultTestDataConfigClass()
         if (testDataConfigClass) {
             configFile = configSlurper.parse(testDataConfigClass)

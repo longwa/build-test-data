@@ -1,28 +1,33 @@
 package base
 
 import bookstore.Address
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
-import org.grails.core.DefaultGrailsDomainClass
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class MinSizeTests {
+class MinSizeTests extends Specification implements TestDataBuilder {
     void testEmailMinSize() {
-        def addressDomain = new DefaultGrailsDomainClass(Address)
-        def domainObject = Address.build()
-        assert domainObject
-        assert domainObject.id
-        assert domainObject.emailAddress
-        assert domainObject.emailAddress.size() == 100
+        when:
+        def domainObject = build(Address)
+
+        then:
+        domainObject
+        domainObject.id
+        domainObject.emailAddress
+        domainObject.emailAddress.size() == 40
     }
 
     void testUrlMinSize() {
-        def addressDomain = new DefaultGrailsDomainClass(Address)
-        def domainObject = Address.build()
-        assert domainObject
-        assert domainObject.id
-        assert domainObject.webSite
-        assert domainObject.webSite.size() == 100
+        when:
+        def domainObject = build(Address)
+
+        then:
+        domainObject
+        domainObject.id
+        domainObject.webSite
+        domainObject.webSite.size() == 40
     }
 }

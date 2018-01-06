@@ -1,29 +1,37 @@
 package base
 
 import bookstore.Author
+import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import spock.lang.Specification
 
 @Rollback
 @Integration
-class BuildLazyTests {
+class BuildLazyTests extends Specification implements TestDataBuilder {
     void testBuildLazyNoParamsCreatesNewWhenNoneExist() {
         assert Author.count() == 0
 
-        def domainObject = Author.buildLazy()
-        assert domainObject
-        assert Author.count() == 1
+        when:
+        def domainObject = buildLazy(Author)
+
+        then:
+        domainObject != null
+        Author.count() == 1
     }
 
     void testBuildLazyNoParamsFindsExistingWithoutCreateNew() {
-        Author.build(firstName: "Foo", lastName: "Qux")
+        build(Author, [firstName: "Foo", lastName: "Qux"])
         assert Author.count() == 1
 
-        def domainObject = Author.buildLazy()
-        assert domainObject
-        assert domainObject.firstName == "Foo"
-        assert domainObject.lastName == "Qux"
-        assert Author.count() == 1
+        when:
+        def domainObject = buildLazy(Author)
+
+        then:
+        domainObject
+        domainObject.firstName == "Foo"
+        domainObject.lastName == "Qux"
+        Author.count() == 1
     }
 
     void testBuildLazyWithParamsCreatesNewWhenNoneExist() {
