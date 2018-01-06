@@ -53,6 +53,7 @@ class NullableConstraintHandler extends AbstractConstraintHandler {
         switch (constrainedProperty.propertyType) {
             case String:
                 return propertyName
+            case Float:
             case Integer:
                 return 0
             case Long:

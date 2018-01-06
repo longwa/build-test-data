@@ -1,5 +1,7 @@
 package triangle
 
+import bookstore.Address
+import bookstore.Foo
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
 import org.junit.Test
@@ -7,6 +9,7 @@ import org.junit.Test
 @Rollback
 @Integration
 class TriangleRelationshipTests {
+
     @Test
     void testBuildTriangleRelationship() {
         // Director has many managers and workers
@@ -15,6 +18,8 @@ class TriangleRelationshipTests {
         assert Worker.build()
         assert Manager.build()
         assert Director.build()
+        assert Foo.build()
+        assert Address.build()
     }
 
     void testBuildTriangleRelationshipPartiallyCompleteAlready() {

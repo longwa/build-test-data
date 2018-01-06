@@ -4,10 +4,13 @@ import bookstore.Address
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
 import org.grails.core.DefaultGrailsDomainClass
+import org.junit.Test
 
 @Rollback
 @Integration
 class MinSizeTests {
+
+    @Test
     void testEmailMinSize() {
         def addressDomain = new DefaultGrailsDomainClass(Address)
         def domainObject = Address.build()
@@ -17,6 +20,7 @@ class MinSizeTests {
         assert domainObject.emailAddress.size() == 100
     }
 
+    @Test
     void testUrlMinSize() {
         def addressDomain = new DefaultGrailsDomainClass(Address)
         def domainObject = Address.build()

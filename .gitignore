@@ -39,3 +39,5 @@ testOptionalJars/web-app/plugins/*
 
 build-test-data/build/*
 build-test-data/.gradle/*
+.gradle
+build/

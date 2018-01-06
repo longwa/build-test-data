@@ -4,24 +4,30 @@ import config.Hotel
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import org.junit.After
+import org.junit.Test
 
 @Rollback
 @Integration
 class TestDataConfigTests {
+
+    @After
     void tearDown() {
         // we should reset the config holder when feeding it values in tests as it could cause issues
-        // for other tests later on that are expecting the default config if we do not 
+        // for other tests later on that are expecting the default config if we do not
         TestDataConfigurationHolder.reset()
     }
 
+    @Test
     void testRealConfigFile() {
         // uses the file in grails-app/conf/TestDataConfig.groovy
         TestDataConfigurationHolder.reset() // you can reset it if you want it to get to a known value
         Hotel testHotel = Hotel.build()
         assert testHotel.name == "Motel 6"
-        assert "6125551111", testHotel.faxNumber.startsWith("612555") // 
+        assert "6125551111", testHotel.faxNumber.startsWith("612555") //
     }
 
+    @Test
     void testStaticValue() {
         def hotelNameAlwaysHilton = [('config.Hotel'): [name: "Hilton"]]
         TestDataConfigurationHolder.sampleData = hotelNameAlwaysHilton
@@ -33,6 +39,7 @@ class TestDataConfigTests {
         assert stillHilton.name == "Hilton"
     }
 
+    @Test
     void testConfigClosure() {
         def i = 0
         def hotelNameAlternates = [
@@ -52,6 +59,7 @@ class TestDataConfigTests {
         assert backToHolidayInn.name == "Holiday Inn"
     }
 
+    @Test
     void testConfigClosureWithPassedInValues() {
         TestDataConfigurationHolder.sampleData = [
             ('config.Hotel'): [faxNumber: { values ->
@@ -62,6 +70,7 @@ class TestDataConfigTests {
         assert holidayInn.faxNumber == "Fax number for Holiday Inn"
     }
 
+    @Test
     void testConfigClosureWithPassedInValuesFromEarlierClosure() {
         def i = 0
         TestDataConfigurationHolder.sampleData = [

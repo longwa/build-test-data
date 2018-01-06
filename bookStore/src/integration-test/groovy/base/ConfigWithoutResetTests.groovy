@@ -4,21 +4,25 @@ import config.Article
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import org.junit.Test
 
 @Rollback
 @Integration
 class ConfigWithoutResetTests {
     // test order isn't guaranteed with Java 7 but this way, with 2 tests, we know that reset is working because
     // one of the tests will run first, then the other, but both get the same articles
+
+    @Test
     void testBuildFirstUniqueArticle() {
         resetAndBuildUniqueArticles()
     }
 
+    @Test
     void testBuildSecondUniqueArticle() {
         resetAndBuildUniqueArticles()
     }
 
-    private static resetAndBuildUniqueArticles() {
+    static resetAndBuildUniqueArticles() {
         TestDataConfigurationHolder.reset() // reset to a known state for these tests
         def a = Article.build()
         assert a.name == "Article 1"

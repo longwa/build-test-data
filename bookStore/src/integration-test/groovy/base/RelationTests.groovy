@@ -10,10 +10,13 @@ import human.Face
 import magazine.Issue
 import magazine.Page
 import org.grails.core.DefaultGrailsDomainClass
+import org.junit.Test
 
 @Rollback
 @Integration
 class RelationTests {
+
+    @Test
     void testOneToOneCascades() {
         def domainObject = Face.build()
         assert domainObject
@@ -22,6 +25,7 @@ class RelationTests {
         assert domainObject.nose.id
     }
 
+    @Test
     void testBelongsToGetsHasMany() {
         def bookDomain = new DefaultGrailsDomainClass(Book)
         def domainProp = bookDomain.properties.find { it.name == 'author' }
@@ -36,6 +40,7 @@ class RelationTests {
         assert domainObject.id
     }
 
+    @Test
     void testHasManyNullableFalse() {
         def authorDomain = new DefaultGrailsDomainClass(Author)
         def domainProp = authorDomain.properties.find { it.name == 'books' }
@@ -56,6 +61,7 @@ class RelationTests {
         }
     }
 
+    @Test
     void testManyToManyNullableFalse() {
         def invoiceDomain = new DefaultGrailsDomainClass(Invoice)
         def domainProp = invoiceDomain.properties.find { it.name == 'books' }
@@ -72,6 +78,7 @@ class RelationTests {
         assert 3 == domainObject.books.size()
     }
 
+    @Test
     void testParentCollectionUpdatedWhenChildAutomaticallyAdded() {
         def page = Page.build()
         assert page
@@ -79,6 +86,7 @@ class RelationTests {
         assert [page.id] == page.issue.pages.id
     }
 
+    @Test
     void testParentCollectionUpdatedWhenChildManuallyAdded() {
         def issue = new Issue(title: "title").save(failOnError: true)
         assert issue
@@ -89,6 +97,7 @@ class RelationTests {
         assert [page.id] == issue.pages.id
     }
 
+    @Test
     void testHasOne() {
         def arm = Arm.build()
         def hand = arm.hand

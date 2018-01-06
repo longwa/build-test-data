@@ -1,5 +1,6 @@
 package base
 
+import bookstore.Address
 import grails.buildtestdata.TestDataBuilder
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
@@ -10,8 +11,13 @@ import org.junit.Test
 
 @Rollback
 @Integration
-class BuildAllTests implements TestDataBuilder {
+class BuildAllTests {
     GrailsApplication grailsApplication
+
+//    @Test
+//    void testAddy() {
+//        Address.build()
+//    }
 
     @Test
     void testBuildAllDomains() {
@@ -21,7 +27,7 @@ class BuildAllTests implements TestDataBuilder {
         grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).each { GrailsClass domainClass ->
             try {
                 if (!domainClass.isAbstract()) {
-                    def domainObject = build(domainClass.clazz)
+                    def domainObject = domainClass.clazz.build()
                     assert domainObject."${domainClass.identifier.name}"
                 }
             }

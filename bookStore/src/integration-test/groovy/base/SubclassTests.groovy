@@ -2,6 +2,7 @@ package base
 
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import org.junit.Test
 import subclassing.RelatedClass
 import subclassing.SubClass
 import subclassing.SuperClass
@@ -9,6 +10,7 @@ import subclassing.SuperClass
 @Rollback
 @Integration
 class SubclassTests {
+    @Test
     void testSuccessfulBuildOfDomainSubclass() {
         def subClass = SubClass.build()
         assert subClass
