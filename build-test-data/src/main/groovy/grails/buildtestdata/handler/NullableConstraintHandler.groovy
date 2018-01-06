@@ -29,7 +29,7 @@ class NullableConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         Object value = determineBasicValue(propertyName, constrainedProperty)
-
+        println "handle $domain $propertyName"
         // If we can't find a basic value, see if this is a domain class in which case we will populate a new domain
         if (value == null) {
             if (propertyIsDomainClass(constrainedProperty.propertyType)) {
@@ -101,6 +101,7 @@ class NullableConstraintHandler extends AbstractConstraintHandler {
 
     @SuppressWarnings("GroovyUnusedDeclaration")
     void populateDomainProperty(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
+        println "populateDomainProperty $propertyName"
         PersistentEntity defDomain = getPersistentEntity(domain.getClass())
         PersistentProperty domainProp = defDomain.getPropertyByName(propertyName)
         ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(domain.getClass())
@@ -133,6 +134,7 @@ class NullableConstraintHandler extends AbstractConstraintHandler {
             owningObject.addTo(toOneProp.referencedPropertyName, domain)
         }
         else if (domainProp instanceof ToMany) {
+            println "domainProp instanceof ToMany $domainProp"
             ToMany toManyProp = domainProp as ToMany
             Class referencedClass = toManyProp?.associatedEntity?.javaClass
 

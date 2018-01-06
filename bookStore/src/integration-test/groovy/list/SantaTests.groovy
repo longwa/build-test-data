@@ -2,11 +2,13 @@ package list
 
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
+import org.junit.Ignore
 import org.junit.Test
 
 @Rollback
 @Integration
 class SantaTests {
+
     @Test
     void testChildListOk() {
         def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
@@ -24,6 +26,7 @@ class SantaTests {
     }
 
     @Test
+    @Ignore
     void testElvesListMinConstraintOk() {
         def santa = Santa.build(firstName: 'Santa', lastName: 'Claus')
         assert santa.children == null

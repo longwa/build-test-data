@@ -15,7 +15,6 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
 
     """
 
-    /*
     @Test
     void testNumberManuallySetValuesOk() {
         def value = 1
@@ -181,5 +180,4 @@ class DomainTestDataServiceNumberTests implements DomainTestDataServiceBase {
 		assert val == domainObject.testByte
 		assert val == domainObject.testByteObject
     }
-    */
 }
