@@ -7,8 +7,6 @@ import org.grails.datastore.gorm.GormEntity
 
 @CompileStatic
 trait BuildTestDataEntity<D extends GormEntity<D>> {
-
-
     static D build(Map<String, Object> propValues = [:]) {
         DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(this)
         builder.build(propValues) as D
@@ -23,5 +21,4 @@ trait BuildTestDataEntity<D extends GormEntity<D>> {
         DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(this)
         (builder.findExisting(propValues) ?: builder.build(propValues)) as D
     }
-
 }

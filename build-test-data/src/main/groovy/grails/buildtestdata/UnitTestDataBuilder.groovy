@@ -28,14 +28,11 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
 
     @Before
     @CompileDynamic
-    @Override
     void handleBuildAnnotation() {
         Build build = this.getClass().getAnnotation(Build)
         if (build) {
             resolveDependencyGraph([] as Set, expandSubclasses(build.value()))
         }
-
-        super.handleBuildAnnotation()
     }
 
     private Class[] expandSubclasses(Class<?>... classes) {

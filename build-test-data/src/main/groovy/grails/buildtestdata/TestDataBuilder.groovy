@@ -1,10 +1,7 @@
 package grails.buildtestdata
 
-import grails.buildtestdata.mixin.Build
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
-import org.junit.Before
 import org.junit.BeforeClass
 
 /**
@@ -32,20 +29,7 @@ trait TestDataBuilder {
      * Override this to override test data configuration for this test only
      */
     Closure doWithTestDataConfig() {
-        null
-    }
-
-    @Before
-    @CompileDynamic
-    void handleBuildAnnotation() {
-        Build build = this.getClass().getAnnotation(Build)
-        if (build) {
-            build.value().each { Class clazz ->
-                clazz.metaClass.static.build = { Map<String, Object> props = [:] ->
-                    DomainInstanceRegistry.lookup(clazz).build(props)
-                }
-            }
-        }
+        throw new UnsupportedOperationException("Not yet implemented")
     }
 
     @BeforeClass
