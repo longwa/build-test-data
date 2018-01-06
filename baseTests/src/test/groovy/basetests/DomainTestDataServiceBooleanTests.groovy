@@ -1,13 +1,13 @@
-import grails.testing.mixin.integration.Integration
-import grails.gorm.transactions.Rollback
-import org.junit.Test
+package basetests
 
-@Rollback
-@Integration
-class DomainTestDataServiceBooleanTests implements DomainTestDataServiceBase {
-    @Test
+import spock.lang.Specification
+
+class DomainTestDataServiceBooleanTests extends Specification implements DomainTestDataServiceBase {
+
     void testBooleanDefaultGroovyTruthFalseOk() {
+        when:
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestDomain {
                 Long id
                 Long version
@@ -16,14 +16,17 @@ class DomainTestDataServiceBooleanTests implements DomainTestDataServiceBase {
         """)
 
         def domainObject = domainClass.build()
+
+        then:
         assert domainObject != null
         assert domainObject.testProperty == false
     }
 
-    @Test
     void testBooleanManuallySetValues() {
+        when:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain2 {
                 Long id
                 Long version
                 Boolean testProperty
@@ -31,19 +34,25 @@ class DomainTestDataServiceBooleanTests implements DomainTestDataServiceBase {
         """)
 
         def domainObject = domainClass.build(testProperty: true)
+
+        then:
         assert domainObject != null
         assert domainObject.testProperty == true
 
+        when:
         domainObject = domainClass.build(testProperty: false)
+
+        then:
         assert domainObject != null
         assert domainObject.testProperty == false
 
     }
 
-    @Test
     void testBooleanNullable() {
+        expect:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain3 {
                 Long id
                 Long version
                 Boolean testProperty
@@ -59,10 +68,11 @@ class DomainTestDataServiceBooleanTests implements DomainTestDataServiceBase {
         assert domainObject.testProperty == null
     }
 
-    @Test
     void testBooleanNotNullable() {
+        expect:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain4 {
                 Long id
                 Long version
                 Boolean testProperty

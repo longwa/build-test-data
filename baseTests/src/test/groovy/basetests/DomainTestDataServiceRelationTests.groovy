@@ -1,10 +1,8 @@
-import grails.gorm.transactions.Rollback
-import grails.testing.mixin.integration.Integration
+package basetests
+
 import org.grails.core.DefaultGrailsDomainClass
 import org.junit.Test
 
-@Rollback
-@Integration
 class DomainTestDataServiceRelationTests implements DomainTestDataServiceBase {
     void setUp() {
         Owner.metaClass.validate = validateMock

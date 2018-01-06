@@ -1,14 +1,15 @@
-import grails.buildtestdata.TestDataConfigurationHolder
-import grails.gorm.transactions.Rollback
-import grails.testing.mixin.integration.Integration
-import org.junit.Test
+package basetests
 
-@Rollback
-@Integration
-class DomainTestDataServiceDateTests implements DomainTestDataServiceBase {
-    @Test
+import grails.buildtestdata.TestDataConfigurationHolder
+import org.junit.Test
+import spock.lang.Specification
+
+class DomainTestDataServiceDateTests extends Specification implements DomainTestDataServiceBase {
+
     void testDateMin() {
+        expect:
         def domainClass = createDomainClass("""
+            @grails.persistence.Entity
             class TestDomain {
                 Long id
                 Long version

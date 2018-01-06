@@ -1,13 +1,16 @@
-import grails.testing.mixin.integration.Integration
-import org.junit.Test
+package basetests
 
-@Integration
-class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
-    @Test
+import org.junit.Test
+import spock.lang.Specification
+
+class DomainTestDataServiceStringTests extends Specification implements DomainTestDataServiceBase {
+
     void testStringMinSize() {
+        expect:
         def minSize = 200
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestStringMinSize {
                 Long id
                 Long version
                 String testProperty
@@ -18,18 +21,19 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() >= minSize
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty.size() >= minSize
     }
 
-    @Test
     void testStringMaxSizeExceeded() {
+        expect:
         def maxSize = 2
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestStringMaxSizeExceeded {
                 Long id
                 Long version
                 String testProperty
@@ -40,18 +44,19 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() <= maxSize
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty.size() <= maxSize
     }
 
-    @Test
     void testStringMaxSizeNotExceeded() {
+        expect:
         def maxSize = 200
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestStringMaxSizeNotExceeded {
                 Long id
                 Long version
                 String testProperty
@@ -62,18 +67,19 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() <= maxSize
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty.size() <= maxSize
     }
 
-    @Test
     void testStringInList() {
+        expect:
         def firstInListItem = 'one'
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain2 {
                 Long id
                 Long version
                 String testProperty
@@ -84,17 +90,18 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty == firstInListItem
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == firstInListItem
     }
 
-    @Test
     void testStringBlankFalse() {
+        expect:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain3 {
                 Long id
                 Long version
                 String testProperty
@@ -105,16 +112,17 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        assert domainObject != null
+        assert domainObject.testProperty != null
     }
 
-    @Test
     void testStringCreditCardNumber() {
+        expect:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain4 {
                 Long id
                 Long version
                 String testProperty
@@ -125,16 +133,17 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        assert domainObject != null
+        assert domainObject.testProperty != null
     }
 
-    @Test
     void testStringEmail() {
+        expect:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain5 {
                 Long id
                 Long version
                 String testProperty
@@ -145,16 +154,17 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
            }
         """)
 
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        assert domainObject != null
+        assert domainObject.testProperty != null
     }
 
-    @Test
     void testStringUrl() {
+        expect:
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain6 {
                 Long id
                 Long version
                 String testProperty
@@ -164,17 +174,18 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
                 }
            }
         """)
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
+        assert domainObject != null
+        assert domainObject.testProperty != null
     }
 
-    @Test
     void testStringRange() {
+        expect:
         // appears to only check the first letter
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain7 {
                 Long id
                 Long version
                 String testProperty
@@ -184,19 +195,20 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
                 }
            }
         """)
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty == 'x'
-     }
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty == 'x'
+    }
 
-    @Test
     void testStringSizeShrink() {
+        expect:
         def least = 1
         def most = 3
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain8 {
                 Long id
                 Long version
                 String testProperty
@@ -206,19 +218,21 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
                 }
            }
         """)
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() == most
-     }
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty.size() == most
+    }
 
-    @Test
+
     void testStringSizeExpand() {
+        expect:
         def least = 100
         def most = 300
         def domainClass = createDomainClass("""
-            class TestDomain {
+            @grails.persistence.Entity
+            class TestDomain9 {
                 Long id
                 Long version
                 String testProperty
@@ -228,10 +242,10 @@ class DomainTestDataServiceStringTests implements DomainTestDataServiceBase {
                 }
            }
         """)
-		def domainObject = domainClass.build()
+        def domainObject = domainClass.build()
 
-		assert domainObject != null
-		assert domainObject.testProperty != null
-		assert domainObject.testProperty.size() == least
-     }
+        assert domainObject != null
+        assert domainObject.testProperty != null
+        assert domainObject.testProperty.size() == least
+    }
 }
