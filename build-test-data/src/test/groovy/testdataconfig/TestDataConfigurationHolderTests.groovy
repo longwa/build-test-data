@@ -1,3 +1,5 @@
+package testdataconfig
+
 import grails.buildtestdata.TestDataConfigurationHolder as TDHC
 import spock.lang.Specification
 
