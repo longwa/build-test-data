@@ -50,6 +50,7 @@ public class Xeger {
     /**
      * As {@link Xeger#Xeger(String, Random)}, creating a {@link Random} instance
      * implicityly.
+     * @param regex expression
      */
     public Xeger(String regex) {
         this(regex, new Random());
@@ -57,6 +58,7 @@ public class Xeger {
 
     /**
      * Generates a random String that is guaranteed to match the regular expression passed to the constructor.
+     * @return generated string
      */
     public String generate() {
         StringBuilder builder = new StringBuilder();
