@@ -13,16 +13,17 @@ class SizeConstraintHandler extends AbstractConstraintHandler {
     void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         SizeConstraint sizeConstraint = appliedConstraint as SizeConstraint
         IntRange range = sizeConstraint.range
+        Object propertyValue = getProperty(domain, propertyName)
 
         MinSizeConstraintHandler.padMinSize(
             domain,
             constrainedProperty.appliedConstraints,
             propertyName,
-            getProperty(domain, propertyName),
+            propertyValue,
             range.from,
             circularCheckList
         )
 
-        MaxSizeConstraintHandler.padMaxSize(domain, propertyName, getProperty(domain, propertyName), range.to)
+        MaxSizeConstraintHandler.padMaxSize(domain, propertyName,propertyValue, range.to)
     }
 }

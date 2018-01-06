@@ -18,7 +18,9 @@ class MaxSizeConstraintHandler extends AbstractConstraintHandler {
     }
 
     static void padMaxSize(GormEntity domain, String propertyName, Object propertyValue, Integer maxSize) {
-        if (propertyValue?.respondsTo('size')) {
+        //println "padMaxSize $propertyName $maxSize"
+        if (propertyValue.respondsTo('size')) {
+            //println "padMaxSize respondsToSize $propertyName $maxSize"
             Integer size = propertyValue.invokeMethod('size', null) as Integer
             if (size > maxSize) {
                 Range range = (0..maxSize - 1)
