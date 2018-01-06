@@ -8,7 +8,7 @@ buildscript {
     }
 }
 
-version "3.3.0"
+version "3.3.0-RC1"
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
@@ -51,18 +51,15 @@ bootRun {
 bootRepackage.enabled = false
 
 grailsPublish {
-    user = 'longwa'
-    key = 'key'
-    githubSlug = 'foo/bar'
+    githubSlug = 'longwa/build-test-data'
 
     license {
         name = 'Apache-2.0'
     }
 
     title = "Build Test Data Plugin"
-    desc = "Enables the easy creation of test data by automatically satisfying most constraints"
+    desc = "Enables the easy creation of test data by automatically satisfying common constraints"
     developers = [longwa: "Aaron Long"]
-
     issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
     vcsUrl = "https://github.com/longwa/$project.name"
 }
