@@ -32,10 +32,10 @@ class NumberTests extends Specification implements DomainTestBase {
             testInteger    : value,
             testLong       : value,
             testInt        : value,
-            testShort      : value,
-            testShortObject: value,
-            testByte       : value,
-            testByteObject : value
+            testShort      : value as short,
+            testShortObject: value as Short,
+            testByte       : value as byte,
+            testByteObject : value as Byte,
         ])
         assertFieldsEqual(domainObject, value)
     }
@@ -54,10 +54,10 @@ class NumberTests extends Specification implements DomainTestBase {
             testInteger    : validValueButGroovyTruthFalse,
             testLong       : validValueButGroovyTruthFalse,
             testInt        : validValueButGroovyTruthFalse,
-            testShort      : validValueButGroovyTruthFalse,
-            testShortObject: validValueButGroovyTruthFalse,
-            testByte       : validValueButGroovyTruthFalse,
-            testByteObject : validValueButGroovyTruthFalse
+            testShort      : validValueButGroovyTruthFalse as short,
+            testShortObject: validValueButGroovyTruthFalse as Short,
+            testByte       : validValueButGroovyTruthFalse as byte,
+            testByteObject : validValueButGroovyTruthFalse as Byte,
         ])
 
         assertFieldsEqual(domainObject, validValueButGroovyTruthFalse)

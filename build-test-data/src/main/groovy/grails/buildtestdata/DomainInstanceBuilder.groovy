@@ -1,5 +1,10 @@
 package grails.buildtestdata
 
+import grails.databinding.DataBinder
+import grails.databinding.SimpleDataBinder
+import grails.databinding.SimpleMapDataBindingSource
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
 import grails.buildtestdata.handler.ConstraintHandler
@@ -14,15 +19,18 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.OneToOne
 
 import org.springframework.validation.Errors
 
 @Slf4j
+@CompileStatic
 class DomainInstanceBuilder {
     Class javaClass
     PersistentEntity persistentEntity
+    DataBinder dataBinder = new SimpleDataBinder()
 
     // All constrained properties
     Map<String, ConstrainedProperty> constrainedProperties
@@ -69,22 +77,28 @@ class DomainInstanceBuilder {
     }
 
     private Map<String, ConstrainedProperty> findDomainProperties(Map<String, ConstrainedProperty> constrainedProperties) {
-        constrainedProperties.findAll { DomainUtil.propertyIsToOneDomainClass(it.value.propertyType) }
+        constrainedProperties.findAll { Map.Entry<String, ConstrainedProperty> it ->
+            DomainUtil.propertyIsToOneDomainClass(it.value.propertyType)
+        }
     }
 
     private Set<String> findRequiredDomainPropertyNames(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
-        domainProperties.keySet().findAll { requiredPropertyNames.contains(it) }
+        domainProperties.keySet().findAll { String it ->
+            requiredPropertyNames.contains(it)
+        }
     }
 
     private Set<Class> findRequiredDomainClasses(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
-        domainProperties.findAll { requiredPropertyNames.contains(it.key) }.collect {
+        domainProperties.findAll { Map.Entry<String, ConstrainedProperty> it ->
+            requiredPropertyNames.contains(it.key) }
+        .collect { Map.Entry<String, ConstrainedProperty> it ->
             it.value.propertyType
         } as Set<Class>
     }
 
     private Set<String> findPropsToSaveFirst() {
         if (persistentEntity.persistentProperties.any { it instanceof OneToOne && it.isOwningSide() }) {
-            return requiredPropertyNames.findAll {
+            return requiredPropertyNames.findAll { String it ->
                 PersistentProperty prop = persistentEntity.getPropertyByName(it)
                 prop instanceof OneToOne && ((OneToOne) prop).isOwningSide()
             }
@@ -125,11 +139,10 @@ class DomainInstanceBuilder {
     GormEntity populateInstance(GormEntity domainInstance, Map<String, Object> propValues, CircularCheckList circularCheckList) {
         propValues = findMissingConfigValues(propValues) + propValues
 
-        for (property in propValues.keySet()) {
-            setDomainPropertyValue(domainInstance, property, propValues[property])
-        }
+        dataBinder.bind(domainInstance, new SimpleMapDataBindingSource(propValues))
+        applyBiDirectionManyToOnes(domainInstance)
 
-        Set<String> requiredMissingPropertyNames = (requiredPropertyNames - propValues.keySet()).findAll { propName ->
+        Set<String> requiredMissingPropertyNames = (requiredPropertyNames - propValues.keySet()).findAll { String propName ->
             !InvokerHelper.getProperty(domainInstance, propName)
         }
 
@@ -144,32 +157,18 @@ class DomainInstanceBuilder {
         domainInstance
     }
 
-    void setDomainPropertyValue(GormEntity domainInstance, String propertyName, Object value) {
-        log.debug("Setting {}.{} to {}", javaClass.name, propertyName, value)
-
-        if (propertyName.contains('.')) {
-            setValueOnNestedProperty(domainInstance, propertyName, value)
-        }
-        else {
-            InvokerHelper.setProperty(domainInstance, propertyName, value)
-        }
-
+    // If value is an Author and we're a Book, add us to the Author's set of books if there is one
+    void applyBiDirectionManyToOnes(GormEntity domainInstance) {
         PersistentEntity defDomain = DomainUtil.getPersistentEntity(domainInstance.class)
-        PersistentProperty domainProp = defDomain.getPropertyByName(propertyName)
+        for (Association association in defDomain.associations) {
+            Object value = association.reader.read(domainInstance)
+            if (association instanceof ManyToOne && value instanceof GormEntity) {
+                ManyToOne manyToOneProp = association as ManyToOne
+                GormEntity owningObject = value as GormEntity
 
-        // If value is an Author and we're a Book, add us to the Author's set of books if there is one
-        if (domainProp instanceof ManyToOne && value instanceof GormEntity) {
-            ManyToOne manyToOneProp = domainProp as ManyToOne
-            GormEntity owningObject = value as GormEntity
-
-            owningObject.addTo(manyToOneProp.referencedPropertyName, domainInstance)
+                owningObject.addTo(manyToOneProp.referencedPropertyName, domainInstance)
+            }
         }
-    }
-
-    void setValueOnNestedProperty(GormEntity domainInstance, String propertyName, Object value) {
-        // This is an embedded property, i.e. 'bar.foo' = 23
-        String[] props = propertyName.split(/\./)
-        props[0..-2].inject(domainInstance) { current, next -> current[next] }[props[-1]] = value
     }
 
     Map<String, Object> findMissingConfigValues(Map<String, Object> propValues) {
@@ -202,7 +201,7 @@ class DomainInstanceBuilder {
             ConstraintHandler handler = ConstraintHandler.handlers[appliedConstraint.name]
             if (handler) {
                 handler.handle(domainInstance, propertyName, appliedConstraint, constrainedProperty, circularCheckList)
-                log.debug("${domainInstance?.class?.name}.$propertyName field after adjustment for ${appliedConstraint?.name}")
+                log.debug("{}.{} field adjustment for {}", domainInstance?.class?.name, propertyName, appliedConstraint?.name)
             }
             else {
                 log.warn("Unable to find a constraint handler for {} with constraint: {}", domainInstance?.class?.name, appliedConstraint?.name)
@@ -256,6 +255,7 @@ class DomainInstanceBuilder {
      * @param clazz
      * @return true if the class has a mapping block with an id(generator: '...') defined
      */
+    @CompileDynamic
     private boolean hasAssignedKey(Class clazz) {
         boolean assigned = false
 
@@ -293,6 +293,7 @@ class DomainInstanceBuilder {
      * Evaluate the mapping block to see if there is an id mapping with a generator defined
      * This is just a quick and dirty way to determine assigned keys without using hibernate
      */
+    @CompileStatic
     static class MappingDelegate {
         boolean isAssigned = false
 

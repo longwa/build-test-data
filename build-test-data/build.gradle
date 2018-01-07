@@ -29,10 +29,13 @@ dependencies {
 
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
-    compile "org.grails:grails-core"
     compile "dk.brics.automaton:automaton:1.11-8"
-    compile "org.grails:grails-gorm-testing-support"
     compile "org.apache.commons:commons-lang3:3.7"
+
+    compile "org.grails:grails-core"
+    compile "org.grails:grails-gorm-testing-support"
+    compile 'org.grails:grails-databinding:3.3.1'
+    compile "org.grails:grails-datastore-gorm:$gormVersion"
 
     console "org.grails:grails-console"
 

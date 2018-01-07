@@ -1,3 +1,3 @@
 subprojects {
-    version = "3.3.0.RC1"
+    version = "3.3.0.RC2"
 }
