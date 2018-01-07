@@ -591,13 +591,13 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Creating maintainable test data is hard. Often an entire object graph needs to be created to support the instantiation of a single domain object.  This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we&#8217;ve grown over time and maintained as the domain objects change. After a while, adding just one more Widget to that set of canned data ends up breaking tests just about every time.</p>
+<p>Creating maintainable test data is hard. Often an entire object graph needs to be created to support the instantiation of a single domain object. This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we&#8217;ve grown over time and maintained as the domain objects change. After a while, adding just one more widget to that set of canned data ends up breaking tests just about every time.</p>
 </div>
 <div class="paragraph">
 <p>There has to be a better solution, right?</p>
 </div>
 <div class="paragraph">
-<p>Yep! Due to the power and the glory of Grails, we have a lot of metadata at our fingertips about those domain objects.  We know what constraints we&#8217;ve placed on our objects, and which objects depend on other objects to live.</p>
+<p>Yep! Due to the power and the glory of Grails, we have a lot of metadata at our fingertips about those domain objects. We know what constraints we&#8217;ve placed on our objects, and which objects depend on other objects to live.</p>
 </div>
 <div class="paragraph">
 <p>Using this additional information, we&#8217;ve created a grails plugin that makes it easy to just provide those values that you want to exercise under test and not worry about the rest of the object graph that you need to create just to instantiate your domain objects.</p>
@@ -612,8 +612,25 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="sect2">
 <h3 id="release-history">Release History</h3>
-<div class="paragraph">
-<p>TODO</p>
+<div class="ulist">
+<ul>
+<li>
+<p>January 6th, 2018 - 3.3.0.RC1</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for Grails 3.3.x</p>
+</li>
+<li>
+<p>Major cleanup and performance improvements</p>
+</li>
+<li>
+<p>Trait based API</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -807,21 +824,21 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="installation">Installation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The test framework and testing methodology for Grails has undergone several major revisions over the few releases.</p>
+<p>The test framework and testing methodology for Grails has undergone several major revisions over the past few releases.</p>
 </div>
 <div class="paragraph">
-<p>Unfortunately, that makes it impossible to have one plugin which is compatible with all prior versions.</p>
+<p>Unfortunately, this makes it impossible to have one plugin which is compatible with all prior versions.</p>
 </div>
 <div class="sect2">
 <h3 id="grails-3-3">Grails 3.3</h3>
 <div class="paragraph">
-<p><code>testCompile "org.grails.plugins:build-test-data:3.3.0.RC1"</code></p>
+<p><code>compile "org.grails.plugins:build-test-data:3.3.0.RC1"</code></p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="grails-3-1-and-3-2">Grails 3.1 and 3.2</h3>
 <div class="paragraph">
-<p><code>testCompile "org.grails.plugins:build-test-data:3.0.1"</code></p>
+<p><code>compile "org.grails.plugins:build-test-data:3.0.1"</code></p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -839,7 +856,10 @@ Version 3.0.1 is required for Grails versions 3.0 through 3.2
 <div class="sect2">
 <h3 id="grails-2-5">Grails 2.5</h3>
 <div class="paragraph">
-<p>See the legacy Wiki documentation for details.</p>
+<p>See the legacy Wiki documentation for details:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/longwa/build-test-data/wiki" class="bare">https://github.com/longwa/build-test-data/wiki</a></p>
 </div>
 </div>
 </div>
@@ -888,7 +908,10 @@ Version 3.0.1 is required for Grails versions 3.0 through 3.2
 <p>You can no longer disable via the <code>testDataConfig.enabled = false</code> option.</p>
 </div>
 <div class="paragraph">
-<p>Just use the <code>testCompile</code> scope to restrict to just testing.</p>
+<p>Currently, the only way to have the <code>build</code> methods injected is to use the <code>compile</code> scope. If you want to use the <code>testCompile</code> scope, you will need to either use the <code>UnitTestDataBuilder</code> trait methods directly or add the trait manually at runtime.</p>
+</div>
+<div class="paragraph">
+<p>This seems to be a limitation of the <code>TraitInjector</code> API as it doesn&#8217;t apply the <code>BuildTestDataEntity</code> trait to domain objects unless the plugin is in <code>compile</code> scope.</p>
 </div>
 </div>
 <div class="sect2">
@@ -922,8 +945,8 @@ Version 3.0.1 is required for Grails versions 3.0 through 3.2
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> UnitTestDataBuilder {
-    <span class="type">void</span> setup() {
-        mockDomains([Author])
+    <span class="type">void</span> setupSpec() {
+        mockDomains(Author)
     }
     ...
 }</code></pre>

@@ -519,13 +519,13 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Creating maintainable test data is hard. Often an entire object graph needs to be created to support the instantiation of a single domain object.  This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we&#8217;ve grown over time and maintained as the domain objects change. After a while, adding just one more Widget to that set of canned data ends up breaking tests just about every time.</p>
+<p>Creating maintainable test data is hard. Often an entire object graph needs to be created to support the instantiation of a single domain object. This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we&#8217;ve grown over time and maintained as the domain objects change. After a while, adding just one more widget to that set of canned data ends up breaking tests just about every time.</p>
 </div>
 <div class="paragraph">
 <p>There has to be a better solution, right?</p>
 </div>
 <div class="paragraph">
-<p>Yep! Due to the power and the glory of Grails, we have a lot of metadata at our fingertips about those domain objects.  We know what constraints we&#8217;ve placed on our objects, and which objects depend on other objects to live.</p>
+<p>Yep! Due to the power and the glory of Grails, we have a lot of metadata at our fingertips about those domain objects. We know what constraints we&#8217;ve placed on our objects, and which objects depend on other objects to live.</p>
 </div>
 <div class="paragraph">
 <p>Using this additional information, we&#8217;ve created a grails plugin that makes it easy to just provide those values that you want to exercise under test and not worry about the rest of the object graph that you need to create just to instantiate your domain objects.</p>
@@ -540,8 +540,25 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="sect2">
 <h3 id="release-history">Release History</h3>
-<div class="paragraph">
-<p>TODO</p>
+<div class="ulist">
+<ul>
+<li>
+<p>January 6th, 2018 - 3.3.0.RC1</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for Grails 3.3.x</p>
+</li>
+<li>
+<p>Major cleanup and performance improvements</p>
+</li>
+<li>
+<p>Trait based API</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -549,7 +566,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-06 17:59:27 -05:00
+Last updated 2018-01-07 10:31:23 -05:00
 </div>
 </div>
 </body>

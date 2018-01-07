@@ -564,7 +564,10 @@ table.CodeRay td.code>pre{padding:0}
 <p>You can no longer disable via the <code>testDataConfig.enabled = false</code> option.</p>
 </div>
 <div class="paragraph">
-<p>Just use the <code>testCompile</code> scope to restrict to just testing.</p>
+<p>Currently, the only way to have the <code>build</code> methods injected is to use the <code>compile</code> scope. If you want to use the <code>testCompile</code> scope, you will need to either use the <code>UnitTestDataBuilder</code> trait methods directly or add the trait manually at runtime.</p>
+</div>
+<div class="paragraph">
+<p>This seems to be a limitation of the <code>TraitInjector</code> API as it doesn&#8217;t apply the <code>BuildTestDataEntity</code> trait to domain objects unless the plugin is in <code>compile</code> scope.</p>
 </div>
 </div>
 <div class="sect2">
@@ -598,8 +601,8 @@ table.CodeRay td.code>pre{padding:0}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> UnitTestDataBuilder {
-    <span class="type">void</span> setup() {
-        mockDomains([Author])
+    <span class="type">void</span> setupSpec() {
+        mockDomains(Author)
     }
     ...
 }</code></pre>
@@ -651,7 +654,7 @@ Make sure you use <strong>UnitTestDataBuilder</strong> for unit tests and <stron
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-06 19:46:46 -05:00
+Last updated 2018-01-07 10:43:08 -05:00
 </div>
 </div>
 </body>
