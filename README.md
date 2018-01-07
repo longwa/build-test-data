@@ -3,7 +3,7 @@
 ## The Build Test Data Grails Plugin 
 #### Note: Version 3.0.1 supports Grails 3.0 and higher, please continue to use 2.4.0 for Grails 2.4.x and 2.5.x
 
-Creating maintainable test data is hard.  Often an entire object graph needs to be created to support the instantiation of a single domain object.  This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we've grown over time and maintained as the domain objects change.  After a while, adding just one more Widget to that set of canned data ends up breaking tests just about every time.
+Creating maintainable test data is hard. Often an entire object graph needs to be created to support the instantiation of a single domain object.  This leads to either the cutting and pasting of that creation code, or relying on a canned set of objects that we've grown over time and maintained as the domain objects change.  After a while, adding just one more Widget to that set of canned data ends up breaking tests just about every time.
 
 There has to be a better solution, right?  
 
@@ -11,25 +11,9 @@ Yep! Due to the power and the glory of Grails, we have a lot of metadata at our 
 
 Using this additional information, we've created a grails plugin that makes it easy to just provide those values that you want to exercise under test and not worry about the rest of the object graph that you need to create just to instantiate your domain objects.
 
-This plugin is focused on creating test data for integration testing. As of Grails 2.0.0, build-test-data also supports unit tests through annotations and mixins. 
-
 Once installed, all you have to do is call the new "build" method on your domain class and you'll be given a valid instance with all of the required constraints given values. 
 ```groovy
-def a = Author.build()
-```
-In a unit test, you'll just use an annotation to let it know what domain class you'd like to build 
-```groovy
-import grails.buildtestdata.mixin.Build
-
-@Build(Author)
-class AuthorUnitTests {
-
-    void testAuthorStuff() {
-        def author = Author.build()
-        ...
-    }
-
-}
+def author = Author.build(name: 'Bill')
 ```
 
 ### Plugin Objectives 
@@ -39,13 +23,10 @@ class AuthorUnitTests {
 - Tests should not be dependent on other tests, only on the code under test.  Therefore, the same test data should not be used by multiple tests, this creates a strong coupling and leads to test fragility.
 - Changes to domain objects that do not affect the the code under test should not break the test.
 
-
-
-* [Overview Presentation](http://www.slideshare.net/tednaleid/grails-buildtestdata-plugin-1723277)
 * [Features](http://github.com/longwa/build-test-data/wiki/Features)
 * [Installation](http://github.com/longwa/build-test-data/wiki/Installation)
 * [Basic Usage](http://github.com/longwa/build-test-data/wiki/BasicUsage)
-* [Unit Test Support](http://github.com/longwa/build-test-data/wiki/UnitTestSupport) - as of Grails 2.0
+* [Unit Test Support](http://github.com/longwa/build-test-data/wiki/UnitTestSupport) 
 * [Sample Code](http://github.com/longwa/build-test-data/wiki/SampleCode)
 * [Build Test Data Demo application](https://github.com/longwa/build-test-data/tree/master/bookStore)
 * [Fixtures Plugin + Build Test Data Demo application](https://github.com/stokito/grails-fixtures-demo)

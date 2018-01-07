@@ -1,0 +1,83 @@
+[[upgrading]]
+== Upgrading
+When upgrading from older versions of Grails, first follow the standard Grails upgrade process.
+
+=== Performance Improvements
+The core plugin has been refactored to reduce metaClass dependency and remove a few poor performing contructs (I'm looking at you ClassPathScanningCandidateComponentProvider).
+
+Most of the plugin classes have also been converted to `@CompileStatic`. In addition, the DomainInstanceBuilder can be cached and re-used to prevent additional overhead.
+
+=== Abstract Classes
+Concrete subclasses are no longer discovered automatically. If you graph needs to build an abstract class, use the `abstractDefaults` parameter in `TestDataConfig` to specify a concrete subclass.
+
+```groovy
+abstractDefault = [
+    'test.AbstractBook'   : MyBook,
+    'test.AbstractAuthor' : Tolkien
+]
+```
+
+=== Config Parameters
+Some test data config parameters such as `abstractDefault` and `sampleData` used to allow either a Class or String as the map key.
+
+In 3.3 and later, only a full package name String is allowed.
+
+=== Disabling Via TestDataConfig
+You can no longer disable via the `testDataConfig.enabled = false` option.
+
+Just use the `testCompile` scope to restrict to just testing.
+
+=== Unit Tests
+Most of the work when upgrading to Grails 3.3.x will involve refactoring related to the framework itself with only minor changes for build-test-data.
+
+---
+```groovy
+@Build([Author])
+class AuthorSpec extends Specification {
+    ...
+}
+```
+
+Just add the trait:
+```groovy
+@Build([Author])
+class AuthorSpec extends Specification implements UnitTestDataBuilder {
+    ...
+}
+```
+
+Optionally, use the standard Grails mock method:
+
+```groovy
+class AuthorSpec extends Specification implements UnitTestDataBuilder {
+    void setup() {
+        mockDomains([Author])
+    }
+    ...
+}
+```
+
+or by overriding the *getDomainClassesToMock* method:
+
+```groovy
+class AuthorSpec extends Specification implements UnitTestDataBuilder {
+    Class[] getDomainClassesToMock() {
+        [Author]
+    }
+    ...
+}
+```
+
+WARNING: Make sure you use *UnitTestDataBuilder* for unit tests and *TestDataBuilder* for integration tests.
+
+=== Integration Tests
+For integration tests, follow the standard Grails upgrade instructions and then add the `TestDataBuilder` trait:
+
+```groovy
+@Integration
+@Rollback
+class AuthorIntegrationSpec extends Specification implements TestDataBuilder {
+    ...
+}
+```
+

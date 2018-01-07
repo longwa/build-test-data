@@ -1,0 +1,15 @@
+[[integrationtesting]]
+== Integration Testing
+Integration tests don't require the same type of setup as Unit Tests since the Grails environment is fully bootstrapped.
+
+The plugin includes a trait that should be mixed into Integration tests to provide additional functionality:
+
+    trait TestDataBuilder
+
+[NOTE]
+The trait is not strictly required, but it does include some setup and cleanup functionality that could be useful in some cases. Additional functionality may be added in the future via this trait, so implementing it is preferred.
+
+=== Using Build Annotation
+In prior versions, the `@Build` annotation was *strictly* for Unit Tests (it would cause numerous issues when used on integration tests, which was a common source of confusion on our projects).
+
+Starting with build-test-data 3.3, the `@Build` annotation can be used safely on integration tests. The primary reason to use it would be to take advantage of IDE autocomplete for properties when calling the `DomainObject.build()` method.

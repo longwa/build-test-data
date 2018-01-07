@@ -1,0 +1,77 @@
+[[examples]]
+== Examples
+Once you have the plugin installed, it should be as easy as calling `build()` on any of your domain objects in your tests.
+
+If you don't pass any parameters to build, it will attempt to provide values for all of the properties that it determines have required values based on the constraints.  This includes other domain objects.
+
+If you want to specify particular values, you can pass build a map (just like you can to a domain object constructor).  The plugin will attempt to create new values for any required properties that you don't specify in the map.
+```groovy
+domainObject.build(myProperty:'myPropertyValue')
+```
+The build method default is to attempt to save the populated domain object. You can avoid saving the object first by calling the buildWithoutSave method:
+```groovy
+domainObject.buildWithoutSave(myProperty:'myPropertyValue')
+```
+
+=== Working with Unique Constraints
+There currently isn't built-in support for uniqueness constraints, but it's pretty easy to get this working using a closure in the config file to generate a series of unique values.
+```groovy
+testDataConfig {
+    sampleData {
+        'com.foo.Book' {
+             def i = 1
+             title = {-> "title${i++}" }   // creates "title1", "title2",...
+        }
+    }
+}
+```
+
+If your test cares about this unique value, you'll likely want to reset the configuration either directly in your test or in the setUp of the test.  Otherwise, other tests could have grabbed the value that you were expecting. To reset the configuration back to the original state, use this:
+
+```groovy
+TestDataConfigurationHolder.reset()
+```
+
+=== Building Objects and Building Associated Child Objects
+When you have a parent object that you want to have specific child objects, here's one way this can be done.
+```groovy
+class Issue {
+    String title
+    static hasMany = [pages: Page]
+}
+
+class Page {
+    Integer number
+    static hasMany = [advertisments: Advertisment]
+    static belongsTo = [issue: Issue]
+}
+```
+
+You can create an issue and then give it pages:
+```groovy
+// Build the issue first
+def issue = Issue.build()
+
+(1..5).collect { Page.build(issue: issue, number: it) }
+
+// Pages are automatically added to the issue's hasMany pages collection
+assertEquals 5, issue.pages.size()
+
+// Don't build extra issues when building pages
+assertEquals 1, Issue.list().size()
+```
+
+We don't want to build the Page objects before we have the Issue otherwise the build method will create dummy issues in the database for each page (and that last assert would fail).
+
+=== Assigning System Wide Default Values
+Having build assign system wide default property values, or give values to classes that are "distant" in the object graph from the object you're building can all be done with the [[TestDataConfig]] configuration file.
+
+=== Logging Information
+If you want to see the detail of what objects the plugin is trying to save, you can set the logging level for the DomainTestDataService and the DomainInstanceBuilder to info.  Just stick this line in your 'logback.groovy'
+```groovy
+logger("grails.buildtestdata.DomainInstanceBuilder", INFO)
+```
+If you want to see all of the gory detail about what the plugin is doing as it traverses the object graph and examines each property, set the logging level to debug and add in the property handlers:
+```groovy
+logger("grails.buildtestdata", DEBUG)
+```

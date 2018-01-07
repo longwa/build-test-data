@@ -1,0 +1,169 @@
+[[usage]]
+== Usage
+The plugin should be able to generate simple to moderately complex objects and satisfy all of their constraints right out of the box without any additional configuration.
+
+=== Simple Application Example
+Create an Author domain class:
+
+    grails create-domain-class com.example.Author
+
+And give it the following contents:
+```groovy
+package com.example
+
+class Author {
+    String firstName
+    String lastName
+
+    static hasMany = [books: Book]
+
+    static constraints = {
+        firstName(blank: false)
+        lastName(blank: false)
+    }
+    public String toString() {
+        "$firstName $lastName"
+    }
+}
+```
+
+Then create a Book domain class:
+
+    grails create-domain-class com.example.Book
+
+With these contents:
+```groovy
+package com.example
+
+class Book {
+    String title
+    Date published
+    BigDecimal price
+
+    static belongsTo = [author: Author]
+
+    static constraints = {
+        title(blank: false)
+        published(nullable: false)
+        price(nullable: false, scale: 2, min: 5.95 as BigDecimal)
+        author(nullable: false)
+    }
+
+    public String toString() {
+        "$title published on $published by $author costs \$$price"
+    }
+}
+```
+
+Now, load up the grails console and lets try build on our new domain objects:
+
+    grails console
+
+=== build()
+```groovy
+import com.example.*
+
+def a = Author.build()
+
+println "First Name: $a.firstName"
+println "Last Name: $a.lastName"
+println "Author ID: $a.id"
+```
+
+The plugin will automatically create a new Author object, populate the required firstName and lastName fields, and save the object (giving it an id).  If you run the script, you should see output like this:
+
+    First Name: firstName
+    Last Name: lastName
+    Author ID: 1
+
+By default, for String values, the plugin will just try to use the field name as the value (truncating or expanding as necessary if there are string length limitations).
+
+If you want to specify the first name, just pass that in a map that you pass to build on the first line:
+
+    def a = Author.build(firstName: "Daniel")
+
+That modified script prints:
+
+    First Name: Daniel
+    Last Name: lastName
+    Author ID: 2
+
+With Book, we have a more complex domain class.  It has a few different property types and it also has required related domain class of Author.
+
+If you don't care about any of the specific values on the book, you can simply call build() to have a valid, saved book instance:
+```groovy
+import com.example.*
+
+def b = Book.build()
+
+println "Book title: $b.title"
+println "Book price: $b.price"
+println "Book published: $b.published"
+println "Book author: $b.author"
+println "Book id: $b.id"
+```
+
+Prints:
+
+    Book title: title
+    Book price: 5.95
+    Book published: Mon Apr 13 23:11:34 CDT 2009
+    Book author: firstName lastName
+    Book id: 1
+    Book author id: 3
+
+Again, if you want to override some of the values, you can pass them in the map:
+```groovy
+import com.example.*
+
+def b = Book.build(title: "Tomorrow Midnight",
+    author: Author.build(firstName: "Ray", lastName: "Bradbury")
+)
+
+println "Book title: $b.title"
+println "Book price: $b.price"
+println "Book published: $b.published"
+println "Book author: $b.author"
+println "Book id: $b.id"
+println "Book author id: $b.author.id"
+```
+
+Resulting in:
+```
+Book title: Tomorrow Midnight
+Book price: 5.95
+Book published: Mon Apr 13 23:13:22 CDT 2009
+Book author: Ray Bradbury
+Book id: 2
+Book author id: 4
+```
+
+The build-test-data plugin lets you concentrate on the data that's pertinent to your test, rather than building and maintaing large datasets that aren't tailor made for your test.
+
+=== buildLazy()
+Before creating an object (and it's entire graph of required related objects) it will look to see if there's already an object that meets the build criteria. If there is, it will return that, otherwise, it will create a new one:
+
+```groovy
+// Finds book created above with the existing author
+def b = Book.buildLazy(title: "Tomorrow Midnight")
+assert b.author.lastName == "Bradbury"
+
+// Creates new book with author
+def newBook = Book.buildLazy(title: "My Fancy New Book")
+assert newBook != null
+assert newBook.author != null
+```
+
+I find `buildLazy()` to be really useful in grails console sessions where I want to create some dummy test data once and then do a number of operations on it. Previously, I had to comment out all the creation logic so that new objects weren't getting created on every script execution. Now it'll just return them and I can focus on writing the console code I wanted to try out rather than messing with the creation logic.
+
+=== buildWithoutSave()
+In some cases you need to build a domain object, but you don't want to actually save it to the underlying data store. This is particularly useful if you are trying to build a complex graph and need to build one of the children as part of the parent build.
+
+```groovy
+def author = Author.build(
+    books: [Book.buildWithoutSave(name: 'Foo')]
+)
+```
+If you don't have a complicated object graph, `buildWithoutSave()` may not be necessary. However, in cases where you might have a cycle in your graph, it can be necessary to successfully build the graph.
+
+include::unittesting.adoc[]

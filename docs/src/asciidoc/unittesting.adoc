@@ -1,0 +1,78 @@
+[[unittesting]]
+== Unit Testing
+Starting with Grails 3.3, unit testing is implemented via a set of traits that add support for testing the various artifacts types (Controllers, Services, Domains, etc.).
+
+The build-test-data plugin uses the same approach by adding the:
+
+    trait UnitTestDataBuilder
+
+This trait extends the built-in `DataTest` trait to setup the domain objects and domain graph for construction by build-test-data.
+
+For unit tests, you can use the standard `getDomainClassesToMock` method to provide the top-level list of domain objects that are required by the test.
+
+```groovy
+class BookUnitSpec extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Book] // Author will be mocked automatically
+    }
+
+    void "building a book will also build an author"() {
+        when:
+        def book = Book.build()
+
+        then:
+        book.author != null
+    }
+}
+```
+
+TIP: You don't have to explicitly declare that you are building an Author, build-test-data will figure that out for you and tells Grails to mock it automatically.
+
+=== Using @Build
+Alternately, you can continue to use the legacy build-test-data `@Build` annotation to specify classes to mock. The `@Build` annotation currently has the added bonus of supporting code completion in some editors.
+
+```groovy
+@Build([Book])
+class BookUnitSpec extends Specification implements UnitTestDataBuilder {
+    void "building a book will also build an author"() {
+        when:
+        def book = Book.build()
+
+        then:
+        book.author != null
+    }
+}
+```
+
+NOTE: Even if you are using the `@Build` annotation, you must still implement the `UnitTestDataBuilder` trait.
+
+=== Trait Methods
+The `UnitTestDataBuilder` trait adds the builder methods to your test class if you prefer to call them directly.
+
+```groovy
+    T build(Class<T> clazz, Map<String, Object> propValues = [:])
+
+    T buildWithoutSave(Class<T> clazz, Map<String, Object> propValues = [:])
+
+    T buildLazy(Class<T> clazz, Map<String, Object> propValues = [:])
+```
+
+In that case you can just call `build()` and pass in the Class that you which to build.
+
+```groovy
+class BookUnitSpec extends Specification implements UnitTestDataBuilder {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Book]
+    }
+
+    void "building a book using the trait method"() {
+        when:
+        def book = build(Book, [title: 'Book Title'])
+
+        then:
+        book.author != null
+    }
+}
+```

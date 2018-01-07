@@ -1,0 +1,32 @@
+[[methodology]]
+== Methodology
+Over the years, a number of different methods for creating and maintaining testing data have been tried.  Here's a subset of the solutions along with some pros/cons to each of them.
+
+=== Manual Data Creation
+Creating testing data for integration tests has gone through an evolution over the years.
+
+It first started with all of the test data being constructed right in the body of the test method, leading to a lot of cut and paste when you hit another method.
+
+==== Strengths
+* the code that defines the objects under test is right next to the code that uses those objects in test.
+
+==== Weaknesses
+* If the objects under test rely on other objects, it can be necessary to create a large graph of objects in your test method
+* Not at all DRY, cutting and pasting leads to errors and extra code that you don't need
+* When you add a new method to an existing object (or change/delete an existing one), you need to change all of the cut/pasted lines in all of the test methods
+
+JUnit (and other xUnit) testing frameworks DRYed this up by having a "setUp" method that gets called for all test methods, but this requires you to share data across all of the tests in the test class and you're still manually creating it in each test
+
+=== Test Fixtures
+Text fixtures allow you to use a DSL to define a named object graph.  You can then refer to this object graph in a test to have the fixtures instantiated and saved to the database before running your test.
+
+==== Strengths
+* http://www.grails.org/Fixtures+Plugin[Fixture Plugin]
+* Full control over values in every object in the object graph
+
+==== Weaknesses
+* Removes definition of testing data from test which can hurt test clarity.  Who knows how many who knows how many family members the `johnsonFamily` fixture has and how many `smithFamily` has?  You have to look at another file to find out.
+* Starts out well, but more and more tests start to rely on the same fixtures making them fragile "I'll just add another Widget to this fixture" ends up breaking 10 other tests
+* Any changes to domain objects necessitate modifying every fixture that has that domain object within the object graph
+
+
