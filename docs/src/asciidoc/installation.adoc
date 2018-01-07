@@ -3,6 +3,7 @@
 The test framework and testing methodology for Grails has undergone several major revisions over the few releases.
 
 Unfortunately, that makes it impossible to have one plugin which is compatible with all prior versions.
+
 === Grails 3.3
 `testCompile "org.grails.plugins:build-test-data:3.3.0.RC1"`
 
@@ -13,3 +14,4 @@ NOTE: Version 3.0.1 is required for Grails versions 3.0 through 3.2
 
 === Grails 2.5
 See the legacy Wiki documentation for details.
+
