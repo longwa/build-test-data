@@ -1,6 +1,6 @@
 = Build Test Data Users Guide
 Aaron Long <longwa@gmail.com>
-3.3.0RC1
+{version}
 
 include::introduction.adoc[]
 include::methodology.adoc[]

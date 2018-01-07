@@ -1,1 +1,1 @@
-include 'bookStore', 'alternativeConfig', 'build-test-data'
+include 'bookStore', 'alternativeConfig', 'build-test-data', 'docs'
