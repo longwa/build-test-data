@@ -25,7 +25,9 @@ In 3.3 and later, only a full package name String is allowed.
 === Disabling Via TestDataConfig
 You can no longer disable via the `testDataConfig.enabled = false` option.
 
-Just use the `testCompile` scope to restrict to just testing.
+Currently, the only way to have the `build` methods injected is to use the `compile` scope. If you want to use the `testCompile` scope, you will need to either use the `UnitTestDataBuilder` trait methods directly or add the trait manually at runtime.
+
+This seems to be a limitation of the `TraitInjector` API as it doesn't apply the `BuildTestDataEntity` trait to domain objects unless the plugin is in `compile` scope.
 
 === Unit Tests
 Most of the work when upgrading to Grails 3.3.x will involve refactoring related to the framework itself with only minor changes for build-test-data.
@@ -50,8 +52,8 @@ Optionally, use the standard Grails mock method:
 
 ```groovy
 class AuthorSpec extends Specification implements UnitTestDataBuilder {
-    void setup() {
-        mockDomains([Author])
+    void setupSpec() {
+        mockDomains(Author)
     }
     ...
 }
