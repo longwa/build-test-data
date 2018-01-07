@@ -34,7 +34,7 @@ dependencies {
 
     compile "org.grails:grails-core"
     compile "org.grails:grails-gorm-testing-support"
-    compile 'org.grails:grails-databinding:3.3.1'
+    compile "org.grails:grails-databinding:$grailsVersion"
     compile "org.grails:grails-datastore-gorm:$gormVersion"
 
     console "org.grails:grails-console"
