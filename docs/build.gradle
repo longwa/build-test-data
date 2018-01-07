@@ -37,3 +37,7 @@ asciidoctor {
         ]
     ]
 }
+
+// Rebuild docs before pushing
+gitPublishPush.dependsOn asciidoctor
+
