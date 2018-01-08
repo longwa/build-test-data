@@ -25,24 +25,27 @@ repositories {
 }
 
 dependencies {
-    profile "org.grails.profiles:plugin"
-
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "dk.brics.automaton:automaton:1.11-8"
-    compile "org.apache.commons:commons-lang3:3.7"
 
     compile "org.grails:grails-core"
     compile "org.grails:grails-gorm-testing-support"
     compile "org.grails:grails-databinding"
-    compile "org.grails:grails-datastore-gorm:$gormVersion"
-
+    compile "org.grails:grails-datastore-gorm"
     console "org.grails:grails-console"
 
-    provided "org.grails:grails-plugin-services"
-    provided "org.grails:grails-plugin-domain-class"
+    //so we can run 'grails' and/or 'grails test-app' inside build-test-data
+    profile "org.grails.profiles:web-plugin"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-tomcat"
+    compile "org.grails:grails-web-boot"
 
-    testCompile "org.grails:grails-plugin-testing"
+    testCompile "org.grails.plugins:hibernate5"
+    testCompile "org.hibernate:hibernate-core:5.2.12.Final"
+    testRuntime "com.h2database:h2"
+    testRuntime "org.apache.tomcat:tomcat-jdbc"
+
 }
 
 bootRun {
