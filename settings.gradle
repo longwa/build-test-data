@@ -1,1 +1,9 @@
-include 'bookStore', 'alternativeConfig', 'build-test-data', 'docs'
+rootProject.name = 'build-test-data-root'
+
+include 'plugin'
+include 'docs'
+
+include 'examples/bookStore'
+include 'examples/alternativeConfig'
+
+findProject(':plugin').name = 'build-test-data'

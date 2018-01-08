@@ -1,5 +1,6 @@
 package grails.buildtestdata
 
+import grails.buildtestdata.handler.ExampleConstraintHandler
 import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
@@ -184,11 +185,24 @@ class DomainInstanceBuilder {
         // non-nullable without actually having the nullable constraint
         new NullableConstraintHandler().handle(domainInstance, propertyName, null, constrainedProperty, circularCheckList)
 
-        if (getErrors(constrainedProperty, domainInstance, propertyName).errorCount && !createProperty(domainInstance, propertyName, constrainedProperty, circularCheckList)) {
+        if (getErrors(constrainedProperty, domainInstance, propertyName).errorCount
+            && !createProperty(domainInstance, propertyName, constrainedProperty, circularCheckList)) {
             log.warn "Failed to generate a valid value for {}.{}", domainInstance?.class?.name, propertyName
         }
         else {
             log.debug "Property name: {} - Created value: {}", propertyName, domainInstance?.metaClass?.getProperty(domainInstance, propertyName)
+        }
+
+        new ExampleConstraintHandler().handle(domainInstance, propertyName, null, constrainedProperty, circularCheckList)
+
+        //if it has an example constraint then use it
+        //useExampleConstraintIfExists(domainInstance, propertyName, constrainedProperty)
+    }
+
+    @CompileDynamic
+    void useExampleConstraintIfExists(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty){
+        if(constrainedProperty.metaConstraints["example"] != null){
+            InvokerHelper.setProperty(domainInstance, propertyName, constrainedProperty.metaConstraints["example"])
         }
     }
 

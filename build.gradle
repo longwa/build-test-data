@@ -1,3 +1,56 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url 'https://repo.grails.org/grails/libs-snapshots-local/' }
+        maven { url "https://repo.grails.org/grails/core" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails:grails-docs:${project.ext.properties.grailsDocsVersion ?: grailsVersion}"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
+    }
+}
+
+repositories {
+    mavenLocal()
+    maven { url "https://repo.grails.org/grails/core" }
+}
+
+version project.projectVersion
+
+ext {
+    commonBuild = new File(project.rootDir, "gradle").absolutePath
+}
+
 subprojects {
-    version = "3.3.0.RC2"
+    version project.projectVersion
+
+    ext {
+        userOrg = "grails"
+        isGrailsPlugin = name.startsWith('grails-plugin')
+        isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
+    }
+
+    apply plugin:'groovy'
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    dependencies {
+        //testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+    }
+
+    tasks.withType(Test) {
+        testLogging {
+            events "failed"
+            exceptionFormat "full"
+        }
+    }
 }
