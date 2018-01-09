@@ -193,17 +193,9 @@ class DomainInstanceBuilder {
             log.debug "Property name: {} - Created value: {}", propertyName, domainInstance?.metaClass?.getProperty(domainInstance, propertyName)
         }
 
+        //if it has an example constraint value then use it
         new ExampleConstraintHandler().handle(domainInstance, propertyName, null, constrainedProperty, circularCheckList)
 
-        //if it has an example constraint then use it
-        //useExampleConstraintIfExists(domainInstance, propertyName, constrainedProperty)
-    }
-
-    @CompileDynamic
-    void useExampleConstraintIfExists(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty){
-        if(constrainedProperty.metaConstraints["example"] != null){
-            InvokerHelper.setProperty(domainInstance, propertyName, constrainedProperty.metaConstraints["example"])
-        }
     }
 
     Object createProperty(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
