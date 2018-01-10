@@ -23,7 +23,7 @@ class MinSizeConstraintHandler extends AbstractConstraintHandler {
 
         padMinSize(
             domain,
-            constrainedProperty.appliedConstraints,
+            SizeConstraintHandler.getAppliedConstraints(constrainedProperty),
             propertyName,
             propertyValue,
             minSizeConstraint.minSize,

@@ -1,6 +1,7 @@
 package grails.buildtestdata
 
 import grails.buildtestdata.handler.ExampleConstraintHandler
+import grails.buildtestdata.handler.SizeConstraintHandler
 import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
@@ -162,7 +163,7 @@ class DomainInstanceBuilder {
     void applyBiDirectionManyToOnes(GormEntity domainInstance) {
         PersistentEntity defDomain = DomainUtil.getPersistentEntity(domainInstance.class)
         for (Association association in defDomain.associations) {
-            Object value = association.reader.read(domainInstance)
+            Object value = association.owner.reflector.getPropertyReader(association.name).read(domainInstance)
             if (association instanceof ManyToOne && value instanceof GormEntity) {
                 ManyToOne manyToOneProp = association as ManyToOne
                 GormEntity owningObject = value as GormEntity
@@ -201,7 +202,7 @@ class DomainInstanceBuilder {
     Object createProperty(GormEntity domainInstance, String propertyName, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
         log.debug("Building value for {}.{}", domainInstance?.class?.name, propertyName)
 
-        sortedConstraints(constrainedProperty.appliedConstraints).find { Constraint appliedConstraint ->
+        sortedConstraints(SizeConstraintHandler.getAppliedConstraints(constrainedProperty)).find { Constraint appliedConstraint ->
             log.debug("{}.{} constraint, field before adjustment: {}", domainInstance?.class?.name, appliedConstraint?.name, domainInstance?.metaClass?.getProperty(domainInstance, propertyName))
 
             ConstraintHandler handler = ConstraintHandler.handlers[appliedConstraint.name]
