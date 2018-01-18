@@ -5,24 +5,22 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 
 /**
- * Integration tests should implement this trait to add build-test-data functionality
+ * Integration tests can implement this trait to add build-test-data functionality
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
 trait TestDataBuilder {
+
     public <T> T build(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(clazz)
-        builder.build(propValues) as T
+        TestData.build(clazz, propValues)
     }
 
     public <T> T buildWithoutSave(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(clazz)
-        builder.buildWithoutSave(propValues) as T
+        TestData.buildWithoutSave(clazz, propValues)
     }
 
     public <T> T buildLazy(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(clazz)
-        (builder.findExisting(propValues) ?: builder.build(propValues)) as T
+        TestData.buildWithCache(clazz, propValues)
     }
 
     /**

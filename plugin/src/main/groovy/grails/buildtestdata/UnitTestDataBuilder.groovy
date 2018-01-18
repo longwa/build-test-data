@@ -35,7 +35,7 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
         }
     }
 
-    private Class[] expandSubclasses(Class<?>... classes) {
+    Class[] expandSubclasses(Class<?>... classes) {
         classes.collectMany { Class clazz ->
             List<Class> result = [clazz]
             Class subClass = DomainUtil.findConcreteSubclass(clazz)
@@ -46,7 +46,7 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
         } as Class[]
     }
 
-    private void resolveDependencyGraph(Set<Class> mockedList, Class<?>... domainClassesToMock) {
+    void resolveDependencyGraph(Set<Class> mockedList, Class<?>... domainClassesToMock) {
         // First mock these domains so they are registered with Grails
         super.mockDomains(domainClassesToMock)
         mockedList.addAll(domainClassesToMock)
