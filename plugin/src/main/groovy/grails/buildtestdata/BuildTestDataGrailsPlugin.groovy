@@ -1,9 +1,9 @@
 package grails.buildtestdata
 
 import grails.plugins.Plugin
-import groovy.transform.CompileStatic
+import groovy.transform.CompileDynamic
 
-@CompileStatic
+//@CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
 class BuildTestDataGrailsPlugin extends Plugin {
     def grailsVersion = "3.3.0 > *"
@@ -20,4 +20,25 @@ class BuildTestDataGrailsPlugin extends Plugin {
 
     def issueManagement = [system: 'github', url: 'https://github.com/longwa/build-test-data/issues']
     def scm = [url: 'https://github.com/longwa/build-test-data/']
+
+    @Override
+    void doWithApplicationContext() {
+        Class[] domainClasses = grailsApplication.domainClasses*.clazz
+        addBuildMetaMethods(domainClasses)
+    }
+
+    @CompileDynamic
+    void addBuildMetaMethods(Class<?>... entityClasses){
+        entityClasses.each { ec ->
+            def mc = ec.metaClass
+            //println("adding meta for $ec")
+            mc.static.build = {
+                return TestData.build(ec)
+            }
+            mc.static.build = { Map data ->
+                return TestData.build(ec, data)
+            }
+        }
+    }
+
 }
