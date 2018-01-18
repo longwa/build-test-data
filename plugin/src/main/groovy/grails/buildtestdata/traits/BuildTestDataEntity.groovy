@@ -16,6 +16,6 @@ trait BuildTestDataEntity<D extends GormEntity<D>> {
     }
 
     static D buildLazy(Map<String, Object> propValues = [:]) {
-        TestData.buildLazy(this, propValues) as D
+        TestData.buildWithCache(this, propValues) as D
     }
 }

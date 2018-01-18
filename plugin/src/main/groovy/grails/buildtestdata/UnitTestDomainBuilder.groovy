@@ -10,7 +10,7 @@ import org.springframework.core.GenericTypeResolver
 trait UnitTestDomainBuilder<D> implements UnitTestDataBuilder {
 
     private D domainInstance
-    static Class<D> domainClass
+    private static Class<D> entityClass
 
     /**
      * @return An instance of the domain class
@@ -18,34 +18,37 @@ trait UnitTestDomainBuilder<D> implements UnitTestDataBuilder {
     D getDomain() {
         if (domainInstance == null) {
             //use buildWithoutSave to keep it consitent with how DomainUnitTest does it
-            domainInstance = TestData.buildWithoutSave(getDomainUnderTest())
+            this.domainInstance = TestData.buildWithoutSave(getEntityClass())
         }
         domainInstance
+    }
+
+    /**
+     * same as getDomain()
+     */
+    D getEntity() {
+        getDomain()
     }
 
     /** this is called by the {@link org.grails.testing.gorm.spock.DataTestSetupSpecInterceptor} */
     @Override
     Class<?>[] getDomainClassesToMock() {
-        [getDomainUnderTest()].toArray(Class)
+        [getEntityClass()].toArray(Class)
     }
 
-    Class<D> getDomainUnderTest() {
-        if (!domainClass)
-            this.domainClass = (Class<D>) GenericTypeResolver.resolveTypeArgument(getClass(), UnitTestDomainBuilder.class)
+    Class<D> getEntityClass() {
+        if (!entityClass)
+            this.entityClass = (Class<D>) GenericTypeResolver.resolveTypeArgument(getClass(), UnitTestDomainBuilder.class)
 
-        return domainClass
+        return entityClass
     }
 
     D build(Map<String, Object> propValues = [:]) {
-        TestData.build(getDomainUnderTest(), propValues)
+        TestData.build(getEntityClass(), propValues)
     }
 
     D buildWithoutSave(Map<String, Object> propValues = [:]) {
-        TestData.buildWithoutSave(getDomainUnderTest(), propValues)
-    }
-
-    D buildLazy(Map<String, Object> propValues = [:]) {
-        TestData.buildLazy(getDomainUnderTest(), propValues)
+        TestData.buildWithoutSave(getEntityClass(), propValues)
     }
 
 }

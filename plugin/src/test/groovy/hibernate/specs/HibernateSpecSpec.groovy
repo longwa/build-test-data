@@ -1,13 +1,14 @@
 package hibernate.specs
 
 import grails.test.hibernate.HibernateSpec
+import static grails.buildtestdata.TestData.build
 
 class HibernateSpecSpec extends HibernateSpec {
 
     //HibernateSpec scans the package the test sits in. It will automatically find the Baz
     void "test hibernate spec with automatic scan"() {
         when:
-        Baz.build()
+        build(Baz)
 
         then:
         def baz1 = Baz.findById(1)

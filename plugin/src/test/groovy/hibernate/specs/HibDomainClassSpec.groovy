@@ -1,12 +1,12 @@
 package hibernate.specs
 
-import grails.buildtestdata.TestDataBuilder
 import grails.test.hibernate.HibernateSpec
 import hibernate.domains.Bar
 import hibernate.domains.Foo
+import static grails.buildtestdata.TestData.*
 
 //don't use trait on this one, use the TestDataBuilder
-class HibDomainClassSpec extends HibernateSpec implements TestDataBuilder {
+class HibDomainClassSpec extends HibernateSpec{
 
     //dont' need to give it Bar as it will see its an association and mock it
     List<Class> getDomainClasses() {[ Foo ]}
@@ -21,7 +21,7 @@ class HibDomainClassSpec extends HibernateSpec implements TestDataBuilder {
     void "test that Bar got mocked and saved"() {
 
         when: "buildLazy should pick up the one thats already there from setupSpec"
-        def bar = buildLazy(Bar) //should pick up the one thats already there
+        def bar = buildWithCache(Bar) //should pick up the one thats already there
 
         then: "the id should be 1 as it was saved already"
         bar.id == 1
@@ -43,7 +43,7 @@ class HibDomainClassSpec extends HibernateSpec implements TestDataBuilder {
 
     void "round 2"() {
         when: "buildLazy is called but will create a new one"
-        def foo = buildLazy(Foo)
+        def foo = buildWithCache(Foo)
         //build(Foo)
 
         then: "a new Foo was saved since the build was called in another test and not in setupSpec"

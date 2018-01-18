@@ -5,7 +5,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 
 /**
- * Integration tests should implement this trait to add build-test-data functionality
+ * Integration tests can implement this trait to add build-test-data functionality
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
@@ -20,7 +20,7 @@ trait TestDataBuilder {
     }
 
     public <T> T buildLazy(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        TestData.buildLazy(clazz, propValues)
+        TestData.buildWithCache(clazz, propValues)
     }
 
     /**
