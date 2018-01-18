@@ -5,9 +5,9 @@ import abstractclass.AbstractSubClass
 
 import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
-import grails.buildtestdata.DomainInstanceRegistry
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.builders.BuildTestDataApi
 import spock.lang.Specification
 
 class AbstractDefaultUnitTests extends Specification implements UnitTestDataBuilder {
@@ -15,7 +15,7 @@ class AbstractDefaultUnitTests extends Specification implements UnitTestDataBuil
         TestDataConfigurationHolder.reset()
 
         // Since we are changing out the subclass defaults, prevent any caching
-        DomainInstanceRegistry.clear()
+        BuildTestDataApi.clear()
     }
 
     void testBuildWithNoDefault() {

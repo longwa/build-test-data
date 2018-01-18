@@ -1,5 +1,6 @@
 package grails.buildtestdata
 
+import grails.buildtestdata.builders.BuildTestDataApi
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -37,6 +38,6 @@ trait TestDataBuilder {
 
     @AfterClass
     static void cleanupTestDataBuilder() {
-        DomainInstanceRegistry.clear()
+        BuildTestDataApi.clear()
     }
 }

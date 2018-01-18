@@ -1,5 +1,7 @@
 package grails.buildtestdata
 
+import grails.buildtestdata.builders.BuildTestDataApi
+import grails.buildtestdata.builders.GormEntityTestDataBuilder
 import grails.buildtestdata.mixin.Build
 import grails.testing.gorm.DataTest
 import groovy.transform.CompileDynamic
@@ -54,7 +56,7 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
         Set<Class> requiredClasses = domainClassesToMock.collectMany { Class clazz ->
             // For domain instance building, we only care about concrete classes
             if (!DomainUtil.isAbstract(clazz)) {
-                DomainInstanceBuilder builder = DomainInstanceRegistry.lookup(clazz)
+                GormEntityTestDataBuilder builder = (GormEntityTestDataBuilder) BuildTestDataApi.findBuilder(clazz)
                 builder.requiredDomainClasses
             }
             else {

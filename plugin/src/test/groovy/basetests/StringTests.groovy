@@ -35,10 +35,10 @@ class StringTests extends Specification implements DomainTestBase {
             class TestStringMaxSizeExceeded {
                 Long id
                 Long version
-                String testProperty
+                String maxPropExceeds
 
                 static constraints = {
-                    testProperty(maxSize: $maxSize)
+                    maxPropExceeds(maxSize: $maxSize)
                 }
            }
         """)
@@ -46,8 +46,8 @@ class StringTests extends Specification implements DomainTestBase {
         def domainObject = domainClass.build()
 
         assert domainObject != null
-        assert domainObject.testProperty != null
-        assert domainObject.testProperty.size() <= maxSize
+        assert domainObject.maxPropExceeds != null
+        assert domainObject.maxPropExceeds.size() <= maxSize
     }
 
     void testStringMaxSizeNotExceeded() {
