@@ -36,4 +36,15 @@ class DomainUtil {
     static boolean isAbstract(Class clazz) {
         Modifier.isAbstract(clazz.getModifiers())
     }
+
+    static Class[] expandSubclasses(Class<?>... classes) {
+        classes.collectMany { Class clazz ->
+            List<Class> result = [clazz]
+            Class subClass = findConcreteSubclass(clazz)
+            if (subClass != clazz) {
+                result << subClass
+            }
+            result
+        } as Class[]
+    }
 }

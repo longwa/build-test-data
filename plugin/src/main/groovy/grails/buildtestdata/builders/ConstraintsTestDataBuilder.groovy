@@ -19,7 +19,6 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
     
     static List<String> CONSTRAINT_SORT_ORDER = [
         ConstrainedProperty.IN_LIST_CONSTRAINT, // most important
-        //ConstrainedProperty.NULLABLE_CONSTRAINT,
         ConstrainedProperty.EMAIL_CONSTRAINT,
         ConstrainedProperty.CREDIT_CARD_CONSTRAINT,
         ConstrainedProperty.URL_CONSTRAINT,

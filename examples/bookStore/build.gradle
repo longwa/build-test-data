@@ -26,11 +26,11 @@ repositories {
     maven { url "https://repo.grails.org/grails/core" }
 }
 
-grails {
-    plugins {
-        compile project(':build-test-data')
-    }
-}
+//grails {
+//    plugins {
+//        compile project(':build-test-data')
+//    }
+//}
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-logging"
@@ -65,6 +65,7 @@ dependencies {
 
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
+    testCompile project(':build-test-data')
 }
 
 bootRun {
