@@ -1,5 +1,6 @@
 package grails.buildtestdata.builders
 
+import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.utils.Basics
 import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
@@ -33,8 +34,10 @@ class PogoTestDataBuilder implements DataBuilder{
     def build(BuildTestDataContext ctx) {
         // Nothing to do, target exists already 
         if(ctx.target) return ctx.target
-        
-        Map initialProps = BuildTestDataApi.initialPropsResolver.getInitialProps(target)
+
+        //TODO fix to use new initialProps design
+        //Map initialProps = BuildTestDataApi.initialPropsResolver.getInitialProps(target)
+        Map initialProps = findMissingConfigValues(ctx.data)
         if(initialProps){
             if(ctx.data){
                 ctx.data = [:] + initialProps + ctx.data 
@@ -50,6 +53,12 @@ class PogoTestDataBuilder implements DataBuilder{
         }
         instance
     }
+
+    Map<String, Object> findMissingConfigValues(Map<String, Object> propValues) {
+        Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(target.name) - propValues.keySet()
+        TestDataConfigurationHolder.getPropertyValues(target.name, missingProperties, propValues)
+    }
+
 
     def getNewInstance(){
         if(List.isAssignableFrom(target)){

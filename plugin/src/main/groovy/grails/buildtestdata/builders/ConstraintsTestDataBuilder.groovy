@@ -6,7 +6,9 @@ import grails.buildtestdata.utils.ClassUtils
 import grails.gorm.validation.Constrained
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
+import grails.gorm.validation.DefaultConstrainedProperty
 import grails.gorm.validation.PersistentEntityValidator
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.mapping.model.MappingContext
@@ -30,7 +32,7 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
         ConstrainedProperty.MIN_CONSTRAINT,
         ConstrainedProperty.MIN_SIZE_CONSTRAINT,
         ConstrainedProperty.MAX_SIZE_CONSTRAINT,
-        ConstrainedProperty.MATCHES_CONSTRAINT,     // not implememnted, provide sample data
+        ConstrainedProperty.MATCHES_CONSTRAINT,
         ConstrainedProperty.VALIDATOR_CONSTRAINT,   // not implememnted, provide sample data
         ConstrainedProperty.BLANK_CONSTRAINT, // precluded by no '' default value applied in the nullable constraint handling
     ].reverse()
@@ -83,6 +85,8 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
 
     Collection<String> findRequiredPropertyNames() {
         Map<String,? extends Constrained> constraints = constraintsMap
+        //println constraintsMap
+
         if(constraints){
             return constraints.keySet().findAll {
                 isRequiredConstrained(constraints.get(it))
@@ -102,6 +106,7 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
     void populateRequiredValues(Object instance, BuildTestDataContext ctx) {
         for (requiredPropertyName in requiredPropertyNames) {
             Constrained constrained = constraintsMap.get(requiredPropertyName)
+            println "populateRequiredValues $requiredPropertyName $constrained"
             if(constrained instanceof ConstrainedProperty){
                 if(!isSatisfied(instance,requiredPropertyName,(ConstrainedProperty) constrained)){
                     satisfyConstrained(instance, requiredPropertyName,(ConstrainedProperty) constrained,ctx)    
@@ -110,6 +115,15 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
                     ctx.satisfyNested(instance,requiredPropertyName,((ConstrainedProperty)constrained).propertyType)
                 }
             }
+            //do examples if it exists
+            exampleMetaConstraints(instance, requiredPropertyName,(ConstrainedProperty) constrained,ctx)
+        }
+    }
+
+    @CompileDynamic
+    void exampleMetaConstraints(Object instance, String propertyName, ConstrainedProperty constrained, BuildTestDataContext ctx){
+        if(constrained instanceof DefaultConstrainedProperty && constrained.metaConstraints["example"]){
+            new ExampleConstraintHandler().handle(instance, propertyName, null, constrained, ctx)
         }
     }
     
@@ -125,8 +139,10 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
             if (log.debugEnabled) {
                 log.debug "${target?.name}.${constraint?.name} constraint, field before adjustment: ${InvokerHelper.getProperty(instance,propertyName)}"
             }
+            println "finding constraint.name ${constraint.name}"
             ConstraintHandler handler = handlers[constraint.name]
             if (handler) {
+                println "found handler constraint.name ${constraint.name}"
                 handler.handle(instance, propertyName, constraint, constrained, ctx)
                 if (log.debugEnabled) {
                     log.debug "${target?.name}.$propertyName field after adjustment for ${constraint?.name}: ${InvokerHelper.getProperty(instance,propertyName)}"

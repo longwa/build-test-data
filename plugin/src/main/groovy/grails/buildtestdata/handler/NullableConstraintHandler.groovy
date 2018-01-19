@@ -19,7 +19,7 @@ class NullableConstraintHandler extends AbstractHandler {
         if(value == null){
             value = determineNonStandardValue(instance,propertyName,appliedConstraint,constrainedProperty,ctx)
         }
-        println "NullableConstraintHandler Setting val $propertyName $value"
+        //println "NullableConstraintHandler Setting val $propertyName $value"
         setValue(instance,propertyName,value)
     }
 
