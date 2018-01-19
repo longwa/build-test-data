@@ -55,6 +55,7 @@ class Basics {
         if(!type.isPrimitive()) return type
         if(Byte.TYPE == type) return Byte;
         if(Long.TYPE == type) return Long;
+        if(Short.TYPE == type) return Short;
         if(Double.TYPE == type) return Double;
         if(Integer.TYPE == type) return Integer;
         if(Float.TYPE == type) return Float;

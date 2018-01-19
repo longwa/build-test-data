@@ -43,8 +43,8 @@ class PogoTestDataBuilder implements DataBuilder{
                 ctx.data = [:] + initialProps
             }    
         }
-        def instance = newInstance        
-        
+        def instance = getNewInstance()
+
         if(ctx.data){
             dataBinder.bind(instance,new SimpleMapDataBindingSource(ctx.data))
         }
