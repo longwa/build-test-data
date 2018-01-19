@@ -42,7 +42,7 @@ class GormEntityTestDataBuilder extends ConstraintsTestDataBuilder{
     Map<String, ConstrainedProperty> domainProperties
 
     Set<Class> requiredDomainClasses
-    Set<String> requiredPropertyNames
+    //Set<String> requiredPropertyNames
     Set<String> requiredDomainPropertyNames
     Set<String> propsToSaveFirst
 
@@ -114,16 +114,22 @@ class GormEntityTestDataBuilder extends ConstraintsTestDataBuilder{
         instance
     }
 
-    @Override
-    Collection<String> findRequiredPropertyNames() {
-        Collection<String> requiredPropertyNames = super.findRequiredPropertyNames()
-        PersistentEntity persistentEntity = persistentEntity
-        Collection<String> requiredPersistentFields = (Collection<String>)persistentEntity.getPersistentProperties().inject([]){acc,item->
-            if(!item.nullable) acc.add(item.name)
-            return acc
+    Set<String> findRequiredPropertyNames(Map<String, ConstrainedProperty> constrainedProperties) {
+        Set<String> allPropertyNames = constrainedProperties.keySet()
+        allPropertyNames.findAll { String propName ->
+            !constrainedProperties[propName].isNullable()
         }
-        return requiredPropertyNames + requiredPersistentFields
     }
+//    @Override
+//    Collection<String> findRequiredPropertyNames() {
+//        Collection<String> requiredPropertyNames = super.findRequiredPropertyNames()
+//        PersistentEntity persistentEntity = persistentEntity
+//        Collection<String> requiredPersistentFields = (Collection<String>)persistentEntity.getPersistentProperties().inject([]){acc,item->
+//            if(!item.nullable) acc.add(item.name)
+//            return acc
+//        }
+//        return requiredPropertyNames + requiredPersistentFields
+//    }
 
     @Override
     Map<String, ? extends Constrained> getConstraintsMap() {
