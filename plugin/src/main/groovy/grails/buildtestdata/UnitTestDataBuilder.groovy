@@ -49,6 +49,7 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
     }
 
     void mockDependencyGraph(Set<Class> mockedList, Class<?>... domainClassesToMock) {
+        println "mockDependencyGraph $domainClassesToMock"
         // First mock these domains so they are registered with Grails
         super.mockDomains(domainClassesToMock)
         mockedList.addAll(domainClassesToMock)
@@ -57,6 +58,7 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
             // For domain instance building, we only care about concrete classes
             if (!DomainUtil.isAbstract(clazz)) {
                 GormEntityTestDataBuilder builder = (GormEntityTestDataBuilder) BuildTestDataApi.findBuilder(clazz)
+                println "requiredDomainClasses ${builder.requiredDomainClasses}"
                 builder.requiredDomainClasses
             }
             else {
