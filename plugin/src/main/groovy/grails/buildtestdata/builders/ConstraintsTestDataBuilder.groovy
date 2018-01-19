@@ -64,7 +64,7 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
 
     ConstraintsTestDataBuilder(Class target) {
         super(target)
-        //this.requiredPropertyNames = findRequiredPropertyNames()
+        this.requiredPropertyNames = findRequiredPropertyNames()
         this.handlers = new HashMap<String,? extends ConstraintHandler>(defaultHandlers)
 
     }
@@ -84,17 +84,17 @@ class ConstraintsTestDataBuilder extends PogoTestDataBuilder {
         ClassUtils.getStaticPropertyValue(target,'constraintsMap') as Map<String, ? extends Constrained>
     }
 
-//    Collection<String> findRequiredPropertyNames() {
-//        Map<String,? extends Constrained> constraints = constraintsMap
-//        //println constraintsMap
-//
-//        if(constraints){
-//            return constraints.keySet().findAll {
-//                isRequiredConstrained(constraints.get(it))
-//            }
-//        }
-//        return []
-//    }
+    Set<String>  findRequiredPropertyNames() {
+        Map<String,? extends Constrained> constraints = constraintsMap
+        //println constraintsMap
+
+        if(constraints){
+            return constraints.keySet().findAll {
+                isRequiredConstrained(constraints.get(it))
+            }
+        }
+        return [] as Set
+    }
 
     
     @Override

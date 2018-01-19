@@ -14,6 +14,9 @@ class BuildTestDataContext {
     
     
     Object satisfyNested(Object instance, String property, Class propertyType){
+        //it the property is already set then just return it
+        if(instance[property]) return instance[property]
+
         Class instanceType = instance.class
         if(propertyType.isAssignableFrom(instanceType)){
             return instance
@@ -24,7 +27,6 @@ class BuildTestDataContext {
         }        
         
         knownInstances.put(instanceType,instance)
-        
         Object prevTarget = target
         Object prevData = data
         try{

@@ -10,9 +10,11 @@ import grails.gorm.validation.PersistentEntityValidator
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.OneToOne
 import org.springframework.validation.Validator
 
@@ -61,7 +63,7 @@ class GormEntityTestDataBuilder extends ConstraintsTestDataBuilder{
         PersistentEntityValidator entityValidator = mappingContext.getEntityValidator(persistentEntity) as PersistentEntityValidator
         constrainedProperties = (entityValidator?.constrainedProperties ?: [:]) as Map<String, ConstrainedProperty>
 
-        requiredPropertyNames = findRequiredPropNames(constrainedProperties)
+        //requiredPropertyNames = findRequiredPropNames(constrainedProperties)
         domainProperties = findDomainProperties(constrainedProperties)
         requiredDomainPropertyNames = findRequiredDomainPropertyNames(domainProperties, requiredPropertyNames)
         requiredDomainClasses = findRequiredDomainClasses(domainProperties, requiredPropertyNames)
@@ -71,22 +73,22 @@ class GormEntityTestDataBuilder extends ConstraintsTestDataBuilder{
 
     Set<String> findRequiredPropNames(Map<String, ConstrainedProperty> constrainedProperties) {
         Set<String> allPropertyNames = constrainedProperties.keySet()
-        allPropertyNames.findAll { String propName ->
+        return allPropertyNames.findAll { String propName ->
             !constrainedProperties[propName].isNullable()
         }
     }
 
     Set<Class> findRequiredDomainClasses(Map<String, ConstrainedProperty> domainProperties, Set<String> requiredPropertyNames) {
-        domainProperties.findAll { Map.Entry<String, ConstrainedProperty> it ->
-            requiredPropertyNames.contains(it.key) }
-        .collect { Map.Entry<String, ConstrainedProperty> it ->
-            it.value.propertyType
+        persistentEntity.associations.findAll { Association assc ->
+            requiredPropertyNames.contains(assc.name) && !(assc.associatedEntity instanceof EmbeddedPersistentEntity)
+        }.collect{ Association assc ->
+            assc.associatedEntity.javaClass
         } as Set<Class>
     }
 
     Map<String, ConstrainedProperty> findDomainProperties(Map<String, ConstrainedProperty> constrainedProperties) {
         constrainedProperties.findAll { Map.Entry<String, ConstrainedProperty> it ->
-            DomainUtil.propertyIsToOneDomainClass(it.value.propertyType)
+            DomainUtil.propertyIsDomainClass(it.value.propertyType)
         }
     }
 
@@ -110,7 +112,7 @@ class GormEntityTestDataBuilder extends ConstraintsTestDataBuilder{
     @Override
     def build(BuildTestDataContext ctx) {
         GormEntity instance = (GormEntity) super.build(ctx)
-        instance.save()
+        instance.save(failOnError: true)
         instance
     }
 
@@ -161,7 +163,16 @@ class GormEntityTestDataBuilder extends ConstraintsTestDataBuilder{
     @Override
     @CompileDynamic
     def buildLazy(BuildTestDataContext ctx) {
-        (ctx.data? target.where(ctx.data):target.first()) ?:super.buildLazy(ctx)
+        def ent
+        if (ctx.data) {
+            ent = target.findWhere(ctx.data)
+        } else {
+            List list = target.list([limit: 1])
+            ent = list ? list.first() : null
+        }
+        if(!ent) ent = super.buildLazy(ctx)
+
+        return ent
     }
 
     @Override

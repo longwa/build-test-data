@@ -6,7 +6,8 @@ import grails.buildtestdata.UnitTestDataBuilder
 import spock.lang.Specification
 
 class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
-    void setup() {
+
+    void setupSpec() {
         mockDomains(Author)
     }
 
