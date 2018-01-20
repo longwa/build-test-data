@@ -1,6 +1,6 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -9,7 +9,7 @@ abstract class AbstractHandler implements ConstraintHandler {
 
     @Override
     void handle(Object instance, String propertyName, Constraint appliedConstraint,
-                ConstrainedProperty constrainedProperty, BuildTestDataContext ctx) {
+                ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
         handle(instance, propertyName, appliedConstraint, constrainedProperty)
         handle(instance, propertyName, appliedConstraint)
         handle(instance, propertyName, constrainedProperty)

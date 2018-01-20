@@ -37,7 +37,6 @@ class HibDomainClassSpec extends HibernateSpec{
         foo.name == 'bill'
         foo.bar.name == 'name'
         foo.bar.id == 2
-        println foo.properties
 
     }
 
@@ -49,7 +48,6 @@ class HibDomainClassSpec extends HibernateSpec{
         then: "a new Foo was saved since the build was called in another test and not in setupSpec"
         foo.id == 2
         foo.bar.id == 3
-        println foo.properties
 
     }
 }

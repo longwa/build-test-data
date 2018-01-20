@@ -1,6 +1,6 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.gorm.validation.Constrained
 import grails.gorm.validation.Constraint
 import org.grails.datastore.mapping.model.MappingContext
@@ -19,7 +19,7 @@ class PersistentEntityNullableConstraintHandler extends NullableConstraintHandle
 
     @Override
     Object determineNonStandardValue(Object instance, String propertyName, Constraint appliedConstraint,
-                                     Constrained constrainedProperty, BuildTestDataContext ctx) {
+                                     Constrained constrainedProperty, DataBuilderContext ctx) {
         PersistentProperty persistentProperty = persistentEntity.getPropertyByName(propertyName)
         if(persistentProperty instanceof Association){
             switch (persistentProperty){

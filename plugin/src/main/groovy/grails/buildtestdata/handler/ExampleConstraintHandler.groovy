@@ -1,6 +1,6 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.buildtestdata.utils.IsoDateUtil
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 class ExampleConstraintHandler extends AbstractConstraintHandler {
     @Override
     void handle(Object instance, String propertyName, Constraint appliedConstraint,
-                ConstrainedProperty constrainedProperty, BuildTestDataContext ctx) {
+                ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
         Object exValue = getExampleContraintValue(constrainedProperty)
         if(exValue != null){
             setProperty(instance, propertyName, exValue)

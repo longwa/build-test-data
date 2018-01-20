@@ -1,7 +1,7 @@
 package grails.buildtestdata
 
 import grails.buildtestdata.builders.BuildTestDataApi
-import grails.buildtestdata.builders.GormEntityTestDataBuilder
+import grails.buildtestdata.builders.PersistentEntityDataBuilder
 import grails.buildtestdata.mixin.Build
 import grails.testing.gorm.DataTest
 import grails.testing.spock.OnceBefore
@@ -49,7 +49,7 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
     }
 
     void mockDependencyGraph(Set<Class> mockedList, Class<?>... domainClassesToMock) {
-        println "mockDependencyGraph $domainClassesToMock"
+        //println "mockDependencyGraph $domainClassesToMock"
         // First mock these domains so they are registered with Grails
         super.mockDomains(domainClassesToMock)
         mockedList.addAll(domainClassesToMock)
@@ -57,8 +57,8 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
         Set<Class> requiredClasses = domainClassesToMock.collectMany { Class clazz ->
             // For domain instance building, we only care about concrete classes
             if (!DomainUtil.isAbstract(clazz)) {
-                GormEntityTestDataBuilder builder = (GormEntityTestDataBuilder) BuildTestDataApi.findBuilder(clazz)
-                println "requiredDomainClasses ${builder.requiredDomainClasses}"
+                PersistentEntityDataBuilder builder = (PersistentEntityDataBuilder) BuildTestDataApi.findBuilder(clazz)
+                //println "requiredDomainClasses ${builder.requiredDomainClasses}"
                 builder.requiredDomainClasses
             }
             else {

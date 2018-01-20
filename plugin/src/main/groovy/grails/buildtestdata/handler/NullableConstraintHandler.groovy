@@ -1,6 +1,6 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.buildtestdata.utils.Basics
 import grails.gorm.validation.Constrained
 import grails.gorm.validation.ConstrainedProperty
@@ -14,7 +14,7 @@ class NullableConstraintHandler extends AbstractHandler {
 
     @Override
     void handle(Object instance, String propertyName, Constraint appliedConstraint,
-                ConstrainedProperty constrainedProperty, BuildTestDataContext ctx) {
+                ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
         Object value = determineBasicValue(propertyName,constrainedProperty)
         if(value == null){
             value = determineNonStandardValue(instance,propertyName,appliedConstraint,constrainedProperty,ctx)
@@ -24,7 +24,7 @@ class NullableConstraintHandler extends AbstractHandler {
     }
 
     Object determineNonStandardValue(Object instance, String propertyName, Constraint appliedConstraint,
-                                     Constrained constrainedProperty, BuildTestDataContext ctx) {
+                                     Constrained constrainedProperty, DataBuilderContext ctx) {
         if(constrainedProperty instanceof ConstrainedProperty){
             ctx.satisfyNested(instance,propertyName,constrainedProperty.propertyType)
         }

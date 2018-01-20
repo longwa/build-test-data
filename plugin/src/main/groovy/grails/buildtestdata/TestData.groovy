@@ -1,7 +1,7 @@
 package grails.buildtestdata
 
 import grails.buildtestdata.builders.BuildTestDataApi
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 
 /**
  * static helpers to build a domain instance with test data
@@ -16,7 +16,7 @@ class TestData {
      * @return the built and saved entity instance
      */
     static <T> T build(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) BuildTestDataApi.findBuilder(entityClass).build(new BuildTestDataContext(data))
+        (T) BuildTestDataApi.findBuilder(entityClass).build(new DataBuilderContext(data))
     }
 
     /**
@@ -26,7 +26,7 @@ class TestData {
      * @return the built unsaved entity instance
      */
     static <T> T buildWithoutSave(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) BuildTestDataApi.findBuilder(entityClass).buildWithoutSave(new BuildTestDataContext(data))
+        (T) BuildTestDataApi.findBuilder(entityClass).buildWithoutSave(new DataBuilderContext(data))
     }
 
     /**
@@ -36,7 +36,7 @@ class TestData {
      * @return the built and saved entity intance
      */
     static <T> T buildWithCache(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) BuildTestDataApi.findBuilder(entityClass).buildLazy(new BuildTestDataContext(data))
+        (T) BuildTestDataApi.findBuilder(entityClass).buildLazy(new DataBuilderContext(data))
     }
 
     static void loadTestDataConfig() {

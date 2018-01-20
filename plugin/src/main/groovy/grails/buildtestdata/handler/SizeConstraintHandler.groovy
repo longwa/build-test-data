@@ -1,10 +1,9 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.GormEntity
 
 @CompileStatic
 class SizeConstraintHandler extends AbstractHandler {
@@ -14,11 +13,11 @@ class SizeConstraintHandler extends AbstractHandler {
 
     @Override
     void handle(Object instance, String propertyName, Constraint appliedConstraint,
-                ConstrainedProperty constrainedProperty, BuildTestDataContext ctx) {
+                ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
         handle(instance,propertyName,constrainedProperty,ctx)
     }
 
-    void handle(Object instance, String propertyName, ConstrainedProperty constrainedProperty, BuildTestDataContext ctx) {
+    void handle(Object instance, String propertyName, ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
 
         Object propertyValue = getValue(instance, propertyName)
         minSizeConstraintHandler.handle(instance, propertyName, constrainedProperty, ctx, constrainedProperty.minSize, propertyValue)

@@ -5,21 +5,29 @@ import grails.buildtestdata.utils.Basics
 import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
+import org.springframework.core.annotation.Order
 
 class PogoTestDataBuilder implements DataBuilder{
-    static class Factory extends AbstractTestDataBuilderFactory<PogoTestDataBuilder> {
-        Factory(){
-            super(Integer.MIN_VALUE)
-        }
+
+    @Order
+    static class Factory implements DataBuilderFactory<PogoTestDataBuilder> {
         @Override
         PogoTestDataBuilder build(Class target) {
             return new PogoTestDataBuilder(target)
         }
+        @Override
+        boolean supports(Class clazz) {
+            return true
+        }
     }
 
-    
     DataBinder dataBinder
     Class target
+
+
+    PogoTestDataBuilder(){
+        this.dataBinder = new SimpleDataBinder()
+    }
 
     PogoTestDataBuilder(Class target){
         this.target=target
@@ -31,7 +39,7 @@ class PogoTestDataBuilder implements DataBuilder{
     }
     
     @Override
-    def build(BuildTestDataContext ctx) {
+    def build(DataBuilderContext ctx) {
         // Nothing to do, target exists already 
         if(ctx.target) return ctx.target
 
@@ -73,12 +81,12 @@ class PogoTestDataBuilder implements DataBuilder{
     }
     
     @Override
-    def buildLazy(BuildTestDataContext ctx) {
+    def buildLazy(DataBuilderContext ctx) {
         return build(ctx)
     }
 
     @Override
-    def buildWithoutSave(BuildTestDataContext ctx){
+    def buildWithoutSave(DataBuilderContext ctx){
         return build(ctx)
     }
 }

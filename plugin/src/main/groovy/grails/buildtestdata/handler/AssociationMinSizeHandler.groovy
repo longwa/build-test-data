@@ -1,6 +1,6 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.builders.BuildTestDataContext
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.gorm.validation.ConstrainedProperty
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -14,7 +14,7 @@ class AssociationMinSizeHandler extends MinSizeConstraintHandler{
     }
 
     @Override
-    void handle(Object instance, String propertyName, ConstrainedProperty constrained, BuildTestDataContext ctx,
+    void handle(Object instance, String propertyName, ConstrainedProperty constrained, DataBuilderContext ctx,
                 int minSize, Object propertyValue) {
         PersistentProperty property = persistentEntity.getPropertyByName(propertyName)
         if(property instanceof Association){

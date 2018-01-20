@@ -9,6 +9,7 @@ import spock.lang.Specification
 @Rollback
 @Integration
 class BuildLazyTests extends Specification implements TestDataBuilder {
+
     void testBuildLazyNoParamsCreatesNewWhenNoneExist() {
         assert Author.count() == 0
 
