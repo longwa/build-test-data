@@ -22,15 +22,15 @@ class PogoTestDataBuilder implements DataBuilder{
     }
 
     DataBinder dataBinder
-    Class target
+    Class targetClass
 
 
     PogoTestDataBuilder(){
         this.dataBinder = new SimpleDataBinder()
     }
 
-    PogoTestDataBuilder(Class target){
-        this.target=target
+    PogoTestDataBuilder(Class targetClass){
+        this.targetClass=targetClass
         this.dataBinder = new SimpleDataBinder()
     }
     
@@ -63,20 +63,20 @@ class PogoTestDataBuilder implements DataBuilder{
     }
 
     Map<String, Object> findMissingConfigValues(Map<String, Object> propValues) {
-        Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(target.name) - propValues.keySet()
-        TestDataConfigurationHolder.getPropertyValues(target.name, missingProperties, propValues)
+        Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(targetClass.name) - propValues.keySet()
+        TestDataConfigurationHolder.getPropertyValues(targetClass.name, missingProperties, propValues)
     }
 
 
     def getNewInstance(){
-        if(List.isAssignableFrom(target)){
+        if(List.isAssignableFrom(targetClass)){
             [] as List
         }
-        else if(Set.isAssignableFrom(target)){
+        else if(Set.isAssignableFrom(targetClass)){
             [] as Set
         }
         else{
-            target.newInstance()
+            targetClass.newInstance()
         }
     }
     

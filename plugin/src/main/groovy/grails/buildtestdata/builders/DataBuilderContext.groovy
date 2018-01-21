@@ -22,22 +22,30 @@ class DataBuilderContext {
         }
         def match = knownInstances.find {k,v-> propertyType.isAssignableFrom(k)}
         if(match){
+//            if(propertyType.isAssignableFrom(match.value.class)) {
+//                instance[property] = match.value
+//            }
             return match.value
         }        
         
         knownInstances.put(instanceType,instance)
         Object prevTarget = target
         Object prevData = data
+        Object returnInstance
         try{
             data = ((Map<String,?>)data[property])?:[:]
             target = instance[property]
-            
-            BuildTestDataApi.findBuilder(propertyType).build(this)
+
+            returnInstance = BuildTestDataApi.findBuilder(propertyType).buildWithoutSave(this)
+//            if(propertyType.isAssignableFrom(returnInstance.class)) {
+//                instance[property] = returnInstance
+//            }
         }
         finally {
             data=prevData
             target=prevTarget
             knownInstances.remove(instanceType)
         }
+        return returnInstance
     }
 }

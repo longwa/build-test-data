@@ -100,7 +100,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         catch(Exception e){
             e.printStackTrace()
         }
-        throw new RuntimeException("No constraints found for persistent entity ${target.name}. Make sure it's mocked and properly initialized.")
+        throw new RuntimeException("No constraints found for persistent entity ${targetClass.name}. Make sure it's mocked and properly initialized.")
     }
 
     Validator getValidator(){
@@ -112,7 +112,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     }
     
     PersistentEntity getPersistentEntity(){
-        (PersistentEntity) ClassUtils.getStaticPropertyValue(target,'gormPersistentEntity')
+        (PersistentEntity) ClassUtils.getStaticPropertyValue(targetClass,'gormPersistentEntity')
     }
 
     @Override
@@ -120,9 +120,9 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     def buildLazy(DataBuilderContext ctx) {
         def ent
         if (ctx.data) {
-            ent = target.findWhere(ctx.data)
+            ent = targetClass.findWhere(ctx.data)
         } else {
-            List list = target.list([limit: 1])
+            List list = targetClass.list([limit: 1])
             ent = list ? list.first() : null
         }
         if(!ent) ent = super.buildLazy(ctx)
@@ -132,6 +132,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
 
     @Override
     def buildWithoutSave(DataBuilderContext ctx){
-        return build(ctx)
+        GormEntity instance = (GormEntity) super.build(ctx)
+        instance
     }
 }

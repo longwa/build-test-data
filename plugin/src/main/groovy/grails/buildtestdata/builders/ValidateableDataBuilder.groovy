@@ -79,7 +79,7 @@ class ValidateableDataBuilder extends PogoTestDataBuilder {
 
     Map<String, ConstrainedProperty>  getConstraintsMap() {
         //Assume its a grails.validation.Validateable. overrides in GormEntityDataBuilder
-        ClassUtils.getStaticPropertyValue(target,'constraintsMap') as Map<String, ConstrainedProperty>
+        ClassUtils.getStaticPropertyValue(targetClass,'constraintsMap') as Map<String, ConstrainedProperty>
     }
 
     Set<String>  findRequiredPropertyNames() {
@@ -109,7 +109,8 @@ class ValidateableDataBuilder extends PogoTestDataBuilder {
                 satisfyConstrained(instance, requiredPropertyName,constrained,ctx)
             }
             else if(!isBasicType(((ConstrainedProperty)constrained).propertyType)){
-                ctx.satisfyNested(instance,requiredPropertyName,constrained.propertyType)
+                Object val = ctx.satisfyNested(instance,requiredPropertyName,constrained.propertyType)
+                instance[requiredPropertyName] = val
             }
             //do examples if it exists
             exampleMetaConstraints(instance, requiredPropertyName, constrained,ctx)
@@ -132,11 +133,11 @@ class ValidateableDataBuilder extends PogoTestDataBuilder {
     
     Object satisfyConstrained(Object instance, String propertyName, ConstrainedProperty constrained, DataBuilderContext ctx) {
         return sortedConstraints(constrained.appliedConstraints).find { Constraint constraint ->
-            log.debug "${target?.name}.${constraint?.name} constraint, field before adjustment: ${InvokerHelper.getProperty(instance,propertyName)}"
+            log.debug "${targetClass?.name}.${constraint?.name} constraint, field before adjustment: ${InvokerHelper.getProperty(instance,propertyName)}"
             ConstraintHandler handler = handlers[constraint.name]
             if (handler) {
                 handler.handle(instance, propertyName, constraint, constrained, ctx)
-                log.debug "${target?.name}.$propertyName field after adjustment for ${constraint?.name}: ${InvokerHelper.getProperty(instance,propertyName)}"
+                log.debug "${targetClass?.name}.$propertyName field after adjustment for ${constraint?.name}: ${InvokerHelper.getProperty(instance,propertyName)}"
             } else {
                 log.warn "Unable to find property generator handler for constraint ${constraint?.name}!"
             }

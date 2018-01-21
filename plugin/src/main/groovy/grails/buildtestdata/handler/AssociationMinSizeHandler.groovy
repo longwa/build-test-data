@@ -21,11 +21,7 @@ class AssociationMinSizeHandler extends MinSizeConstraintHandler{
             def value =  (0..minSize-1).collect{
                 ctx.satisfyNested(instance,propertyName,((Association)property).associatedEntity.javaClass)
             }
-            setValue(
-                instance,
-                propertyName,
-                value
-            )            
+            setValue(instance, propertyName, value)
         }
         super.handle(instance, propertyName, constrained, ctx, minSize, propertyValue)
     }

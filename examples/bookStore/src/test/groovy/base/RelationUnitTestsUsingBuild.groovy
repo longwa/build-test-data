@@ -11,7 +11,7 @@ import magazine.Issue
 import magazine.Page
 import spock.lang.Specification
 
-@Build([Face, Book, Author, Invoice, Page, Issue, Arm])
+@Build([Arm, Face, Book, Author, Invoice, Page])
 class RelationUnitTestsUsingBuild extends Specification implements UnitTestDataBuilder {
     void testOneToOneCascades() {
         when:
