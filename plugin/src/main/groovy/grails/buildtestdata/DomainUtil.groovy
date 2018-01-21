@@ -24,9 +24,12 @@ class DomainUtil {
         Collection.isAssignableFrom(clazz)
     }
 
+    /**
+     * check the test config for info on what conrete classes to sub in for abstracts
+     */
     static Class findConcreteSubclass(Class abstractClass) {
         if (isAbstract(abstractClass)) {
-            TestDataConfigurationHolder.getAbstractDefaultFor(abstractClass.name)
+            return TestDataConfigurationHolder.getAbstractDefaultFor(abstractClass.name) ?: abstractClass
         }
         else {
             return abstractClass

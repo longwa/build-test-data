@@ -1,5 +1,6 @@
 package grails.buildtestdata.builders
 
+import grails.buildtestdata.DomainUtil
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.utils.Basics
 import grails.databinding.DataBinder
@@ -24,13 +25,8 @@ class PogoTestDataBuilder implements DataBuilder{
     DataBinder dataBinder
     Class targetClass
 
-
-    PogoTestDataBuilder(){
-        this.dataBinder = new SimpleDataBinder()
-    }
-
     PogoTestDataBuilder(Class targetClass){
-        this.targetClass=targetClass
+        this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
         this.dataBinder = new SimpleDataBinder()
     }
     
