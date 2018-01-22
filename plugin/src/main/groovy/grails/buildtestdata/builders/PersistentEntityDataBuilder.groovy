@@ -60,8 +60,6 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
                 prop instanceof OneToOne && ((OneToOne) prop).isOwningSide()
             }
         }
-
-        //findRequiredDomainPropertyNames()
     }
 
     Set<Class> findRequiredDomainClasses() {
@@ -74,22 +72,6 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         persistentEntity.associations.findAll { Association assc ->
             requiredPropertyNames.contains(assc.name) && !(assc.associatedEntity instanceof EmbeddedPersistentEntity)
         }
-    }
-
-    @Override
-    def build(DataBuilderContext ctx) {
-        GormEntity instance = (GormEntity) buildWithoutSave(ctx)
-        //instance.save(failOnError: true)
-        save(instance, ctx)
-        instance
-    }
-
-    @Override
-    def buildWithoutSave(DataBuilderContext ctx) {
-        def instance = super.doBuild(ctx)
-        applyBiDirectionManyToOnes((GormEntity) instance)
-        populateRequiredValues(instance, ctx)
-        instance
     }
 
     /*
@@ -132,9 +114,48 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         (PersistentEntity) ClassUtils.getStaticPropertyValue(targetClass,'gormPersistentEntity')
     }
 
+    /**
+     * builds the data using the passed in context
+     *
+     * @param args a map of option
+     *  - save : (default: true) whether to call the save method when its a GormEntity
+     *  - find : (default: false) whether to try and find the entity in the datastore first
+     *  - flush : (default: false) passed in the args to the GormEntity save method
+     *  - failOnError : (default: true) passed in the args to the GormEntity save method
+     *  - include : a list of the properties to build in addition to the required fields.
+     *  - includeAll : (default: false) build tests data for all fields in the domain
+     * @param ctx the DataBuilderContext
+     * @return the built entity.
+     */
     @Override
+    def build(Map args, DataBuilderContext ctx) {
+        boolean saveFlag = args["save"] == null ? true : args["save"]
+        boolean find = args["find"] == null ? false : args["find"]
+
+        GormEntity instance
+        //try looking it up in the store if "lazy" of find is set.
+        if(find) {
+            instance = findInStore(ctx)
+        }
+        //find wasn't set to true or it couldn't find anything if it was
+        if(!instance){
+            instance = doBuild(ctx)
+        }
+
+        if(saveFlag) save(instance, ctx, args)
+        instance
+    }
+
+    @Override
+    GormEntity doBuild(DataBuilderContext ctx) {
+        def instance = super.doBuild(ctx)
+        applyBiDirectionManyToOnes((GormEntity) instance)
+        populateRequiredValues(instance, ctx)
+        (GormEntity) instance
+    }
+
     @CompileDynamic
-    def buildLazy(DataBuilderContext ctx) {
+    GormEntity findInStore(DataBuilderContext ctx) {
         def ent
         if (ctx.data) {
             ent = targetClass.findWhere(ctx.data)
@@ -142,12 +163,10 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
             List list = targetClass.list([limit: 1])
             ent = list ? list.first() : null
         }
-        if(!ent) ent = super.buildLazy(ctx)
-
-        return ent
+        return (GormEntity) ent
     }
 
-    GormEntity save(GormEntity domainInstance, DataBuilderContext ctx) {
+    GormEntity save(GormEntity domainInstance, DataBuilderContext ctx, Map saveArgs = [:]) {
         if (ctx.knownInstances[domainInstance.class] || domainInstance instanceof Enum) {
             return domainInstance
         }
@@ -164,7 +183,8 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
                 }
             }
         }
-        domainInstance.save(failOnError: true)
+        saveArgs['failOnError'] = saveArgs.containsKey('failOnError') ? saveArgs['failOnError'] : true
+        domainInstance.save(saveArgs)
 
         domainInstance
     }

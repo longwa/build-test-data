@@ -28,10 +28,19 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
         entityClasses.each { ec ->
             def mc = ec.metaClass
             mc.static.build = {
-                return TestData.build(ec)
+                return build(ec)
             }
-            mc.static.build = { Map data ->
-                return TestData.build(ec, data)
+            mc.static.build = { Map args ->
+                return build(args, ec)
+            }
+            mc.static.build = { Map args, Map data ->
+                return build(args, ec, data)
+            }
+            mc.static.findOrBuild = {
+                return findOrBuild( ec, [:])
+            }
+            mc.static.findOrBuild = { Map data ->
+                return findOrBuild( ec, data)
             }
         }
     }
@@ -72,4 +81,5 @@ trait UnitTestDataBuilder extends DataTest implements TestDataBuilder {
             mockDependencyGraph(mockedList, requiredClasses as Class[])
         }
     }
+
 }

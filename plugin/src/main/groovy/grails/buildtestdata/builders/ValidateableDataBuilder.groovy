@@ -98,10 +98,9 @@ class ValidateableDataBuilder extends PogoDataBuilder {
         return [] as Set
     }
 
-    
     @Override
-    def build(DataBuilderContext ctx) {
-        Object instance = (Object) super.build(ctx)
+    def build(Map args, DataBuilderContext ctx) {
+        Object instance = (Object) super.build(args, ctx)
         populateRequiredValues(instance, ctx)
         instance
     }

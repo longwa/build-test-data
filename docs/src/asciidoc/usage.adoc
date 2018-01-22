@@ -140,21 +140,21 @@ Book author id: 4
 
 The build-test-data plugin lets you concentrate on the data that's pertinent to your test, rather than building and maintaing large datasets that aren't tailor made for your test.
 
-=== buildLazy()
+=== findOrBuild()
 Before creating an object (and it's entire graph of required related objects) it will look to see if there's already an object that meets the build criteria. If there is, it will return that, otherwise, it will create a new one:
 
 ```groovy
 // Finds book created above with the existing author
-def b = Book.buildLazy(title: "Tomorrow Midnight")
+def b = Book.findOrBuild(title: "Tomorrow Midnight")
 assert b.author.lastName == "Bradbury"
 
 // Creates new book with author
-def newBook = Book.buildLazy(title: "My Fancy New Book")
+def newBook = Book.findOrBuild(title: "My Fancy New Book")
 assert newBook != null
 assert newBook.author != null
 ```
 
-I find `buildLazy()` to be really useful in grails console sessions where I want to create some dummy test data once and then do a number of operations on it. Previously, I had to comment out all the creation logic so that new objects weren't getting created on every script execution. Now it'll just return them and I can focus on writing the console code I wanted to try out rather than messing with the creation logic.
+I find `findOrBuild()` to be really useful in grails console sessions where I want to create some dummy test data once and then do a number of operations on it. Previously, I had to comment out all the creation logic so that new objects weren't getting created on every script execution. Now it'll just return them and I can focus on writing the console code I wanted to try out rather than messing with the creation logic.
 
 === buildWithoutSave()
 In some cases you need to build a domain object, but you don't want to actually save it to the underlying data store. This is particularly useful if you are trying to build a complex graph and need to build one of the children as part of the parent build.

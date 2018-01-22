@@ -48,15 +48,16 @@ class BookUnitSpec extends Specification implements UnitTestDataBuilder {
 NOTE: Even if you are using the `@Build` annotation, you must still implement the `UnitTestDataBuilder` trait.
 
 === Trait Methods
-The `UnitTestDataBuilder` trait adds the builder methods to your test class if you prefer to call them directly.
+The `TestDataBuilder` and therefore the `UnitTestDataBuilder` trait adds the builder methods to your test class if you prefer to call them directly.
 
 ```groovy
-    T build(Class<T> clazz, Map<String, Object> propValues = [:])
+     public <T> T build(Map args = [:], Class<T> clazz)
 
-    T buildWithoutSave(Class<T> clazz, Map<String, Object> propValues = [:])
+     public <T> T build(Class<T> clazz, Map<String, Object> propValues)
 
-    T buildLazy(Class<T> clazz, Map<String, Object> propValues = [:])
-```
+     public <T> T build(Map args, Class<T> clazz, Map<String, Object> propValues)
+
+     public <T> T findOrBuild(Class<T> clazz, Map<String, Object> propValues = [:])
 
 In that case you can just call `build()` and pass in the Class that you which to build.
 

@@ -39,11 +39,7 @@ class DataBuilderContext {
             knownInstances.put(instance.class, instance)
             //the save is primarily here and will be true for ManyToOne so we don't get
             //org.hibernate.TransientPropertyValueException: Not-null property references a transient value - transient instance must be saved before current operation
-            if(save){
-                return TestData.findBuilder(propertyType).build(newCtx)
-            }else{
-                return TestData.findBuilder(propertyType).buildWithoutSave(newCtx)
-            }
+            return TestData.findBuilder(propertyType).build(newCtx, save: save)
         }
         finally {
             knownInstances.remove(instance.class)
@@ -55,7 +51,7 @@ class DataBuilderContext {
         knownInstances.put(instance.class, instance)
 
         try{
-            return TestData.findBuilder(propertyType).buildWithoutSave(newCtx)
+            return TestData.findBuilder(propertyType).build(newCtx, save: false)
         }
         finally {
             knownInstances.remove(instance.class)

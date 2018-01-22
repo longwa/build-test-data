@@ -15,7 +15,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 0
 
         when:
-        def domainObject = buildLazy(Author)
+        def domainObject = findOrBuild(Author)
 
         then:
         assert domainObject
@@ -27,7 +27,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author)
+        def domainObject = findOrBuild(Author)
 
         then:
         assert domainObject
@@ -40,7 +40,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 0
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Bar"])
+        def domainObject = findOrBuild(Author, [firstName: "Bar"])
 
         then:
         assert domainObject
@@ -52,7 +52,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Bar"])
+        def domainObject = findOrBuild(Author, [firstName: "Bar"])
 
         then:
         assert domainObject
@@ -64,7 +64,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Foo"])
+        def domainObject = findOrBuild(Author, [firstName: "Foo"])
 
         then:
         assert domainObject
@@ -78,7 +78,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Foo", lastName: "Bar"])
+        def domainObject = findOrBuild(Author, [firstName: "Foo", lastName: "Bar"])
 
         then:
         assert domainObject

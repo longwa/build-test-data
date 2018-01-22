@@ -35,8 +35,17 @@ class BuildTestDataGrailsPlugin extends Plugin {
             mc.static.build = {
                 return TestData.build(ec)
             }
-            mc.static.build = { Map data ->
-                return TestData.build(ec, data)
+            mc.static.build = { Map args ->
+                return TestData.build(args, ec)
+            }
+            mc.static.build = { Map args, Map data ->
+                return TestData.build(args, ec, data)
+            }
+            mc.static.findOrBuild = {
+                return TestData.findOrBuild( ec, [:])
+            }
+            mc.static.findOrBuild = { Map data ->
+                return TestData.findOrBuild( ec, data)
             }
         }
     }

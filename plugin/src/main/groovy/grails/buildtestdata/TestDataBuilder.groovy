@@ -6,22 +6,27 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 
 /**
- * Integration tests can implement this trait to add build-test-data functionality
+ * Integration tests, any class really, can implement this trait to add build-test-data functionality
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
 trait TestDataBuilder {
 
-    public <T> T build(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        TestData.build(clazz, propValues)
+    /** see {@link TestData#build} */
+    public <T> T build(Map args = [:], Class<T> clazz) {
+        TestData.build(args, clazz)
     }
 
-    public <T> T buildWithoutSave(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        TestData.buildWithoutSave(clazz, propValues)
+    public <T> T build(Class<T> clazz, Map<String, Object> propValues) {
+        TestData.build([:], clazz, propValues)
     }
 
-    public <T> T buildLazy(Class<T> clazz, Map<String, Object> propValues = [:]) {
-        TestData.buildWithCache(clazz, propValues)
+    public <T> T build(Map args, Class<T> clazz, Map<String, Object> propValues) {
+        TestData.build(args, clazz, propValues)
+    }
+
+    public <T> T findOrBuild(Class<T> clazz, Map<String, Object> propValues = [:]) {
+        TestData.build([find: true], clazz, propValues)
     }
 
     /**

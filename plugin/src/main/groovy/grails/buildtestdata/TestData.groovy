@@ -25,34 +25,64 @@ class TestData {
     }
 
     /**
+     * {@see #build(Map args, Class<T> entityClass, Map<String, Object> data)}
+     */
+    static <T> T build(Class<T> entityClass, Map<String, Object> data = [:]) {
+        build([:], entityClass, data)
+    }
+
+    /**
+     * builds the data using the passed in context
+     * @param args a map of option
+     *  - save : (default: true) whether to call the save method when its a GormEntity
+     *  - find : (default: false) whether to try and find the entity in the datastore first
+     *  - flush : (default: false) passed in the args to the GormEntity save method
+     *  - failOnError : (default: true) passed in the args to the GormEntity save method
+     *  - include : a list of the properties to build in addition to the required fields.
+     *  - includeAll : (default: false) build tests data for all fields in the domain
+     *  - data : a map of data to bind, can also just be in the args. usefull if you have a field named 'save' or 'find' etc..
+     * @param entityClass the domain class for the entity that is built
+     * @return the built entity.
+     */
+    static <T> T build(Map args, Class<T> entityClass) {
+        Map newArgs = [:]
+        Map<String, Object> propValues = [:]
+        if (args){
+            ['save', 'find', 'include', 'includeAll', 'flush', 'failOnError'].each { key ->
+                if (args.containsKey(key)) newArgs[key] = args.remove(key)
+            }
+            propValues = ((args?.data) ? args.remove('data') : args) as Map<String, Object>
+        }
+        return build(newArgs, entityClass, propValues)
+    }
+
+    /**
      * builds and saves and instance of the domain entity
      *
+     * @param args a map of option
+     *  - save : (default: true) whether to call the save method when its a GormEntity
+     *  - find : (default: false) whether to try and find the entity in the datastore first
+     *  - flush : (default: false) passed in the args to the GormEntity save method
+     *  - failOnError : (default: true) passed in the args to the GormEntity save method
+     *  - include : a list of the properties to build in addition to the required fields.
+     *  - includeAll : (default: false) build tests data for all fields in the domain
      * @param entityClass the domain class to use
      * @param data properties to set on the entity instance before it tries to build tests data
      * @return the built and saved entity instance
      */
-    static <T> T build(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) findBuilder(entityClass).build(new DataBuilderContext(data))
+    static <T> T build(Map args, Class<T> entityClass, Map<String, Object> data) {
+        (T) findBuilder(entityClass).build(args, new DataBuilderContext(data))
     }
 
     /**
-     * Uses the cached entity if it exists, otherwise build a new one
+     * tried to find the an existing entity in the store, otherwise build its
+     *
      * @param entityClass the domain class to use
-     * @param data properties to set on the entity instance before it tries to build tests data
-     * @return the built unsaved entity instance
+     * @param data to be used in the finder or if not found used to build it.
+     * @return the built and saved entity instance
      */
-    static <T> T buildWithoutSave(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) findBuilder(entityClass).buildWithoutSave(new DataBuilderContext(data))
-    }
-
-    /**
-     * Uses the cached entity if it exists, otherwise build a new one
-     * @param entityClass the domain class to use
-     * @param data properties to set on the entity instance before it tries to build tests data
-     * @return the built and saved entity intance
-     */
-    static <T> T buildWithCache(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) findBuilder(entityClass).buildLazy(new DataBuilderContext(data))
+    static <T> T findOrBuild(Class<T> entityClass, Map<String, Object> data = [:]) {
+        build([find: true], entityClass, data)
     }
 
     static getInitialPropsResolver(){

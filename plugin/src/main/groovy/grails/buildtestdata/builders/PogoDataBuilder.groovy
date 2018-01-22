@@ -34,9 +34,14 @@ class PogoDataBuilder implements DataBuilder{
     protected boolean isBasicType(Class type){
         Basics.isBasicType(type)
     }
-    
+
     @Override
     def build(DataBuilderContext ctx) {
+        return build([:], ctx)
+    }
+
+    @Override
+    def build(Map args, DataBuilderContext ctx) {
         return doBuild(ctx)
     }
 
@@ -79,15 +84,5 @@ class PogoDataBuilder implements DataBuilder{
         else{
             targetClass.newInstance()
         }
-    }
-    
-    @Override
-    def buildLazy(DataBuilderContext ctx) {
-        return build(ctx)
-    }
-
-    @Override
-    def buildWithoutSave(DataBuilderContext ctx){
-        return build(ctx)
     }
 }

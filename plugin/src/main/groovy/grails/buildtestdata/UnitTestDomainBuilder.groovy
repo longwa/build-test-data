@@ -18,7 +18,7 @@ trait UnitTestDomainBuilder<D> implements UnitTestDataBuilder {
     D getDomain() {
         if (domainInstance == null) {
             //use buildWithoutSave to keep it consitent with how DomainUnitTest does it
-            this.domainInstance = TestData.buildWithoutSave(getEntityClass())
+            this.domainInstance = TestData.build(getEntityClass(), save:false)
         }
         domainInstance
     }
@@ -43,12 +43,16 @@ trait UnitTestDomainBuilder<D> implements UnitTestDataBuilder {
         return entityClass
     }
 
-    D build(Map<String, Object> propValues = [:]) {
-        TestData.build(getEntityClass(), propValues)
+    D build() {
+       build([:], getEntityClass(), [:])
     }
 
-    D buildWithoutSave(Map<String, Object> propValues = [:]) {
-        TestData.buildWithoutSave(getEntityClass(), propValues)
+    D build(Map args) {
+        build(args, getEntityClass())
+    }
+
+    D build(Map args, Map<String, Object> propValues) {
+        build(args, getEntityClass(), propValues)
     }
 
 }
