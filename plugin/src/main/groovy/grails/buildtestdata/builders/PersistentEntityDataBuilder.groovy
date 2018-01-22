@@ -47,13 +47,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
             new AssociationMinSizeHandler(getPersistentEntity())
         )
 
-//        MappingContext mappingContext = persistentEntity.mappingContext
-//        PersistentEntityValidator entityValidator = mappingContext.getEntityValidator(persistentEntity) as PersistentEntityValidator
-//        constrainedProperties = (entityValidator?.constrainedProperties ?: [:]) as Map<String, ConstrainedProperty>
-
         requiredDomainClasses = findRequiredDomainClasses(requiredPropertyNames)
-
-        //propsToSaveFirst = findPropsToSaveFirst()
     }
 
     Set<String> findRequiredPropNames(Map<String, ConstrainedProperty> constrainedProperties) {
@@ -71,28 +65,25 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         } as Set<Class>
     }
 
-//    Set<String> findPropsToSaveFirst() {
-//        if (persistentEntity.persistentProperties.any { it instanceof OneToOne && it.isOwningSide() }) {
-//            return requiredPropertyNames.findAll { String it ->
-//                PersistentProperty prop = persistentEntity.getPropertyByName(it)
-//                prop instanceof OneToOne && ((OneToOne) prop).isOwningSide()
-//            }
-//        }
-//
-//        requiredDomainPropertyNames
-//    }
-
     @Override
     def build(DataBuilderContext ctx) {
-        GormEntity instance = (GormEntity) super.build(ctx)
-        instance.save(failOnError: true)
+        GormEntity instance = (GormEntity) buildWithoutSave(ctx)
+        instance.save(failOnError: true, flush: true)
+        instance
+    }
+
+    @Override
+    def buildWithoutSave(DataBuilderContext ctx) {
+        def instance = super.doBuild(ctx)
+        //applyBiDirectionManyToOnes((GormEntity) instance)
+        populateRequiredValues(instance, ctx)
         instance
     }
 
     @Override
     Map<String, ConstrainedProperty> getConstraintsMap() {
         try{
-            Validator validator = getValidator()
+            Validator validator = mappingContext.getEntityValidator(persistentEntity)
             if(validator instanceof ConstrainedEntity){
                 return ((ConstrainedEntity)validator).constrainedProperties
             }
@@ -103,10 +94,6 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         throw new RuntimeException("No constraints found for persistent entity ${targetClass.name}. Make sure it's mocked and properly initialized.")
     }
 
-    Validator getValidator(){
-        mappingContext.getEntityValidator(persistentEntity)
-    }
-    
     MappingContext getMappingContext(){
         persistentEntity.getMappingContext()
     }
@@ -130,9 +117,4 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         return ent
     }
 
-    @Override
-    def buildWithoutSave(DataBuilderContext ctx){
-        GormEntity instance = (GormEntity) super.build(ctx)
-        instance
-    }
 }

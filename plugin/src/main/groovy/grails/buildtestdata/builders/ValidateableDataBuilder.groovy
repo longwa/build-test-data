@@ -12,9 +12,13 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.runtime.InvokerHelper
 
+/**
+ * DataBuilder to build test data for any @Validateable and command objects. not just Gorm persistence entities.
+ * PersistentEntityDataBuilder extends this for finer grained Gorm test data generation
+ */
 @Slf4j
 @CompileStatic
-class ValidateableDataBuilder extends PogoTestDataBuilder {
+class ValidateableDataBuilder extends PogoDataBuilder {
 
     static List<String> CONSTRAINT_SORT_ORDER = [
         ConstrainedProperty.IN_LIST_CONSTRAINT, // most important
@@ -102,8 +106,17 @@ class ValidateableDataBuilder extends PogoTestDataBuilder {
         instance
     }
 
+    /**
+     * primary entry method for populating the entity data
+     * @param instance
+     * @param ctx
+     */
     void populateRequiredValues(Object instance, DataBuilderContext ctx) {
-        for (requiredPropertyName in requiredPropertyNames) {
+
+        //remove any data that was passed in the context
+        Set<String> requiredMissingPropertyNames = requiredPropertyNames - ctx.data.keySet()
+
+        for (requiredPropertyName in requiredMissingPropertyNames) {
             ConstrainedProperty constrained = constraintsMap.get(requiredPropertyName)
             if(!isSatisfied(instance,requiredPropertyName,constrained)){
                 satisfyConstrained(instance, requiredPropertyName,constrained,ctx)

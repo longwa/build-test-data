@@ -1,12 +1,28 @@
 package grails.buildtestdata
 
-import grails.buildtestdata.builders.BuildTestDataApi
+
+import grails.buildtestdata.builders.DataBuilder
 import grails.buildtestdata.builders.DataBuilderContext
+import grails.buildtestdata.builders.DataBuilderFactory
+import grails.buildtestdata.builders.PersistentEntityDataBuilder
+import grails.buildtestdata.builders.PogoDataBuilder
+import grails.buildtestdata.propsresolver.InitialPropsResolver
+import org.springframework.core.annotation.AnnotationAwareOrderComparator
 
 /**
- * static helpers to build a domain instance with test data
+ * Primary static API to build a domain instance with test data
  */
 class TestData {
+
+    static InitialPropsResolver initialPropsResolver
+
+    static final Map builders = new HashMap<Class, DataBuilder>()
+    static final List<DataBuilderFactory> factories = []
+    static{
+        factories.add(new PersistentEntityDataBuilder.Factory())
+        factories.add(new PogoDataBuilder.Factory())
+        AnnotationAwareOrderComparator.sort(factories)
+    }
 
     /**
      * builds and saves and instance of the domain entity
@@ -16,7 +32,7 @@ class TestData {
      * @return the built and saved entity instance
      */
     static <T> T build(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) BuildTestDataApi.findBuilder(entityClass).build(new DataBuilderContext(data))
+        (T) findBuilder(entityClass).build(new DataBuilderContext(data))
     }
 
     /**
@@ -26,7 +42,7 @@ class TestData {
      * @return the built unsaved entity instance
      */
     static <T> T buildWithoutSave(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) BuildTestDataApi.findBuilder(entityClass).buildWithoutSave(new DataBuilderContext(data))
+        (T) findBuilder(entityClass).buildWithoutSave(new DataBuilderContext(data))
     }
 
     /**
@@ -36,14 +52,32 @@ class TestData {
      * @return the built and saved entity intance
      */
     static <T> T buildWithCache(Class<T> entityClass, Map<String, Object> data = [:]) {
-        (T) BuildTestDataApi.findBuilder(entityClass).buildLazy(new DataBuilderContext(data))
+        (T) findBuilder(entityClass).buildLazy(new DataBuilderContext(data))
     }
 
-    static void loadTestDataConfig() {
-        TestDataConfigurationHolder.loadTestDataConfig()
+    static getInitialPropsResolver(){
+        if(initialPropsResolver == null){
+            initialPropsResolver = new InitialPropsResolver.EmptyInitialPropsResolver()
+        }
+        initialPropsResolver
     }
 
-    static void clearCache() {
-        //DomainInstanceRegistry.clear()
+    static DataBuilder findBuilder(Class clazz){
+        if(!builders.containsKey(clazz)){
+            builders.put(clazz,createBuilder(clazz))
+        }
+        builders.get(clazz)
+    }
+
+    static DataBuilder createBuilder(Class clazz){
+        for(factory in factories){
+            if(factory.supports(clazz)){
+                return factory.build(clazz)
+            }
+        }
+    }
+
+    static void clear() {
+        builders.clear()
     }
 }

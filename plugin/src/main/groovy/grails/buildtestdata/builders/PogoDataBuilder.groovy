@@ -8,13 +8,13 @@ import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
 import org.springframework.core.annotation.Order
 
-class PogoTestDataBuilder implements DataBuilder{
+class PogoDataBuilder implements DataBuilder{
 
     @Order
-    static class Factory implements DataBuilderFactory<PogoTestDataBuilder> {
+    static class Factory implements DataBuilderFactory<PogoDataBuilder> {
         @Override
-        PogoTestDataBuilder build(Class target) {
-            return new PogoTestDataBuilder(target)
+        PogoDataBuilder build(Class target) {
+            return new PogoDataBuilder(target)
         }
         @Override
         boolean supports(Class clazz) {
@@ -25,7 +25,8 @@ class PogoTestDataBuilder implements DataBuilder{
     DataBinder dataBinder
     Class targetClass
 
-    PogoTestDataBuilder(Class targetClass){
+    PogoDataBuilder(Class targetClass){
+        //findConcreteSubclass takes care of subtituing in concrete classes for abstracts
         this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
         this.dataBinder = new SimpleDataBinder()
     }
@@ -36,7 +37,11 @@ class PogoTestDataBuilder implements DataBuilder{
     
     @Override
     def build(DataBuilderContext ctx) {
-        // Nothing to do, target exists already 
+        return doBuild(ctx)
+    }
+
+    def doBuild(DataBuilderContext ctx) {
+        // Nothing to do, target exists already
         if(ctx.target) return ctx.target
 
         //TODO fix to use new initialProps design
@@ -44,11 +49,11 @@ class PogoTestDataBuilder implements DataBuilder{
         Map initialProps = findMissingConfigValues(ctx.data)
         if(initialProps){
             if(ctx.data){
-                ctx.data = [:] + initialProps + ctx.data 
+                ctx.data = [:] + initialProps + ctx.data
             }
             else{
                 ctx.data = [:] + initialProps
-            }    
+            }
         }
         def instance = getNewInstance()
 
