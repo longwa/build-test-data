@@ -114,7 +114,8 @@ class Basics {
             case Byte:
                 return 71
             case Enum:
-                return type.enumConstants[0]
+                Collection values = type.invokeMethod("values", null) as Collection
+                return values.first()
             default:
                 return null
         }

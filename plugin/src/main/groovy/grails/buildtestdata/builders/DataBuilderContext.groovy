@@ -18,7 +18,7 @@ class DataBuilderContext {
         this.data=data
     }
 
-    Object satisfyNested(Object instance, String property, Class propertyType){
+    Object satisfyNested(Object instance, String property, Class propertyType, boolean save = false){
         //it the property is already set then just return it
         if(instance[property]) return instance[property]
 
@@ -37,8 +37,13 @@ class DataBuilderContext {
 
         try{
             knownInstances.put(instance.class, instance)
-
-            return TestData.findBuilder(propertyType).buildWithoutSave(newCtx)
+            //the save is primarily here and will be true for ManyToOne so we don't get
+            //org.hibernate.TransientPropertyValueException: Not-null property references a transient value - transient instance must be saved before current operation
+            if(save){
+                return TestData.findBuilder(propertyType).build(newCtx)
+            }else{
+                return TestData.findBuilder(propertyType).buildWithoutSave(newCtx)
+            }
         }
         finally {
             knownInstances.remove(instance.class)

@@ -5,7 +5,6 @@ import enumtest.CarStatus
 import enumtest.Door
 import enumtest.DoorStatus
 import grails.buildtestdata.UnitTestDataBuilder
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class EnumUnitTests extends Specification implements UnitTestDataBuilder {
@@ -22,7 +21,6 @@ class EnumUnitTests extends Specification implements UnitTestDataBuilder {
         assert CarStatus.REVERSE == car.status
     }
 
-    @Ignore //FIXME not sure why this one is failing yet
     void testDoorStatusEnumPopulated() {
         when:
         Door door = build(Door)
