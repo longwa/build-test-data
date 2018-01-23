@@ -9,6 +9,10 @@ class DataBuilderContext {
     Object target
     
     Map<Class,Object> knownInstances = [:]
+    //the fields to include along with the required fields.
+    Set<String> includeList
+    //the fields to include along with the required fields. will either be a List or a String = '*' for all
+    Object includes
 
     DataBuilderContext(){
         this.data=[:]

@@ -98,6 +98,10 @@ class ValidateableDataBuilder extends PogoDataBuilder {
         return [] as Set
     }
 
+    Set<String> getConstraintsPropertyNames() {
+        constraintsMap?.keySet()
+    }
+
     @Override
     def build(Map args, DataBuilderContext ctx) {
         Object instance = (Object) super.build(args, ctx)
@@ -112,11 +116,11 @@ class ValidateableDataBuilder extends PogoDataBuilder {
      */
     void populateRequiredValues(Object instance, DataBuilderContext ctx) {
 
-        //remove any data that was passed in the context
-        Set<String> requiredMissingPropertyNames = requiredPropertyNames - ctx.data.keySet()
-
-        for (requiredPropertyName in requiredMissingPropertyNames) {
+        //at this point databinding should have already occured for overrides. getRequiredFields will compensate for that
+        // as well as add in any extras we want from the includeList
+        for (requiredPropertyName in getFieldsToBuild(ctx)) {
             ConstrainedProperty constrained = constraintsMap.get(requiredPropertyName)
+            //see if its already satisfied.
             if(!isSatisfied(instance,requiredPropertyName,constrained)){
                 satisfyConstrained(instance, requiredPropertyName,constrained,ctx)
             }
@@ -124,9 +128,29 @@ class ValidateableDataBuilder extends PogoDataBuilder {
                 Object val = ctx.satisfyNested(instance,requiredPropertyName,constrained.propertyType)
                 instance[requiredPropertyName] = val
             }
-            //do examples if it exists
+            //if its null and in the list from getRequiredFields then assume it needs to be set as it may be coming from the includeList
+            else if(instance[requiredPropertyName] == null){
+                satisfyConstrained(instance, requiredPropertyName,constrained,ctx)
+            }
+            //sets the value from the example constraint field if it exists.
+            //This overrides and sets the field with whatever is set in the example intentionally so it fails if its fubared.
             exampleMetaConstraints(instance, requiredPropertyName, constrained,ctx)
         }
+    }
+
+    /**
+     * combines the includes if it exists with the requiredPropertyNames and removed any data binding overrides
+     * that would have already occured from the ctx
+     */
+    Set<String> getFieldsToBuild(DataBuilderContext ctx){
+        Set<String> includeList = [] as Set
+        if(ctx.includes && ctx.includes instanceof String && ctx.includes == '*'){
+            includeList = getConstraintsPropertyNames()
+        } else if(ctx.includes instanceof List){
+            includeList = ctx.includes as Set<String>
+        }
+        //merge in includeList if set and remove the data
+        return (requiredPropertyNames + includeList) - ctx.data.keySet()
     }
 
     @CompileDynamic

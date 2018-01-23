@@ -35,19 +35,19 @@ class UnitTestDomainBuilderTest extends Specification implements UnitTestDomainB
     void "test props"() {
         when:
         def u = build(name: 'bill')
-        domain.name = 'bob'
+        entity.name = 'bob'
 
         then:
         u.name == 'bill'
-        domain.name == 'bob'
+        entity.name == 'bob'
     }
 
     void "test we get a new domain each time"() {
         expect:
-        domain != null
-        domain.name == 'name'
-        domain.child
-        System.identityHashCode(domain) != id
+        entity != null
+        entity.name == 'name'
+        entity.child
+        System.identityHashCode(entity) != id
     }
 
 }

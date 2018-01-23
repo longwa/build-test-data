@@ -94,15 +94,11 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
 
     @Override
     Map<String, ConstrainedProperty> getConstraintsMap() {
-        try{
-            Validator validator = mappingContext.getEntityValidator(persistentEntity)
-            if(validator instanceof ConstrainedEntity){
-                return ((ConstrainedEntity)validator).constrainedProperties
-            }
+        Validator validator = mappingContext.getEntityValidator(persistentEntity)
+        if(validator instanceof ConstrainedEntity){
+            return ((ConstrainedEntity)validator).constrainedProperties
         }
-        catch(Exception e){
-            e.printStackTrace()
-        }
+        //shouldn't get here
         throw new RuntimeException("No constraints found for persistent entity ${targetClass.name}. Make sure it's mocked and properly initialized.")
     }
 
@@ -117,20 +113,20 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     /**
      * builds the data using the passed in context
      *
-     * @param args a map of option
-     *  - save : (default: true) whether to call the save method when its a GormEntity
-     *  - find : (default: false) whether to try and find the entity in the datastore first
-     *  - flush : (default: false) passed in the args to the GormEntity save method
-     *  - failOnError : (default: true) passed in the args to the GormEntity save method
-     *  - include : a list of the properties to build in addition to the required fields.
-     *  - includeAll : (default: false) build tests data for all fields in the domain
+     * @param args  optional argument map <br>
+     *  - save        : (default: true) whether to call the save method when its a GormEntity <br>
+     *  - find        : (default: false) whether to try and find the entity in the datastore first <br>
+     *  - flush       : (default: false) passed in the args to the GormEntity save method <br>
+     *  - failOnError : (default: true) passed in the args to the GormEntity save method <br>
+     *  - include     : a list of the properties to build in addition to the required fields. <br>
+     *  - includeAll  : (default: false) build tests data for all fields in the domain <br>
      * @param ctx the DataBuilderContext
      * @return the built entity.
      */
     @Override
     def build(Map args, DataBuilderContext ctx) {
-        boolean saveFlag = args["save"] == null ? true : args["save"]
-        boolean find = args["find"] == null ? false : args["find"]
+        boolean saveFlag = args["save"] == null ? true : args.remove("save")
+        boolean find = args["find"] == null ? false : args.remove("find")
 
         GormEntity instance
         //try looking it up in the store if "lazy" of find is set.

@@ -18,7 +18,7 @@ trait UnitTestDomainBuilder<D> implements UnitTestDataBuilder {
     D getDomain() {
         if (domainInstance == null) {
             //use buildWithoutSave to keep it consitent with how DomainUnitTest does it
-            this.domainInstance = TestData.build(getEntityClass(), save:false)
+            this.domainInstance = TestData.build(getEntityClass(), save: false)
         }
         domainInstance
     }

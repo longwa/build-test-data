@@ -12,19 +12,22 @@ import org.junit.BeforeClass
 @SuppressWarnings("GroovyUnusedDeclaration")
 trait TestDataBuilder {
 
-    /** see {@link TestData#build} */
+    /** calls {@link TestData#build} */
     public <T> T build(Map args = [:], Class<T> clazz) {
         TestData.build(args, clazz)
     }
 
+    /** calls {@link TestData#build} */
     public <T> T build(Class<T> clazz, Map<String, Object> propValues) {
         TestData.build([:], clazz, propValues)
     }
 
+    /** calls {@link TestData#build} */
     public <T> T build(Map args, Class<T> clazz, Map<String, Object> propValues) {
         TestData.build(args, clazz, propValues)
     }
 
+    /** calls {@link TestData#build} with [find: true] passed to args*/
     public <T> T findOrBuild(Class<T> clazz, Map<String, Object> propValues = [:]) {
         TestData.build([find: true], clazz, propValues)
     }

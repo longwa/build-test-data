@@ -25,21 +25,16 @@ class TestData {
     }
 
     /**
-     * {@see #build(Map args, Class<T> entityClass, Map<String, Object> data)}
+     * calls {@link #build(Map, Class, Map}
      */
     static <T> T build(Class<T> entityClass, Map<String, Object> data = [:]) {
         build([:], entityClass, data)
     }
 
     /**
-     * builds the data using the passed in context
-     * @param args a map of option
-     *  - save : (default: true) whether to call the save method when its a GormEntity
-     *  - find : (default: false) whether to try and find the entity in the datastore first
-     *  - flush : (default: false) passed in the args to the GormEntity save method
-     *  - failOnError : (default: true) passed in the args to the GormEntity save method
-     *  - include : a list of the properties to build in addition to the required fields.
-     *  - includeAll : (default: false) build tests data for all fields in the domain
+     * pulls/parses the args map and calls {@link #build(Map, Class, Map)}
+     *
+     * @param args optional argument map <br> see desc on {@link #build(Map, Class, Map)}
      *  - data : a map of data to bind, can also just be in the args. usefull if you have a field named 'save' or 'find' etc..
      * @param entityClass the domain class for the entity that is built
      * @return the built entity.
@@ -48,7 +43,7 @@ class TestData {
         Map newArgs = [:]
         Map<String, Object> propValues = [:]
         if (args){
-            ['save', 'find', 'include', 'includeAll', 'flush', 'failOnError'].each { key ->
+            ['save', 'find', 'includes', 'flush', 'failOnError'].each { key ->
                 if (args.containsKey(key)) newArgs[key] = args.remove(key)
             }
             propValues = ((args?.data) ? args.remove('data') : args) as Map<String, Object>
@@ -57,21 +52,24 @@ class TestData {
     }
 
     /**
-     * builds and saves and instance of the domain entity
+     * finds a DataBuilder for the entityClass an calls build. see {@link PersistentEntityDataBuilder#build} for example
      *
-     * @param args a map of option
-     *  - save : (default: true) whether to call the save method when its a GormEntity
-     *  - find : (default: false) whether to try and find the entity in the datastore first
-     *  - flush : (default: false) passed in the args to the GormEntity save method
-     *  - failOnError : (default: true) passed in the args to the GormEntity save method
-     *  - include : a list of the properties to build in addition to the required fields.
-     *  - includeAll : (default: false) build tests data for all fields in the domain
-     * @param entityClass the domain class to use
-     * @param data properties to set on the entity instance before it tries to build tests data
+     * @param args  optional argument map <br>
+     *  - save        : (default: true) whether to call the save method when its a GormEntity <br>
+     *  - find        : (default: false) whether to try and find the entity in the datastore first <br>
+     *  - flush       : (default: false) passed in the args to the GormEntity save method <br>
+     *  - failOnError : (default: true) passed in the args to the GormEntity save method <br>
+     *  - include     : a list of the properties to build in addition to the required fields. use `*` to build all <br>
+     * @param entityClass   the domain class to use
+     * @param data          properties to set on the entity instance before it tries to build tests data
      * @return the built and saved entity instance
      */
     static <T> T build(Map args, Class<T> entityClass, Map<String, Object> data) {
-        (T) findBuilder(entityClass).build(args, new DataBuilderContext(data))
+
+        DataBuilderContext ctx = new DataBuilderContext(data)
+        ctx.includes = args['includes']
+
+        (T) findBuilder(entityClass).build(args, ctx)
     }
 
     /**
