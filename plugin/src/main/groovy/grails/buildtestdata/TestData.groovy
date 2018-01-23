@@ -7,11 +7,13 @@ import grails.buildtestdata.builders.DataBuilderFactory
 import grails.buildtestdata.builders.PersistentEntityDataBuilder
 import grails.buildtestdata.builders.PogoDataBuilder
 import grails.buildtestdata.propsresolver.InitialPropsResolver
+import groovy.transform.CompileStatic
 import org.springframework.core.annotation.AnnotationAwareOrderComparator
 
 /**
  * Primary static API to build a domain instance with test data
  */
+@CompileStatic
 class TestData {
 
     static InitialPropsResolver initialPropsResolver

@@ -2,11 +2,13 @@ package grails.buildtestdata.handler
 
 import grails.buildtestdata.builders.DataBuilderContext
 import grails.gorm.validation.ConstrainedProperty
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 
+@CompileStatic
 class AssociationMinSizeHandler extends MinSizeConstraintHandler{
     PersistentEntity persistentEntity
     
@@ -19,11 +21,11 @@ class AssociationMinSizeHandler extends MinSizeConstraintHandler{
                 int minSize, Object propertyValue) {
         PersistentProperty property = persistentEntity.getPropertyByName(propertyName)
         if(property instanceof Association){
-            Integer size = propertyValue.size()
+            Integer size = (Integer)propertyValue.invokeMethod('size',null)
             if (size < minSize) {
                 ((size + 1)..minSize).each {
                     Class referencedClass = ((Association)property).associatedEntity.javaClass
-                    def obj = ctx.satisfyNestedNew(instance, propertyName, referencedClass)
+                    def obj = ctx.satisfyNestedWithNew(instance, propertyName, referencedClass)
                     ((GormEntity) instance).addTo(propertyName, obj)
                 }
             }

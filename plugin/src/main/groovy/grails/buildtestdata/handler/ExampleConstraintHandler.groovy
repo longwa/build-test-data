@@ -13,13 +13,13 @@ import java.time.LocalDateTime
 
 @Slf4j
 @CompileStatic
-class ExampleConstraintHandler extends AbstractConstraintHandler {
+class ExampleConstraintHandler extends AbstractHandler {
     @Override
     void handle(Object instance, String propertyName, Constraint appliedConstraint,
                 ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
         Object exValue = getExampleContraintValue(constrainedProperty)
         if(exValue != null){
-            setProperty(instance, propertyName, exValue)
+            setValue(instance, propertyName, exValue)
         }
     }
 

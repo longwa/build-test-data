@@ -1,9 +1,12 @@
 package grails.buildtestdata.utils
 
+import groovy.transform.CompileStatic
+
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.*
 
+@CompileStatic
 class Basics {
     protected static final List<Class> BASIC_TYPES = [
         String,
@@ -33,7 +36,8 @@ class Basics {
         OffsetTime,
         ZonedDateTime,
         Instant
-    ]
+    ] as List<Class>
+
     static boolean isBasicType(Class type){
         if(type.isArray()) isBasicType(type.componentType)        
         type.isPrimitive() || BASIC_TYPES.contains(type)

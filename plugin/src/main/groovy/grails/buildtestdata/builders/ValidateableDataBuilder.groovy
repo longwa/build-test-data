@@ -10,7 +10,6 @@ import grails.gorm.validation.DefaultConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
  * DataBuilder to build test data for any @Validateable and command objects. not just Gorm persistence entities.
@@ -163,17 +162,17 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     boolean isSatisfied(Object instance,String propertyName,ConstrainedProperty constrainedProperty){
         def errors = new MockErrors(this)
 
-        constrainedProperty.validate(instance, InvokerHelper.getProperty(instance,propertyName), errors)
+        constrainedProperty.validate(instance, instance[propertyName], errors)
         return !errors.hasErrors()
     }
     
     Object satisfyConstrained(Object instance, String propertyName, ConstrainedProperty constrained, DataBuilderContext ctx) {
         return sortedConstraints(constrained.appliedConstraints).find { Constraint constraint ->
-            log.debug "${targetClass?.name}.${constraint?.name} constraint, field before adjustment: ${InvokerHelper.getProperty(instance,propertyName)}"
+            log.debug "${targetClass?.name}.${constraint?.name} constraint, field before adjustment: ${instance[propertyName]}"
             ConstraintHandler handler = handlers[constraint.name]
             if (handler) {
                 handler.handle(instance, propertyName, constraint, constrained, ctx)
-                log.debug "${targetClass?.name}.$propertyName field after adjustment for ${constraint?.name}: ${InvokerHelper.getProperty(instance,propertyName)}"
+                log.debug "${targetClass?.name}.$propertyName field after adjustment for ${constraint?.name}: ${instance[propertyName]}"
             } else {
                 log.warn "Unable to find property generator handler for constraint ${constraint?.name}!"
             }

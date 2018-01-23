@@ -22,6 +22,14 @@ class DataBuilderContext {
         this.data=data
     }
 
+    /**
+     *
+     * @param instance the instance to use
+     * @param property the property to build on the instance
+     * @param propertyType the Class for the property
+     * @param save true|false on whether to call save
+     * @return
+     */
     Object satisfyNested(Object instance, String property, Class propertyType, boolean save = false){
         //it the property is already set then just return it
         if(instance[property]) return instance[property]
@@ -50,7 +58,10 @@ class DataBuilderContext {
         }
     }
 
-    Object satisfyNestedNew(Object instance, String property, Class propertyType){
+    /**
+     * doesn't use knownInstances cache and creates a new object for the property
+     */
+    Object satisfyNestedWithNew(Object instance, String property, Class propertyType){
         DataBuilderContext newCtx = createCopy(property)
         knownInstances.put(instance.class, instance)
 
@@ -63,6 +74,11 @@ class DataBuilderContext {
 
     }
 
+    /**
+     * clones this context and sets drills down the for the property if it exists
+     * @param property
+     * @return
+     */
     DataBuilderContext createCopy(String property){
         def newCtx = new DataBuilderContext()
         newCtx.knownInstances = knownInstances

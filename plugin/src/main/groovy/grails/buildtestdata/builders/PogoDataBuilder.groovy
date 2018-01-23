@@ -6,8 +6,10 @@ import grails.buildtestdata.utils.Basics
 import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
+import groovy.transform.CompileStatic
 import org.springframework.core.annotation.Order
 
+@CompileStatic
 class PogoDataBuilder implements DataBuilder{
 
     @Order
@@ -68,7 +70,7 @@ class PogoDataBuilder implements DataBuilder{
         instance
     }
 
-    Map<String, Object> findMissingConfigValues(Map<String, Object> propValues) {
+    Map<String, Object> findMissingConfigValues(Map propValues) {
         Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(targetClass.name) - propValues.keySet()
         TestDataConfigurationHolder.getPropertyValues(targetClass.name, missingProperties, propValues)
     }
