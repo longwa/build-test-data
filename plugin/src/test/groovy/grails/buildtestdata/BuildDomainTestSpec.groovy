@@ -3,7 +3,7 @@ package grails.buildtestdata
 import spock.lang.Shared
 import spock.lang.Specification
 
-class UnitTestDomainBuilderTest extends Specification implements UnitTestDomainBuilder<SampleUnitTestDomain>{
+class BuildDomainTestSpec extends Specification implements BuildDomainTest<SampleUnitTestDomain>{
     @Shared int id
 
     void "test basic persistence mocking"() {

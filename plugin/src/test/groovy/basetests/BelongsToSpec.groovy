@@ -1,9 +1,9 @@
 package basetests
 
-import grails.buildtestdata.UnitTestDomainBuilder
+import grails.buildtestdata.BuildDomainTest
 import spock.lang.Specification
 
-class BelongsToSpec extends Specification implements UnitTestDomainBuilder<BookBelongsTo> {
+class BelongsToSpec extends Specification implements BuildDomainTest<BookBelongsTo> {
 
     void "Book with BelongsTo"() {
         when:

@@ -4,10 +4,10 @@ import bookstore.Author
 import config.Article
 import config.Hotel
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import org.junit.After
 
-class TestDataConfigUnitTests implements UnitTestDataBuilder {
+class TestDataConfigUnitTests implements BuildDataTest {
     @After
     void tearDown() {
         // we should reset the config holder when feeding it values in tests as it could cause issues

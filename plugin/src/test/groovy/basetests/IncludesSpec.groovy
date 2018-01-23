@@ -1,11 +1,11 @@
 package basetests
 
 import grails.buildtestdata.TestData
-import grails.buildtestdata.UnitTestDomainBuilder
+import grails.buildtestdata.BuildDomainTest
 import grails.buildtestdata.builders.DataBuilderContext
 import spock.lang.Specification
 
-class IncludesSpec extends Specification implements UnitTestDomainBuilder<IncludeDom> {
+class IncludesSpec extends Specification implements BuildDomainTest<IncludeDom> {
 
     void "sanity check optional is null"() {
         expect:

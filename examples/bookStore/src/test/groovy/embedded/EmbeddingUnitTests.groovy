@@ -1,9 +1,9 @@
 package embedded
 
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class EmbeddingUnitTests extends Specification implements UnitTestDataBuilder {
+class EmbeddingUnitTests extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Embedding]

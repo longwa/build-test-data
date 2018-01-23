@@ -1,9 +1,9 @@
 package hibernate4
 
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class PaintingBuildSpec extends Specification implements UnitTestDataBuilder {
+class PaintingBuildSpec extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Painting]

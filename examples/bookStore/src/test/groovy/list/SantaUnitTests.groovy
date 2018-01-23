@@ -1,9 +1,9 @@
 package list
 
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class SantaUnitTests extends Specification implements UnitTestDataBuilder {
+class SantaUnitTests extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Santa, Child]

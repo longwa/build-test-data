@@ -4,10 +4,10 @@ import enumtest.Car
 import enumtest.CarStatus
 import enumtest.Door
 import enumtest.DoorStatus
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class EnumUnitTests extends Specification implements UnitTestDataBuilder {
+class EnumUnitTests extends Specification implements BuildDataTest {
     void setupSpec() {
         mockDomains(Car, Door)
     }

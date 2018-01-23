@@ -1,9 +1,9 @@
 package basetests
 
-import grails.buildtestdata.UnitTestDomainBuilder
+import grails.buildtestdata.BuildDomainTest
 import spock.lang.Specification
 
-class HasManyMinSizeSpec extends Specification implements UnitTestDomainBuilder<AuthorHasManyMin> {
+class HasManyMinSizeSpec extends Specification implements BuildDomainTest<AuthorHasManyMin> {
 
     void testHasManyNullableFalse() {
         when:

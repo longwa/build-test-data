@@ -1,11 +1,9 @@
 package basetests
 
-import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.UnitTestDataBuilder
-import grails.buildtestdata.UnitTestDomainBuilder
+import grails.buildtestdata.BuildDomainTest
 import spock.lang.Specification
 
-class HasManySpec extends Specification implements UnitTestDomainBuilder<AuthorHasMany> {
+class HasManySpec extends Specification implements BuildDomainTest<AuthorHasMany> {
 
     void testHasManyNullableFalse() {
         when:
