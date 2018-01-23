@@ -112,7 +112,7 @@ class NullableConstraintHandler extends AbstractConstraintHandler {
         // Ensure we don't loop on this domain
         circularCheckList.update(domain)
 
-        if (domainProp instanceof OneToOne || propertyFetcher.getStaticPropertyValue(domain.getClass(), 'embedded', Collection)?.contains(propertyName)) {
+        if (domainProp instanceof OneToOne || propertyFetcher.getStaticPropertyValue('embedded', Collection)?.contains(propertyName)) {
             if (circularCheckList[constrainedProperty?.propertyType?.name]) {
                 setProperty(domain, propertyName, circularCheckList[constrainedProperty?.propertyType?.name])
             }

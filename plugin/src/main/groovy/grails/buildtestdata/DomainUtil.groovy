@@ -3,6 +3,7 @@ package grails.buildtestdata
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.ReflectionUtils
 
 import java.lang.reflect.Modifier
 
@@ -17,7 +18,7 @@ class DomainUtil {
     }
 
     static PersistentEntity getPersistentEntity(Class clazz) {
-        ClassPropertyFetcher.getStaticPropertyValue(clazz, "gormPersistentEntity", PersistentEntity)
+        ClassPropertyFetcher.forClass(clazz).getStaticPropertyValue("gormPersistentEntity", PersistentEntity)
     }
 
     static boolean propertyIsToManyDomainClass(Class clazz) {
