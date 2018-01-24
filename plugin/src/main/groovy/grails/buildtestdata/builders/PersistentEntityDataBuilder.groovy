@@ -174,15 +174,21 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
                 if (domainInstance?.hasProperty(propertyName)) {
                     GormEntity domProp = (GormEntity)domainInstance[propertyName]
                     ctx.knownInstances[domainInstance.class] = domainInstance
-                    //domProp.save(failOnError: true)
+                    //do recursive call on this
                     save(domProp, ctx)
                 }
             }
         }
-        saveArgs['failOnError'] = saveArgs.containsKey('failOnError') ? saveArgs['failOnError'] : true
-        domainInstance.save(saveArgs)
 
-        domainInstance
+        return entitySave(domainInstance, saveArgs)
+    }
+
+    /**
+     * allows implementing tools to replace the closure for any special saving requirements
+     */
+    static Closure entitySave = { GormEntity domainInstance, Map saveArgs ->
+        saveArgs['failOnError'] = saveArgs.containsKey('failOnError') ? saveArgs['failOnError'] : true
+        return domainInstance.save(saveArgs)
     }
 
 }
