@@ -156,14 +156,16 @@ assert newBook.author != null
 
 I find `findOrBuild()` to be really useful in grails console sessions where I want to create some dummy test data once and then do a number of operations on it. Previously, I had to comment out all the creation logic so that new objects weren't getting created on every script execution. Now it'll just return them and I can focus on writing the console code I wanted to try out rather than messing with the creation logic.
 
-=== buildWithoutSave()
-In some cases you need to build a domain object, but you don't want to actually save it to the underlying data store. This is particularly useful if you are trying to build a complex graph and need to build one of the children as part of the parent build.
+=== build(save: false)
+In some cases you need to build a domain object, but you don't want to actually save it to the underlying data store.
+This is particularly useful if you are trying to build a complex graph and need to build one of the children as part of the parent build.
 
 ```groovy
 def author = Author.build(
-    books: [Book.buildWithoutSave(name: 'Foo')]
+    books: [Book.build(name: 'Foo', save: false)]
 )
 ```
-If you don't have a complicated object graph, `buildWithoutSave()` may not be necessary. However, in cases where you might have a cycle in your graph, it can be necessary to successfully build the graph.
+If you don't have a complicated object graph, build with saving may not be necessary.
+However, in cases where you might have a cycle in your graph, it can be necessary to successfully build the graph.
 
 

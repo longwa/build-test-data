@@ -4,14 +4,14 @@ Starting with Grails 3.3, unit testing is implemented via a set of traits that a
 
 The build-test-data plugin uses the same approach by adding the:
 
-    trait UnitTestDataBuilder
+    trait BuildDataTest
 
 This trait extends the built-in `DataTest` trait to setup the domain objects and domain graph for construction by build-test-data.
 
 For unit tests, you can use the standard `getDomainClassesToMock` method to provide the top-level list of domain objects that are required by the test.
 
 ```groovy
-class BookUnitSpec extends Specification implements UnitTestDataBuilder {
+class BookUnitSpec extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Book] // Author will be mocked automatically
@@ -27,14 +27,38 @@ class BookUnitSpec extends Specification implements UnitTestDataBuilder {
 }
 ```
 
-TIP: You don't have to explicitly declare that you are building an Author, build-test-data will figure that out for you and tells Grails to mock it automatically.
+or it can be done in setupSpec
+```groovy
+class LibraryUnitSpec extends Specification implements BuildDataTest {
+    void setupSpec(){
+        mockDomains(Book, Magazine)
+    }
+...
+```
+
+TIP: You don't have to explicitly declare that you are building an Author if Book has a dependency there, build-test-data will figure that out for you and tells Grails to mock it automatically.
+
+
+This plugin also provide a `BuildDomainTest` trait as a replacement to the `grails.testing.gorm.DomainUnitTest`
+that allows the use of generics like so
+
+```groovy
+class BookUnitSpec extends Specification implements BuildDomainTest<Book> {
+
+    void "building a book will also build an author"() {
+        expect:
+        domain.name
+        domain.author != null
+    }
+}
+```
 
 === Using @Build
 Alternately, you can continue to use the legacy build-test-data `@Build` annotation to specify classes to mock. The `@Build` annotation currently has the added bonus of supporting code completion in some editors.
 
 ```groovy
 @Build([Book])
-class BookUnitSpec extends Specification implements UnitTestDataBuilder {
+class BookUnitSpec extends Specification implements BuildDataTest {
     void "building a book will also build an author"() {
         when:
         def book = Book.build()
@@ -45,24 +69,34 @@ class BookUnitSpec extends Specification implements UnitTestDataBuilder {
 }
 ```
 
-NOTE: Even if you are using the `@Build` annotation, you must still implement the `UnitTestDataBuilder` trait.
+NOTE: Even if you are using the `@Build` annotation, you must still implement the `BuildDataTest` trait.
 
 === Trait Methods
-The `TestDataBuilder` and therefore the `UnitTestDataBuilder` trait adds the builder methods to your test class if you prefer to call them directly.
+The `TestDataBuilder` and therefore the `BuildDataTest` trait adds the builder methods to your test class if you prefer to call them directly.
+These call out to statics in the `TestData` class.
+```groovy
+    public <T> T build(Map args = [:], Class<T> clazz) {
+        TestData.build(args, clazz)
+    }
+
+    public <T> T build(Class<T> clazz, Map<String, Object> propValues) {
+        TestData.build([:], clazz, propValues)
+    }
+
+    public <T> T build(Map args, Class<T> clazz, Map<String, Object> propValues) {
+        TestData.build(args, clazz, propValues)
+    }
+
+    public <T> T findOrBuild(Class<T> clazz, Map<String, Object> propValues = [:]) {
+        TestData.build([find: true], clazz, propValues)
+    }
+```
+
+In that case you can just call `build()` and pass in the Class that you which to build or call the TestData methods directly.
+See the groovyDocs on the TestData for more details
 
 ```groovy
-     public <T> T build(Map args = [:], Class<T> clazz)
-
-     public <T> T build(Class<T> clazz, Map<String, Object> propValues)
-
-     public <T> T build(Map args, Class<T> clazz, Map<String, Object> propValues)
-
-     public <T> T findOrBuild(Class<T> clazz, Map<String, Object> propValues = [:])
-
-In that case you can just call `build()` and pass in the Class that you which to build.
-
-```groovy
-class BookUnitSpec extends Specification implements UnitTestDataBuilder {
+class BookUnitSpec extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Book]
@@ -77,3 +111,4 @@ class BookUnitSpec extends Specification implements UnitTestDataBuilder {
     }
 }
 ```
+
