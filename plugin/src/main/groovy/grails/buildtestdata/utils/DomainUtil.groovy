@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier
 
 @CompileStatic
 class DomainUtil {
+
     static boolean propertyIsDomainClass(Class clazz) {
         propertyIsToOneDomainClass(clazz) || propertyIsToManyDomainClass(clazz)
     }

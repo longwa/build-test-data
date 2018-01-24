@@ -7,7 +7,8 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 
 /**
- * Unit tests should implement this trait to add build-test-data functionality
+ * Unit tests should implement this trait to add build-test-data functionality.
+ * Meant as a drop in replacement for Grails Testing Support's DataTest
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")

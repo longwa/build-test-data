@@ -3,6 +3,10 @@ package grails.buildtestdata.builders
 import grails.buildtestdata.TestData
 import groovy.transform.CompileStatic
 
+/**
+ * a context object that is passed around
+ * holds the data and caches the know instances that are already created
+ */
 @CompileStatic
 class DataBuilderContext {
     Map<String,?> data    

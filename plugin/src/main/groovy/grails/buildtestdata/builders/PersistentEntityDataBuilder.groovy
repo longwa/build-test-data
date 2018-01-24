@@ -1,9 +1,8 @@
 package grails.buildtestdata.builders
 
-import grails.buildtestdata.utils.DomainUtil
 import grails.buildtestdata.handler.AssociationMinSizeHandler
 import grails.buildtestdata.handler.PersistentEntityNullableConstraintHandler
-import grails.buildtestdata.utils.ClassUtils
+import grails.buildtestdata.utils.DomainUtil
 import grails.gorm.validation.ConstrainedEntity
 import grails.gorm.validation.ConstrainedProperty
 import groovy.transform.CompileDynamic
@@ -17,6 +16,7 @@ import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.OneToOne
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.core.annotation.Order
 import org.springframework.validation.Validator
 
@@ -107,7 +107,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     }
     
     PersistentEntity getPersistentEntity(){
-        (PersistentEntity) ClassUtils.getStaticPropertyValue(targetClass,'gormPersistentEntity')
+        ClassPropertyFetcher.getStaticPropertyValue(targetClass,'gormPersistentEntity',PersistentEntity)
     }
 
     /**

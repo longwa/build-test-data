@@ -1,7 +1,7 @@
 package grails.buildtestdata.builders
 
 import grails.buildtestdata.handler.*
-import grails.buildtestdata.utils.ClassUtils
+
 import grails.gorm.validation.Constrained
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
@@ -9,6 +9,7 @@ import grails.gorm.validation.DefaultConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.validation.ValidationErrors
 
 /**
@@ -82,7 +83,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
 
     Map<String, ConstrainedProperty>  getConstraintsMap() {
         //Assume its a grails.validation.Validateable. overrides in GormEntityDataBuilder
-        ClassUtils.getStaticPropertyValue(targetClass,'constraintsMap') as Map<String, ConstrainedProperty>
+        ClassPropertyFetcher.getStaticPropertyValue(targetClass,'constraintsMap', Map) as Map<String, ConstrainedProperty>
     }
 
     Set<String>  findRequiredPropertyNames() {

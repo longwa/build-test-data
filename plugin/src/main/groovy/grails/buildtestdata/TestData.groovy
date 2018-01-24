@@ -93,6 +93,11 @@ class TestData {
         initialPropsResolver
     }
 
+    /**
+     * Find in cache or create a builder
+     * @param clazz
+     * @return
+     */
     static DataBuilder findBuilder(Class clazz){
         if(!builders.containsKey(clazz)){
             builders.put(clazz,createBuilder(clazz))
@@ -100,6 +105,11 @@ class TestData {
         builders.get(clazz)
     }
 
+    /**
+     * creates a new DataBuilder by looking through the factories for one that supports the class.
+     * @param clazz
+     * @return
+     */
     static DataBuilder createBuilder(Class clazz){
         for(factory in factories){
             if(factory.supports(clazz)){

@@ -6,6 +6,9 @@ import java.sql.Time
 import java.sql.Timestamp
 import java.time.*
 
+/**
+ * handles creating data for common types when filling fields that are required.
+ */
 @CompileStatic
 class Basics {
     protected static final List<Class> BASIC_TYPES = [

@@ -48,7 +48,16 @@ class BookUnitSpec extends Specification implements BuildDomainTest<Book> {
     void "building a book will also build an author"() {
         expect:
         domain.name
-        domain.author != null
+        domain.author
+    }
+
+    void "building and author will build a book"() {
+        when:
+        def author = build(Author)
+
+        expect:
+        author.name
+        author.book
     }
 }
 ```

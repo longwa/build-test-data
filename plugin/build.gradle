@@ -59,6 +59,7 @@ grailsPublish {
     developers = [
         longwa: "Aaron Long",
         tednaleid: "Ted Naleid",
+        basejump: "Joshua Burnett"
     ]
     issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
     vcsUrl = "https://github.com/longwa/$project.name"
