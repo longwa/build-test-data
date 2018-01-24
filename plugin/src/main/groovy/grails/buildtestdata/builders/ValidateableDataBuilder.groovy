@@ -1,6 +1,5 @@
 package grails.buildtestdata.builders
 
-import grails.buildtestdata.MockErrors
 import grails.buildtestdata.handler.*
 import grails.buildtestdata.utils.ClassUtils
 import grails.gorm.validation.Constrained
@@ -10,6 +9,7 @@ import grails.gorm.validation.DefaultConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.validation.ValidationErrors
 
 /**
  * DataBuilder to build test data for any @Validateable and command objects. not just Gorm persistence entities.
@@ -160,8 +160,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     }
     
     boolean isSatisfied(Object instance,String propertyName,ConstrainedProperty constrainedProperty){
-        def errors = new MockErrors(this)
-
+        def errors = new ValidationErrors(instance)
         constrainedProperty.validate(instance, instance[propertyName], errors)
         return !errors.hasErrors()
     }

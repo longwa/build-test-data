@@ -1,5 +1,6 @@
-package grails.buildtestdata
+package grails.buildtestdata.utils
 
+import grails.buildtestdata.TestDataConfigurationHolder
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher

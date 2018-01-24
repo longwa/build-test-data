@@ -1,14 +1,14 @@
-package grails.buildtestdata
+package grails.buildtestdata.utils
 
-import groovy.transform.CompileStatic
 import org.springframework.validation.BeanPropertyBindingResult
 
 /**
  * Modified version of the GrailsMockErrors class that we can't use
  * directly in build-test-data as GrailsMockErrors is part of a set of test
  * classes that aren't available in a war file in grails 2.0
+ * @Deprecated ?? not used no, just using ValidationErrors. Is this needed?
  */
-@CompileStatic
+@Deprecated
 class MockErrors extends BeanPropertyBindingResult {
     static final ERROR_CODE_TABLE = Collections.unmodifiableMap([
         "blank":               "blank",

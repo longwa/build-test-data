@@ -1,6 +1,6 @@
 package grails.buildtestdata.builders
 
-import grails.buildtestdata.DomainUtil
+import grails.buildtestdata.utils.DomainUtil
 import grails.buildtestdata.handler.AssociationMinSizeHandler
 import grails.buildtestdata.handler.PersistentEntityNullableConstraintHandler
 import grails.buildtestdata.utils.ClassUtils

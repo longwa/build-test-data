@@ -36,7 +36,8 @@ class TestData {
     /**
      * pulls/parses the args map and calls {@link #build(Map, Class, Map)}
      *
-     * @param args optional argument map <br> see desc on {@link #build(Map, Class, Map)}
+     * @param args optional argument map <br> see desc on {@link #build(Map, Class, Map)} <br>
+     *  Adds the following option <br>
      *  - data : a map of data to bind, can also just be in the args. usefull if you have a field named 'save' or 'find' etc..
      * @param entityClass the domain class for the entity that is built
      * @return the built entity.

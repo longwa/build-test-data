@@ -1,5 +1,6 @@
 package grails.buildtestdata
 
+import grails.buildtestdata.utils.DomainUtil
 import grails.util.Environment
 import grails.util.Holders
 import groovy.transform.CompileStatic

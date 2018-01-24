@@ -1,9 +1,7 @@
 package grails.buildtestdata
 
-
-import grails.buildtestdata.builders.PersistentEntityDataBuilder
 import grails.buildtestdata.mixin.Build
-import grails.testing.gorm.DataTest
+import grails.buildtestdata.testing.DependencyDataTest
 import grails.testing.spock.OnceBefore
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
@@ -13,12 +11,12 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
-trait BuildDataTest extends DataTest implements TestDataBuilder {
+trait BuildDataTest extends DependencyDataTest implements TestDataBuilder {
 
     @Override
     void mockDomains(Class<?>... domainClassesToMock) {
-        mockDependencyGraph(domainClassesToMock)
-        //add build method
+        super.mockDomains(domainClassesToMock)
+        //add build methods
         Class[] domainClasses = dataStore.mappingContext.getPersistentEntities()*.javaClass
         addBuildMetaMethods(domainClasses)
     }
@@ -50,34 +48,6 @@ trait BuildDataTest extends DataTest implements TestDataBuilder {
         Build build = this.getClass().getAnnotation(Build)
         if (build) {
             mockDomains(build.value())
-        }
-    }
-
-    void mockDependencyGraph(Class<?>... domainClassesToMock) {
-        mockDependencyGraph([] as Set, DomainUtil.expandSubclasses(domainClassesToMock))
-    }
-
-    void mockDependencyGraph(Set<Class> mockedList, Class<?>... domainClassesToMock) {
-        // First mock these domains so they are registered with Grails
-        super.mockDomains(domainClassesToMock)
-        mockedList.addAll(domainClassesToMock)
-
-        Set<Class> requiredClasses = domainClassesToMock.collectMany { Class clazz ->
-            // For domain instance building, we only care about concrete classes
-            if (!DomainUtil.isAbstract(clazz)) {
-                PersistentEntityDataBuilder builder = (PersistentEntityDataBuilder) TestData.findBuilder(clazz)
-                //println "requiredDomainClasses ${builder.requiredDomainClasses}"
-                builder.requiredDomainClasses
-            }
-            else {
-                []
-            }
-        } as Set<Class>
-
-        // Remove any that we've already seen
-        requiredClasses.removeAll(mockedList)
-        if (requiredClasses) {
-            mockDependencyGraph(mockedList, requiredClasses as Class[])
         }
     }
 
