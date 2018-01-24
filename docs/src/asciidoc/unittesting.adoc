@@ -112,3 +112,48 @@ class BookUnitSpec extends Specification implements BuildDataTest {
 }
 ```
 
+=== HibernateSpec Multi-Tenant
+
+Multi-Tenant example test using HibernateSpec
+
+```groovy
+import static grails.buildtestdata.TestData
+
+//TestDataBuilder will take care of before to load configuratio and after methods to clear cache
+class MultiTenantHibernateSpec extends HibernateSpec implements TestDataBuilder {
+
+    List<Class> getDomainClasses() {
+        [Foo, Bar]
+    }
+
+    @Override
+    Map getConfiguration() {
+        [(Settings.SETTING_MULTI_TENANT_RESOLVER_CLASS)           : SystemPropertyLongTenantResolver,
+         (Settings.SETTING_MULTI_TENANCY_MODE)                    : 'DISCRIMINATOR',
+         (org.grails.orm.hibernate.cfg.Settings.SETTING_DB_CREATE): "create-drop"]
+    }
+
+    def cleanupSpec() {
+        System.setProperty(SystemPropertyLongTenantResolver.PROPERTY_NAME, '')
+    }
+
+    def "Do some test"(){
+        when:
+        def foo = build(Foo)
+
+        then:
+        foo.id
+    }
+
+    def "Do some test"(){
+        when:
+        //Call on TestData directly
+        def bar = TestData.build(Bar, save: false)
+
+        then:
+        !bar.id
+    }
+}
+```
+
+
