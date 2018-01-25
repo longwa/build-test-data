@@ -1,6 +1,7 @@
 package grails.buildtestdata.utils
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.model.MappingFactory
 
 import java.sql.Time
 import java.sql.Timestamp
@@ -11,39 +12,16 @@ import java.time.*
  */
 @CompileStatic
 class Basics {
-    protected static final List<Class> BASIC_TYPES = [
-        String,
-        Boolean,
-        Byte,
-        Short,
-        Integer,
-        Long,
-        Float,
-        Double,
-        Character,
-        Calendar,
-        Date,
-        Time,
-        java.sql.Date,
-        UUID,
-        URL,
-        URI,
-        Currency,
-        TimeZone,
-
-        LocalDate,
-        LocalDateTime,
-        LocalTime,
-
-        OffsetDateTime,
-        OffsetTime,
-        ZonedDateTime,
-        Instant
-    ] as List<Class>
-
-    static boolean isBasicType(Class type){
-        if(type.isArray()) isBasicType(type.componentType)        
-        type.isPrimitive() || BASIC_TYPES.contains(type)
+    static boolean isSimpleType(Class propType) {
+        if (propType == null) return false
+        if (propType.isEnum()) {
+            return true
+        }
+        if (propType.isArray()) {
+            return isSimpleType(propType.getComponentType())
+        }
+        final String typeName = propType.getName()
+        return MappingFactory.isSimpleType(typeName)
     }
     
     static def getArrayValue(Class type){

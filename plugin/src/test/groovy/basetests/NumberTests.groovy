@@ -12,6 +12,9 @@ class NumberTests extends Specification implements DomainTestBase {
                 int testInt
                 short testShort
                 Short testShortObject
+                BigDecimal testBigDecimal
+                Double testDouble
+                Float testFloat
                 byte testByte
                 Byte testByteObject
 
@@ -34,8 +37,11 @@ class NumberTests extends Specification implements DomainTestBase {
             testInt        : value,
             testShort      : value as short,
             testShortObject: value as Short,
+            testBigDecimal : value as BigDecimal,
+            testDouble     : value as Double,
+            testFloat      : value as Float,
             testByte       : value as byte,
-            testByteObject : value as Byte,
+            testByteObject : value as Byte
         ])
         assertFieldsEqual(domainObject, value)
     }
@@ -56,6 +62,9 @@ class NumberTests extends Specification implements DomainTestBase {
             testInt        : validValueButGroovyTruthFalse,
             testShort      : validValueButGroovyTruthFalse as short,
             testShortObject: validValueButGroovyTruthFalse as Short,
+            testBigDecimal : validValueButGroovyTruthFalse as BigDecimal,
+            testDouble     : validValueButGroovyTruthFalse as Double,
+            testFloat      : validValueButGroovyTruthFalse as Float,
             testByte       : validValueButGroovyTruthFalse as byte,
             testByteObject : validValueButGroovyTruthFalse as Byte,
         ])
@@ -91,6 +100,9 @@ class NumberTests extends Specification implements DomainTestBase {
                     testInt(min: $minSize)
                     testShort(min: (short)$minSize)
                     testShortObject(min: (Short)$minSize)
+                    testBigDecimal(min: (BigDecimal)$minSize)
+                    testDouble(min: (Double)$minSize)
+                    testFloat(min: (Float)$minSize)
                     testByte(min: (byte)$minSize)
                     //testByteObject(min: (Byte)$minSize)
                 }
@@ -115,6 +127,9 @@ class NumberTests extends Specification implements DomainTestBase {
                     testInt(max: $maxSize)
                     testShort(max: (short)($maxSize))
                     testShortObject(max: (Short)($maxSize))
+                    testBigDecimal(max: ($maxSize) as BigDecimal)
+                    testDouble(max: ($maxSize) as Double)
+                    testFloat(max: ($maxSize) as Float)
                     testByte(max: (byte)($maxSize))
                     //testByteObject(max: (Byte)($maxSize))
                 }
@@ -140,6 +155,9 @@ class NumberTests extends Specification implements DomainTestBase {
                     testInt(inList: [$numberOne, $numberTwo])
                     testShort(inList: [(short)$numberOne, (short)$numberTwo])
                     testShortObject(inList: [(Short)${numberOne}, (Short)${numberTwo}])
+                    testBigDecimal(inList: [(BigDecimal)${numberOne}, (BigDecimal)${numberTwo}])
+                    testDouble(inList: [(Double)${numberOne}, (Double)${numberTwo}])
+                    testFloat(inList: [(Float)${numberOne}, (Float)${numberTwo}])
                     testByte(inList: [(byte)$numberOne, (byte)$numberTwo])
                     //testByteObject(inList: [(Byte)$numberOne, (Byte)$numberTwo])
                 }
@@ -165,6 +183,9 @@ class NumberTests extends Specification implements DomainTestBase {
                     testInt(range: $numberOne..$numberTwo)
                     testShort(range: ((short)$numberOne)..((short)$numberTwo))
                     testShortObject(range: ((Short)${numberOne})..((Short)${numberTwo}))
+                    testBigDecimal(range: ((BigDecimal)${numberOne})..((BigDecimal)${numberTwo}))
+                    testDouble(range: ((Double)${numberOne})..((Double)${numberTwo}))
+                    testFloat(range: ((Float)${numberOne})..((Float)${numberTwo}))
                     testByte(range: ((byte)$numberOne)..((byte)$numberTwo))
                     //testByteObject(range: ((Byte)$numberOne)..((Byte)$numberTwo))
                 }
@@ -181,6 +202,9 @@ class NumberTests extends Specification implements DomainTestBase {
         assert val == domainObject.testInt
         assert val == domainObject.testShort
         assert val == domainObject.testShortObject
+        assert val == domainObject.testBigDecimal
+        assert val == domainObject.testDouble
+        assert val == domainObject.testFloat
         assert val == domainObject.testByte
         //assert val == domainObject.testByteObject
         return true

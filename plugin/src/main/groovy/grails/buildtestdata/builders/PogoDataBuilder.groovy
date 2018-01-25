@@ -32,10 +32,6 @@ class PogoDataBuilder implements DataBuilder{
         this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
         this.dataBinder = new SimpleDataBinder()
     }
-    
-    protected boolean isBasicType(Class type){
-        Basics.isBasicType(type)
-    }
 
     @Override
     def build(DataBuilderContext ctx) {

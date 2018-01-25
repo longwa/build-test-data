@@ -1,7 +1,7 @@
 package grails.buildtestdata.builders
 
 import grails.buildtestdata.handler.*
-
+import grails.buildtestdata.utils.Basics
 import grails.gorm.validation.Constrained
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
@@ -124,7 +124,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
             if(!isSatisfied(instance,requiredPropertyName,constrained)){
                 satisfyConstrained(instance, requiredPropertyName,constrained,ctx)
             }
-            else if(!isBasicType(((ConstrainedProperty)constrained).propertyType)){
+            else if(!Basics.isSimpleType(constrained.propertyType)){
                 Object val = ctx.satisfyNested(instance,requiredPropertyName,constrained.propertyType)
                 instance[requiredPropertyName] = val
             }

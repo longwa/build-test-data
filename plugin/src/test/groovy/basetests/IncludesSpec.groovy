@@ -40,7 +40,7 @@ class IncludesSpec extends Specification implements BuildDomainTest<IncludeDom> 
         Set incl = TestData.findBuilder(IncludeDom).getFieldsToBuild(ctx)
 
         then:
-        incl.containsAll(['mustHave','optional', 'optExt'])
+        incl.containsAll(['mustHave','optional', 'optExt', 'amount'])
     }
 
     void "test include list works"() {
@@ -67,12 +67,14 @@ class IncludesSpec extends Specification implements BuildDomainTest<IncludeDom> 
 
 @grails.persistence.Entity
 class IncludeDom {
+    BigDecimal amount
     String mustHave
     String optional
     IncludeDomExt optExt
     static constraints = {
         optional nullable: true
         optExt nullable: true
+        amount nullable: true
     }
 }
 
