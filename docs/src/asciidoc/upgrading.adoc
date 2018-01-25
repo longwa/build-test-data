@@ -25,6 +25,11 @@ In 3.3 and later, only a full package name String is allowed.
 === Disabling Via TestDataConfig
 You can no longer disable via the `testDataConfig.enabled = false` option.
 
+=== Build methods refactored
+They all go through static helpers in the TestData eventually
+`buildLazy` -> `findOrBuild` or `build(find:true)`
+`buildWithoutSave` -> `build(save: false)`
+
 === Unit Tests
 Most of the work when upgrading to Grails 3.3.x will involve refactoring related to the framework itself with only minor changes for build-test-data.
 

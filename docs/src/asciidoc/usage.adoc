@@ -3,13 +3,15 @@
 The plugin should be able to generate simple to moderately complex objects and satisfy all of their constraints right out of the box without any additional configuration.
 
 === Simple Application Example
+See the example/bookStore app for examples
+
 Create an Author domain class:
 
     grails create-domain-class com.example.Author
 
 And give it the following contents:
 ```groovy
-package com.example
+package bookstore
 
 class Author {
     String firstName
@@ -33,7 +35,7 @@ Then create a Book domain class:
 
 With these contents:
 ```groovy
-package com.example
+package bookstore
 
 class Book {
     String title
@@ -61,9 +63,10 @@ Now, load up the grails console and lets try build on our new domain objects:
 
 === build()
 ```groovy
-import com.example.*
+import bookstore.Author
+import grails.buildtestdata.TestData
 
-def a = Author.build()
+def a = TestData.build(Author)
 
 println "First Name: $a.firstName"
 println "Last Name: $a.lastName"
@@ -80,7 +83,7 @@ By default, for String values, the plugin will just try to use the field name as
 
 If you want to specify the first name, just pass that in a map that you pass to build on the first line:
 
-    def a = Author.build(firstName: "Daniel")
+    def a = TestData.build(Author, firstName: "Daniel")
 
 That modified script prints:
 
@@ -92,7 +95,7 @@ With Book, we have a more complex domain class.  It has a few different property
 
 If you don't care about any of the specific values on the book, you can simply call build() to have a valid, saved book instance:
 ```groovy
-import com.example.*
+import bookstore.*
 
 def b = Book.build()
 
