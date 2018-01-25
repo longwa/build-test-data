@@ -2,10 +2,10 @@ package base
 
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class AbstractRelatedUnitTests extends Specification implements UnitTestDataBuilder {
+class AbstractRelatedUnitTests extends Specification implements BuildDataTest {
     void testSuccessfulBuild() {
         mockDomains(RelatedToAbstract, ConcreteSubClass)
 

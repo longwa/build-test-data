@@ -1,10 +1,10 @@
 package base
 
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 import standalone.Standalone
 
-class StandaloneUnitTests extends Specification implements UnitTestDataBuilder {
+class StandaloneUnitTests extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Standalone]

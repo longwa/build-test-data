@@ -5,17 +5,18 @@ import abstractclass.AbstractSubClass
 
 import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
-import grails.buildtestdata.DomainInstanceRegistry
+import grails.buildtestdata.TestData
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
+
 import spock.lang.Specification
 
-class AbstractDefaultUnitTests extends Specification implements UnitTestDataBuilder {
+class AbstractDefaultUnitTests extends Specification implements BuildDataTest {
     void setup() {
         TestDataConfigurationHolder.reset()
 
         // Since we are changing out the subclass defaults, prevent any caching
-        DomainInstanceRegistry.clear()
+        TestData.clear()
     }
 
     void testBuildWithNoDefault() {
@@ -25,7 +26,7 @@ class AbstractDefaultUnitTests extends Specification implements UnitTestDataBuil
         build(AbstractClass)
 
         then: "this is no longer supported in BTD 3.3 and later, specific default required"
-        thrown(IllegalStateException)
+        thrown(RuntimeException)
     }
 
     void testSuccessfulBuildWithDefault() {

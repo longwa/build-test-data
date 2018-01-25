@@ -1,12 +1,10 @@
 package list
 
 import bookstore.EstablishedAuthor
-import grails.buildtestdata.UnitTestDataBuilder
-import grails.testing.gorm.DataTest
-import org.junit.Test
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class EstablishedAuthorUnitTests extends Specification implements UnitTestDataBuilder {
+class EstablishedAuthorUnitTests extends Specification implements BuildDataTest {
     @Override
     Class[] getDomainClassesToMock() {
         [EstablishedAuthor]

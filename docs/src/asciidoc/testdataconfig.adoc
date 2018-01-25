@@ -131,7 +131,8 @@ Occasionally it is necessary to build another object manually in your `TestDataC
     }
 ```
 
-There are a number of reasons that you might want to do this. For complex object graphs, this may be necessary to prevent failures due to loops in the graph. Also, for some graphs, you may need to do a buildWithoutSave() or a buildLazy() for a particular association. It may also just be that you want to default an optional association, since build-test-data will only build out the graph for required properties.
+There are a number of reasons that you might want to do this. For complex object graphs, this may be necessary to prevent failures due to loops in the graph.
+Also, for some graphs, you may need to do a build(save: false) or a findOrBuild() for a particular association. It may also just be that you want to default an optional association, since build-test-data will only build out the graph for required properties.
 
 Regardless, this introduces a hidden dependency when building the `Book` class. If you only have `@Build([Book])` in your test case, you'll likely get a MethodMissing exception building `Author`. To resolve this issue, you may specify additional objects to mock each time Book is mocked:
 ```groovy

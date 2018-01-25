@@ -1,23 +1,23 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.CircularCheckList
-import grails.buildtestdata.MockErrors
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
 import nl.flotsam.xeger.Xeger
-import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.validation.constraints.MatchesConstraint
+import org.grails.datastore.mapping.validation.ValidationErrors
 
 @CompileStatic
-class MatchesConstraintHandler extends AbstractConstraintHandler {
+class MatchesConstraintHandler extends AbstractHandler {
+
     @Override
-    void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
+    void handle(Object instance, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty) {
         // If what we have already matches, we are good
-        if (!constrainedProperty?.validate(domain, getProperty(domain, propertyName), new MockErrors(this))) {
+        if(!appliedConstraint.validate(instance,getValue(instance,propertyName),new ValidationErrors(instance))){
             MatchesConstraint matchesConstraint = appliedConstraint as MatchesConstraint
             Xeger generator = new Xeger(matchesConstraint.regex)
-            setProperty(domain, propertyName, generator.generate())
+            setValue(instance,propertyName,generator.generate())
         }
     }
 }
+

@@ -1,11 +1,12 @@
 package base
 
 import bookstore.Author
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import spock.lang.Specification
 
-class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
-    void setup() {
+class BuildLazyUnitTests extends Specification implements BuildDataTest {
+
+    void setupSpec() {
         mockDomains(Author)
     }
 
@@ -13,7 +14,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 0
 
         when:
-        def domainObject = buildLazy(Author)
+        def domainObject = findOrBuild(Author)
 
         then:
         assert domainObject
@@ -25,7 +26,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author)
+        def domainObject = findOrBuild(Author)
 
         then:
         assert domainObject
@@ -38,7 +39,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 0
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Bar"])
+        def domainObject = findOrBuild(Author, [firstName: "Bar"])
 
         then:
         assert domainObject
@@ -50,7 +51,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Bar"])
+        def domainObject = findOrBuild(Author, [firstName: "Bar"])
 
         then:
         assert domainObject
@@ -62,7 +63,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Foo"])
+        def domainObject = findOrBuild(Author, [firstName: "Foo"])
 
         then:
         assert domainObject
@@ -76,7 +77,7 @@ class BuildLazyUnitTests extends Specification implements UnitTestDataBuilder {
 		assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author, [firstName: "Foo", lastName: "Bar"])
+        def domainObject = findOrBuild(Author, [firstName: "Foo", lastName: "Bar"])
 
         then:
         assert domainObject

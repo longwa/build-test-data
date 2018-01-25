@@ -9,8 +9,11 @@ Yep! Due to the power and the glory of Grails, we have a lot of metadata at our 
 Using this additional information, we've created a grails plugin that makes it easy to just provide those values that you want to exercise under test and not worry about the rest of the object graph that you need to create just to instantiate your domain objects.
 
 Once installed, all you have to do is call the new "build" method on your domain class and you'll be given a valid instance with all of the required constraints given values.
+
 ```groovy
 def author = Author.build(name: 'Ted Naleid')
+//or
+def author = TestData.build(Author, name: 'Ted Naleid')
 ```
 
 === Release History

@@ -1,5 +1,5 @@
 package subclassing
 
 class SubClass extends SuperClass {
-    String toString() { "RelatedClass: $name" }    
+    String toString() { "SubClass: $name" }
 }

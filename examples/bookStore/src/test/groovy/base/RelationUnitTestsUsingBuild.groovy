@@ -3,7 +3,7 @@ package base
 import bookstore.Author
 import bookstore.Book
 import bookstore.Invoice
-import grails.buildtestdata.UnitTestDataBuilder
+import grails.buildtestdata.BuildDataTest
 import grails.buildtestdata.mixin.Build
 import human.Arm
 import human.Face
@@ -11,8 +11,8 @@ import magazine.Issue
 import magazine.Page
 import spock.lang.Specification
 
-@Build([Face, Book, Author, Invoice, Page, Issue, Arm])
-class RelationUnitTestsUsingBuild extends Specification implements UnitTestDataBuilder {
+@Build([Arm, Face, Book, Author, Invoice, Page])
+class RelationUnitTestsUsingBuild extends Specification implements BuildDataTest {
     void testOneToOneCascades() {
         when:
         def domainObject = Face.build()

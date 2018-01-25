@@ -21,7 +21,7 @@ class HibDomainClassSpec extends HibernateSpec{
     void "test that Bar got mocked and saved"() {
 
         when: "buildLazy should pick up the one thats already there from setupSpec"
-        def bar = buildWithCache(Bar) //should pick up the one thats already there
+        def bar = build(Bar, find: true) //should pick up the one thats already there
 
         then: "the id should be 1 as it was saved already"
         bar.id == 1
@@ -37,19 +37,17 @@ class HibDomainClassSpec extends HibernateSpec{
         foo.name == 'bill'
         foo.bar.name == 'name'
         foo.bar.id == 2
-        println foo.properties
 
     }
 
     void "round 2"() {
         when: "buildLazy is called but will create a new one"
-        def foo = buildWithCache(Foo)
+        def foo = findOrBuild(Foo)
         //build(Foo)
 
         then: "a new Foo was saved since the build was called in another test and not in setupSpec"
         foo.id == 2
         foo.bar.id == 3
-        println foo.properties
 
     }
 }

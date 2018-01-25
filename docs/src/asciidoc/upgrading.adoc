@@ -25,9 +25,10 @@ In 3.3 and later, only a full package name String is allowed.
 === Disabling Via TestDataConfig
 You can no longer disable via the `testDataConfig.enabled = false` option.
 
-Currently, the only way to have the `build` methods injected is to use the `compile` scope. If you want to use the `testCompile` scope, you will need to either use the `UnitTestDataBuilder` trait methods directly or add the trait manually at runtime.
-
-This seems to be a limitation of the `TraitInjector` API as it doesn't apply the `BuildTestDataEntity` trait to domain objects unless the plugin is in `compile` scope.
+=== Build methods refactored
+They all go through static helpers in the TestData eventually
+`buildLazy` -> `findOrBuild` or `build(find:true)`
+`buildWithoutSave` -> `build(save: false)`
 
 === Unit Tests
 Most of the work when upgrading to Grails 3.3.x will involve refactoring related to the framework itself with only minor changes for build-test-data.
@@ -43,7 +44,7 @@ class AuthorSpec extends Specification {
 Just add the trait:
 ```groovy
 @Build([Author])
-class AuthorSpec extends Specification implements UnitTestDataBuilder {
+class AuthorSpec extends Specification implements BuildDataTest {
     ...
 }
 ```
@@ -51,7 +52,7 @@ class AuthorSpec extends Specification implements UnitTestDataBuilder {
 Optionally, use the standard Grails mock method:
 
 ```groovy
-class AuthorSpec extends Specification implements UnitTestDataBuilder {
+class AuthorSpec extends Specification implements BuildDataTest {
     void setupSpec() {
         mockDomains(Author)
     }
@@ -62,7 +63,7 @@ class AuthorSpec extends Specification implements UnitTestDataBuilder {
 or by overriding the *getDomainClassesToMock* method:
 
 ```groovy
-class AuthorSpec extends Specification implements UnitTestDataBuilder {
+class AuthorSpec extends Specification implements BuildDataTest {
     Class[] getDomainClassesToMock() {
         [Author]
     }
@@ -70,7 +71,14 @@ class AuthorSpec extends Specification implements UnitTestDataBuilder {
 }
 ```
 
-WARNING: Make sure you use *UnitTestDataBuilder* for unit tests and *TestDataBuilder* for integration tests.
+or use with the BuildDomainTest and generics
+```groovy
+class AuthorSpec extends Specification implements BuildDomainTest<Author>{
+    ...
+}
+```
+
+WARNING: Make sure you use *DomainUnitTest* for unit tests and *TestDataBuilder* for integration tests.
 
 === Integration Tests
 For integration tests, follow the standard Grails upgrade instructions and then add the `TestDataBuilder` trait:

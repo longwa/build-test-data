@@ -1,5 +1,6 @@
-package grails.buildtestdata
+package grails.buildtestdata.utils
 
+import grails.buildtestdata.TestDataConfigurationHolder
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
@@ -8,6 +9,7 @@ import java.lang.reflect.Modifier
 
 @CompileStatic
 class DomainUtil {
+
     static boolean propertyIsDomainClass(Class clazz) {
         propertyIsToOneDomainClass(clazz) || propertyIsToManyDomainClass(clazz)
     }
@@ -24,9 +26,12 @@ class DomainUtil {
         Collection.isAssignableFrom(clazz)
     }
 
+    /**
+     * check the test config for info on what conrete classes to sub in for abstracts
+     */
     static Class findConcreteSubclass(Class abstractClass) {
         if (isAbstract(abstractClass)) {
-            TestDataConfigurationHolder.getAbstractDefaultFor(abstractClass.name)
+            return TestDataConfigurationHolder.getAbstractDefaultFor(abstractClass.name) ?: abstractClass
         }
         else {
             return abstractClass

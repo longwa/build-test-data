@@ -1,20 +1,22 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.CircularCheckList
-import grails.buildtestdata.MockErrors
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.validation.ValidationErrors
 
 @CompileStatic
-class ValidatorConstraintHandler extends AbstractConstraintHandler {
+class ValidatorConstraintHandler extends AbstractHandler{
+
     @Override
-    void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
-        // Validate isn't supported, if the value we've got in there isn't valid by this point, throw an error letting
+    void handle(Object instance, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty) {
+        // validate isn't supported, if the value we've got in there isn't valid by this point, throw an error letting
         // the user know why we're not passing
-        if (!constrainedProperty?.validate(domain, getProperty(domain, propertyName), new MockErrors(this))) {
-            throw new ConstraintHandlerException("Validator constraint not supported, attempted value (${getProperty(domain, propertyName)}) does not pass validation: property $propertyName of ${domain.class.name}")
+        if ( !appliedConstraint?.validate(instance, getValue(instance,propertyName), new ValidationErrors(instance)) ) {
+            String error = "Validator constraint support not implemented in build-test-data, attempted value " +
+                "(${getValue(instance,propertyName)}) does not pass validation: property $propertyName of ${instance.class.name}"
+            throw new ConstraintHandlerException(error)
         }
     }
 }
+

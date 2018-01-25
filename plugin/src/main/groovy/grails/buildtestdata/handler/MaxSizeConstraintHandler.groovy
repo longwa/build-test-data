@@ -1,29 +1,30 @@
 package grails.buildtestdata.handler
 
-import grails.buildtestdata.CircularCheckList
+import grails.buildtestdata.builders.DataBuilderContext
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.datastore.gorm.GormEntity
-import org.grails.datastore.gorm.validation.constraints.MaxSizeConstraint
 
 @CompileStatic
-class MaxSizeConstraintHandler extends AbstractConstraintHandler {
+class MaxSizeConstraintHandler extends AbstractHandler {
+
     @Override
-    void handle(GormEntity domain, String propertyName, Constraint appliedConstraint, ConstrainedProperty constrainedProperty, CircularCheckList circularCheckList) {
-        MaxSizeConstraint maxSizeConstraint = appliedConstraint as MaxSizeConstraint
-        Object propertyValue = getProperty(domain, propertyName)
-        padMaxSize(domain, propertyName, propertyValue, maxSizeConstraint.maxSize)
+    void handle(Object instance, String propertyName, Constraint appliedConstraint,
+                ConstrainedProperty constrainedProperty, DataBuilderContext ctx) {
+        pad(instance, propertyName, constrainedProperty, ctx,constrainedProperty.getMaxSize())
     }
 
-    static void padMaxSize(GormEntity domain, String propertyName, Object propertyValue, Integer maxSize) {
-        if (propertyValue?.respondsTo('size')) {
-            Integer size = propertyValue.invokeMethod('size', null) as Integer
+    void pad(Object instance, String propertyName, ConstrainedProperty constrainedProperty, DataBuilderContext ctx, int maxSize) {
+        def value = getValue(instance, propertyName)
+        if (value instanceof Collection && value.size() > maxSize) {
+            setValue(instance, propertyName, value.drop(value.size() - maxSize))
+        } else if (value?.respondsTo('size')) {
+            Integer size = value.invokeMethod('size', null) as Integer
             if (size > maxSize) {
                 Range range = (0..maxSize - 1)
-                InvokerHelper.setProperty(domain, propertyName, propertyValue.invokeMethod('getAt', range))
+                setValue(instance, propertyName, value.invokeMethod('getAt', range))
             }
         }
     }
 }
+

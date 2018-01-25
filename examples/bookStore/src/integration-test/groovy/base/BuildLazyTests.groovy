@@ -9,11 +9,12 @@ import spock.lang.Specification
 @Rollback
 @Integration
 class BuildLazyTests extends Specification implements TestDataBuilder {
+
     void testBuildLazyNoParamsCreatesNewWhenNoneExist() {
         assert Author.count() == 0
 
         when:
-        def domainObject = buildLazy(Author)
+        def domainObject = findOrBuild(Author)
 
         then:
         domainObject != null
@@ -25,7 +26,7 @@ class BuildLazyTests extends Specification implements TestDataBuilder {
         assert Author.count() == 1
 
         when:
-        def domainObject = buildLazy(Author)
+        def domainObject = build(Author, find: true)
 
         then:
         domainObject
@@ -33,11 +34,18 @@ class BuildLazyTests extends Specification implements TestDataBuilder {
         domainObject.lastName == "Qux"
         Author.count() == 1
     }
-
-    void testBuildLazyWithParamsCreatesNewWhenNoneExist() {
+    void "Test with new findOrBuild"() {
         assert Author.count() == 0
 
-        def domainObject = Author.buildLazy(firstName: "Bar")
+        def domainObject = Author.findOrBuild(firstName: "Bar")
+        assert domainObject
+        assert Author.count() == 1
+    }
+
+    void "Test build find with legacy buildLazy method"() {
+        assert Author.count() == 0
+
+        def domainObject = Author.findOrBuild(firstName: "Bar")
         assert domainObject
         assert Author.count() == 1
     }
@@ -46,7 +54,7 @@ class BuildLazyTests extends Specification implements TestDataBuilder {
         Author.build(firstName: "Foo")
         assert Author.count() == 1
 
-        def domainObject = Author.buildLazy(firstName: "Bar")
+        def domainObject = Author.findOrBuild(firstName: "Bar")
         assert domainObject
         assert Author.count() == 2
     }
@@ -55,7 +63,7 @@ class BuildLazyTests extends Specification implements TestDataBuilder {
         Author.build(firstName: "Foo", lastName: "Qux")
         assert Author.count() == 1
 
-        def domainObject = Author.buildLazy(firstName: "Foo")
+        def domainObject = Author.findOrBuild(firstName: "Foo")
         assert domainObject
         assert domainObject.firstName == "Foo"
         assert domainObject.lastName == "Qux"
@@ -66,7 +74,7 @@ class BuildLazyTests extends Specification implements TestDataBuilder {
         Author.build(firstName: "Foo", lastName: "Qux")
         assert Author.count() == 1
 
-        def domainObject = Author.buildLazy(firstName: "Foo", lastName: "Bar")
+        def domainObject = Author.findOrBuild(firstName: "Foo", lastName: "Bar")
         assert domainObject
         assert domainObject.firstName == "Foo"
         assert domainObject.lastName == "Bar"
