@@ -13,8 +13,12 @@ class TestDataConfigurationHolder {
     private static ConfigObject  configFile
 
     static Map<String, Object> sampleData = [:]
-    static Map<String, List> unitAdditionalBuild = [:]
+    static Map<String, List<Class>> unitAdditionalBuild = [:]
     static Map<String, Class> abstractDefault = [:]
+
+    static {
+        loadTestDataConfig()
+    }
 
     static void reset() {
         loadTestDataConfig()
@@ -83,8 +87,8 @@ class TestDataConfigurationHolder {
         sampleData[domainName] as Map
     }
 
-    static List getUnitAdditionalBuildFor(String domainName) {
-        unitAdditionalBuild[domainName]
+    static List<Class> getUnitAdditionalBuildFor(String domainName) {
+        unitAdditionalBuild[domainName] ?: [] as List<Class>
     }
 
     static Class getAbstractDefaultFor(String domainName) {

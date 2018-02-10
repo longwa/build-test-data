@@ -1,5 +1,6 @@
 package grails.buildtestdata.testing
 
+import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.utils.DomainUtil
 import grails.buildtestdata.TestData
 import grails.buildtestdata.builders.PersistentEntityDataBuilder
@@ -11,8 +12,12 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 trait DependencyDataTest extends DataTest {
-
-    //Empty, override in traits or the implemented tests. Gets called/fired for all the mocked domain during mockDependencyGraph
+    /**
+     * Empty, override in traits or the implemented tests.
+     * Gets called/fired for all the mocked domain during mockDependencyGraph
+     *
+     * @param entityClasses
+     */
     void onMockDomains(Class<?>... entityClasses) { }
 
     @Override
@@ -21,9 +26,13 @@ trait DependencyDataTest extends DataTest {
     }
 
     void mockDependencyGraph(Set<Class> mockedList, Class<?>... domainClassesToMock) {
+        // Resolve any additional build classes for this mock list
+        domainClassesToMock = resolveAdditionalBuild(domainClassesToMock)
+
         // First mock these domains so they are registered with Grails
         DataTest.super.mockDomains(domainClassesToMock)
-        //call the next Trait in the chain
+
+        // Call the next Trait in the chain
         onMockDomains(domainClassesToMock)
 
         mockedList.addAll(domainClassesToMock)
@@ -47,4 +56,9 @@ trait DependencyDataTest extends DataTest {
         }
     }
 
+    private Set<Class> resolveAdditionalBuild(Class<?>... domainClassesToMock) {
+        Set<Class> allClasses = domainClassesToMock as Set<Class>
+        allClasses.addAll(domainClassesToMock.collectMany { TestDataConfigurationHolder.getUnitAdditionalBuildFor(it.name) })
+        allClasses
+    }
 }
