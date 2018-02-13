@@ -98,7 +98,8 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         if(validator instanceof ConstrainedEntity){
             return ((ConstrainedEntity)validator).constrainedProperties
         }
-        //shouldn't get here
+
+        // This would mean the object isn't mocked with Grails, really shouldn't happen
         throw new RuntimeException("No constraints found for persistent entity ${targetClass.name}. Make sure it's mocked and properly initialized.")
     }
 
