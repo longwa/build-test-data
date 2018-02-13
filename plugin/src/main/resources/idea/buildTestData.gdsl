@@ -1,13 +1,16 @@
 def ctx = context(ctype: "org.grails.datastore.gorm.GormEntity")
 contributor(ctx) {
-    // Pull all fields as parameters
-    def p = classType.fields?.collect {
-        parameter(name: it.name, type: findClass(it.type.presentableText))
-    }
+    // Protect against null class type in some cases
+    if (classType) {
+        // Pull all fields as parameters
+        def p = classType.fields?.collect {
+            parameter(name: it.name, type: findClass(it.type.presentableText))
+        }
 
-    // Add methods
-    def buildTestMethods = ["build", "findOrBuild"]
-    buildTestMethods.each {
-        method(name: it, isStatic: true, params: [args: p], type: classType.qualifiedName)
+        // Add methods
+        def buildTestMethods = ["build", "findOrBuild"]
+        buildTestMethods.each {
+            method(name: it, isStatic: true, params: [args: p], type: classType.qualifiedName)
+        }
     }
 }
