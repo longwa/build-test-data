@@ -9,33 +9,22 @@ import java.lang.reflect.Modifier
 
 @CompileStatic
 class DomainUtil {
-
-    static boolean propertyIsDomainClass(Class clazz) {
-        propertyIsToOneDomainClass(clazz) || propertyIsToManyDomainClass(clazz)
-    }
-
-    static boolean propertyIsToOneDomainClass(Class clazz) {
-        getPersistentEntity(clazz) != null
-    }
-
     static PersistentEntity getPersistentEntity(Class clazz) {
         ClassPropertyFetcher.getStaticPropertyValue(clazz, "gormPersistentEntity", PersistentEntity)
-    }
-
-    static boolean propertyIsToManyDomainClass(Class clazz) {
-        Collection.isAssignableFrom(clazz)
     }
 
     /**
      * check the test config for info on what conrete classes to sub in for abstracts
      */
     static Class findConcreteSubclass(Class abstractClass) {
+        Class concreteClass = abstractClass
         if (isAbstract(abstractClass)) {
-            return TestDataConfigurationHolder.getAbstractDefaultFor(abstractClass.name) ?: abstractClass
+            concreteClass = TestDataConfigurationHolder.getAbstractDefaultFor(abstractClass.name)
+            if (!concreteClass) {
+                throw new IllegalArgumentException("No concrete subclass found for $abstractClass, use 'testDataConfig.abstractDefault' to configure")
+            }
         }
-        else {
-            return abstractClass
-        }
+        concreteClass
     }
 
     static boolean isAbstract(Class clazz) {
