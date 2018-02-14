@@ -3,6 +3,7 @@ package grails.buildtestdata
 import grails.testing.spock.OnceBefore
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
+import org.junit.Before
 
 /**
  * Integration tests, any class really, can implement this trait to add build-test-data functionality
@@ -39,7 +40,7 @@ trait TestDataBuilder {
         null
     }
 
-    @OnceBefore
+    @Before
     void setupCustomTestDataConfig() {
         Closure testDataConfig = doWithTestDataConfig()
         if (testDataConfig) {

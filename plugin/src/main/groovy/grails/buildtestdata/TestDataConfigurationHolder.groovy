@@ -39,8 +39,8 @@ class TestDataConfigurationHolder {
         resource
     }
 
-    static void setSampleData(Object configObject) {
-        config.setSampleData(configObject)
+    static void setSampleData(Map<String, Object> sampleData) {
+        config.sampleData = sampleData
     }
 
     static Map<String, Object> getConfigFor(String domainName) {
@@ -68,19 +68,22 @@ class TestDataConfigurationHolder {
     }
 
     /**
-     * Takes a testDataConfig { ... } block that is merged over the default one
-     *
-     * {->
-     *     unitAdditionalBuild { ... }
-     *     sampleData {
-     *         ...
-     *     }
-     * }
-     *
+     * Takes a testDataConfig { ... } block that is merged over the default values
      * @param block
      */
     static void mergeConfig(Closure block) {
-        // TODO - Implement
+        ConfigObject blockConfig = new ConfigSlurper(Environment.current.name).parse(new ClosureScript(closure: block))
+        config.mergeConfig(blockConfig)
+    }
+
+    @CompileStatic
+    private static class ClosureScript extends Script {
+        Closure closure
+        def run() {
+            closure.resolveStrategy = Closure.DELEGATE_FIRST
+            closure.delegate = this
+            closure.call()
+        }
     }
 }
 
@@ -105,41 +108,28 @@ class TestDataConfiguration {
         if (testDataConfigResource) {
             ConfigObject configFile = configSlurper.parse(testDataConfigResource.URL)
             log.debug("Loading configuration from file: {}", configFile)
-
-            // Process the sample data
-            setSampleData(configFile['testDataConfig']['sampleData'] as Map ?: [:])
-
-            // Process additional build for unit testing
-            unitAdditionalBuild = configFile['testDataConfig']['unitAdditionalBuild'] as Map ?: [:]
-
-            // If we have abstract defaults, automatically add transitive dependencies
-            // for them since they may need to be built.
-            abstractDefault = configFile['testDataConfig']['abstractDefault'] as Map ?: [:]
-            abstractDefault.each { String key, Class value ->
-                if (DomainUtil.isAbstract(value)) {
-                    throw new IllegalArgumentException("Default value for 'abstractDefault.${key}' must be a concrete class")
-                }
-                if (unitAdditionalBuild.containsKey(key)) {
-                    unitAdditionalBuild[key] << value
-                }
-                else {
-                    unitAdditionalBuild[key] = [value]
-                }
-            }
-
-            log.debug("Configuration loaded.")
+            mergeConfig(configFile)
         }
     }
 
-    void setSampleData(Object configObject) {
-        if (configObject instanceof String) {
-            sampleData = configSlurper.parse(configObject as String) as Map
-        }
-        else if (configObject instanceof Map) {
-            sampleData = configObject as Map
-        }
-        else {
-            throw new IllegalArgumentException("TestDataConfigurationHolder.sampleData should be either a String or a Map")
+    void mergeConfig(ConfigObject config) {
+        // Add to any existing configuration
+        sampleData += config['testDataConfig']['sampleData'] as Map ?: [:]
+        unitAdditionalBuild += config['testDataConfig']['unitAdditionalBuild'] as Map ?: [:]
+        abstractDefault += config['testDataConfig']['abstractDefault'] as Map ?: [:]
+
+        // If we have abstract defaults, automatically add transitive dependencies
+        // for them since they may need to be built.
+        abstractDefault.each { String key, Class value ->
+            if (DomainUtil.isAbstract(value)) {
+                throw new IllegalArgumentException("Value for 'abstractDefault.${key}' must be a concrete class")
+            }
+            if (unitAdditionalBuild.containsKey(key)) {
+                unitAdditionalBuild[key] << value
+            }
+            else {
+                unitAdditionalBuild[key] = [value]
+            }
         }
     }
 
@@ -160,6 +150,10 @@ class TestDataConfiguration {
     }
 
     Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
+        if (!sampleData[domainName]) {
+            throw new IllegalArgumentException("Sample data for $domainName does not exist")
+        }
+
         // Fetch both and either invoke the closure or just return raw values
         Object value = sampleData[domainName][propertyName]
         if (value instanceof Closure) {
