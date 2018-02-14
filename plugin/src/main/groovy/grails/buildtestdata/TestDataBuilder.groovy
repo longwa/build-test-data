@@ -1,9 +1,8 @@
 package grails.buildtestdata
 
-
+import grails.testing.spock.OnceBefore
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
-import org.junit.BeforeClass
 
 /**
  * Integration tests, any class really, can implement this trait to add build-test-data functionality
@@ -11,6 +10,7 @@ import org.junit.BeforeClass
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
 trait TestDataBuilder {
+    private static boolean hasCustomTestDataConfig = false
 
     /** calls {@link TestData#build} */
     public <T> T build(Map args = [:], Class<T> clazz) {
@@ -33,19 +33,26 @@ trait TestDataBuilder {
     }
 
     /**
-     * Override this to override test data configuration for this test only
+     * Override this to override test data configuration for this test class
      */
     Closure doWithTestDataConfig() {
-        throw new UnsupportedOperationException("Not yet implemented")
+        null
     }
 
-    @BeforeClass
-    static void setupTestDataBuilder() {
-        TestDataConfigurationHolder.loadTestDataConfig()
+    @OnceBefore
+    void setupCustomTestDataConfig() {
+        Closure testDataConfig = doWithTestDataConfig()
+        if (testDataConfig) {
+            TestDataConfigurationHolder.mergeConfig(testDataConfig)
+            hasCustomTestDataConfig = true
+        }
     }
 
     @AfterClass
     static void cleanupTestDataBuilder() {
         TestData.clear()
+        if (hasCustomTestDataConfig) {
+            TestDataConfigurationHolder.reset()
+        }
     }
 }

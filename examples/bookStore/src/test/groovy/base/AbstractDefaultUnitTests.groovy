@@ -20,7 +20,7 @@ class AbstractDefaultUnitTests extends Specification implements BuildDataTest {
     }
 
     void testBuildWithNoDefault() {
-        TestDataConfigurationHolder.abstractDefault = [:]
+        TestDataConfigurationHolder.config.abstractDefault = [:]
 
         when:
         build(AbstractClass)
@@ -30,7 +30,7 @@ class AbstractDefaultUnitTests extends Specification implements BuildDataTest {
     }
 
     void testSuccessfulBuildWithDefault() {
-        TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': ConcreteSubClass]
+        TestDataConfigurationHolder.config.abstractDefault = ['abstractclass.AbstractSubClass': ConcreteSubClass]
         mockDomain(AbstractSubClass)
 
         when:
@@ -41,7 +41,7 @@ class AbstractDefaultUnitTests extends Specification implements BuildDataTest {
     }
 
     void testSuccessfulBuildWithDifferentDefault() {
-        TestDataConfigurationHolder.abstractDefault = ['abstractclass.AbstractSubClass': AnotherConcreteSubClass]
+        TestDataConfigurationHolder.config.abstractDefault = ['abstractclass.AbstractSubClass': AnotherConcreteSubClass]
         mockDomain(AbstractSubClass)
 
         when:

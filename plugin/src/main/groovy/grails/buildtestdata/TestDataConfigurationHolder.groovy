@@ -5,33 +5,106 @@ import grails.util.Environment
 import grails.util.Holders
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.Resource
 
 @Slf4j
 @CompileStatic
+@SuppressWarnings("GroovyUnusedDeclaration")
 class TestDataConfigurationHolder {
-    private static ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
-    private static ConfigObject  configFile
+    @Lazy
+    private static Resource testDataConfigResource = { getDefaultTestDataConfigResource() }()
 
-    static Map<String, Object> sampleData = [:]
-    static Map<String, List<Class>> unitAdditionalBuild = [:]
-    static Map<String, Class> abstractDefault = [:]
+    @Lazy
+    static TestDataConfiguration config = { new TestDataConfiguration(testDataConfigResource) }()
 
-    static {
-        loadTestDataConfig()
+    static void loadTestDataConfig() {
+        // Nothing to do here, loaded lazily on demand
     }
 
     static void reset() {
-        loadTestDataConfig()
+        config.initialize(testDataConfigResource)
     }
 
-    static void loadTestDataConfig() {
+    static Resource getDefaultTestDataConfigResource() {
+        String configPath = Holders.flatConfig['grails.buildtestdata.testDataConfig'] ?: 'TestDataConfig.groovy'
+        if (!configPath.endsWith(".groovy")) {
+            configPath += ".groovy"
+        }
+        ClassPathResource resource = new ClassPathResource(configPath, TestDataConfigurationHolder.classLoader)
+        if (!resource.exists()) {
+            log.warn("{} not found in classpath, build-test-data plugin proceeding without config file", resource)
+            return null
+        }
+        resource
+    }
+
+    static void setSampleData(Object configObject) {
+        config.setSampleData(configObject)
+    }
+
+    static Map<String, Object> getConfigFor(String domainName) {
+        config.getConfigFor(domainName)
+    }
+
+    static List<Class> getUnitAdditionalBuildFor(String domainName) {
+        config.getUnitAdditionalBuildFor(domainName)
+    }
+
+    static Class getAbstractDefaultFor(String domainName) {
+        config.getAbstractDefaultFor(domainName)
+    }
+
+    static Set<String> getConfigPropertyNames(String domainName) {
+        config.getConfigPropertyNames(domainName)
+    }
+
+    static Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
+        config.getSuppliedPropertyValue(propertyValues, domainName, propertyName)
+    }
+
+    static Map<String, Object> getPropertyValues(String domainName, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
+        config.getPropertyValues(domainName, propertyNames, propertyValues)
+    }
+
+    /**
+     * Takes a testDataConfig { ... } block that is merged over the default one
+     *
+     * {->
+     *     unitAdditionalBuild { ... }
+     *     sampleData {
+     *         ...
+     *     }
+     * }
+     *
+     * @param block
+     */
+    static void mergeConfig(Closure block) {
+        // TODO - Implement
+    }
+}
+
+@CompileStatic
+@Slf4j
+class TestDataConfiguration {
+    final ConfigSlurper configSlurper = new ConfigSlurper(Environment.current.name)
+
+    Map<String, Object> sampleData
+    Map<String, List<Class>> unitAdditionalBuild
+    Map<String, Class> abstractDefault
+
+    TestDataConfiguration(Resource testDataConfigResource) {
+        initialize(testDataConfigResource)
+    }
+
+    void initialize(Resource testDataConfigResource) {
         sampleData = [:]
         unitAdditionalBuild = [:]
         abstractDefault = [:]
 
-        Class testDataConfigClass = getDefaultTestDataConfigClass()
-        if (testDataConfigClass) {
-            configFile = configSlurper.parse(testDataConfigClass)
+        if (testDataConfigResource) {
+            ConfigObject configFile = configSlurper.parse(testDataConfigResource.URL)
+            log.debug("Loading configuration from file: {}", configFile)
 
             // Process the sample data
             setSampleData(configFile['testDataConfig']['sampleData'] as Map ?: [:])
@@ -46,7 +119,6 @@ class TestDataConfigurationHolder {
                 if (DomainUtil.isAbstract(value)) {
                     throw new IllegalArgumentException("Default value for 'abstractDefault.${key}' must be a concrete class")
                 }
-
                 if (unitAdditionalBuild.containsKey(key)) {
                     unitAdditionalBuild[key] << value
                 }
@@ -55,23 +127,11 @@ class TestDataConfigurationHolder {
                 }
             }
 
-            log.debug("Loaded configuration file: {}", configFile)
+            log.debug("Configuration loaded.")
         }
     }
 
-    static Class getDefaultTestDataConfigClass() {
-        GroovyClassLoader classLoader = new GroovyClassLoader(TestDataConfigurationHolder.classLoader)
-        String testDataConfig = Holders.flatConfig['grails.buildtestdata.testDataConfig'] ?: 'TestDataConfig'
-        try {
-            return classLoader.loadClass(testDataConfig)
-        }
-        catch (ClassNotFoundException ignored) {
-            log.warn("{}.groovy not found, build-test-data plugin proceeding without config file", testDataConfig)
-            return null
-        }
-    }
-
-    static void setSampleData(Object configObject) {
+    void setSampleData(Object configObject) {
         if (configObject instanceof String) {
             sampleData = configSlurper.parse(configObject as String) as Map
         }
@@ -83,23 +143,23 @@ class TestDataConfigurationHolder {
         }
     }
 
-    static Map<String, Object> getConfigFor(String domainName) {
+    Map<String, Object> getConfigFor(String domainName) {
         sampleData[domainName] as Map
     }
 
-    static List<Class> getUnitAdditionalBuildFor(String domainName) {
+    List<Class> getUnitAdditionalBuildFor(String domainName) {
         unitAdditionalBuild[domainName] ?: [] as List<Class>
     }
 
-    static Class getAbstractDefaultFor(String domainName) {
+    Class getAbstractDefaultFor(String domainName) {
         abstractDefault[domainName]
     }
 
-    static Set<String> getConfigPropertyNames(String domainName) {
+    Set<String> getConfigPropertyNames(String domainName) {
         getConfigFor(domainName)?.keySet() ?: [] as Set<String>
     }
 
-    static Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
+    Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
         // Fetch both and either invoke the closure or just return raw values
         Object value = sampleData[domainName][propertyName]
         if (value instanceof Closure) {
@@ -110,7 +170,7 @@ class TestDataConfigurationHolder {
         value
     }
 
-    static Map<String, Object> getPropertyValues(String domainName, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
+    Map<String, Object> getPropertyValues(String domainName, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
         for (propertyName in propertyNames) {
             propertyValues[propertyName] = getSuppliedPropertyValue(propertyValues, domainName, propertyName)
         }

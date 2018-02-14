@@ -51,5 +51,4 @@ trait BuildDataTest extends DependencyDataTest implements TestDataBuilder {
             mockDomains(build.value())
         }
     }
-
 }
