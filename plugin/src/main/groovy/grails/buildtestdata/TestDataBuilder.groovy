@@ -1,6 +1,5 @@
 package grails.buildtestdata
 
-import grails.testing.spock.OnceBefore
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
 import org.junit.Before
@@ -53,6 +52,7 @@ trait TestDataBuilder {
     static void cleanupTestDataBuilder() {
         TestData.clear()
         if (hasCustomTestDataConfig) {
+            hasCustomTestDataConfig = false
             TestDataConfigurationHolder.reset()
         }
     }
