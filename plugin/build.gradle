@@ -14,7 +14,6 @@ group "org.grails.plugins"
 apply plugin: "eclipse"
 apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
-apply plugin: "org.grails.grails-plugin-publish"
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-logging"
@@ -48,23 +47,6 @@ bootRun {
 // Enable if you wish to package this plugin as a standalone application
 bootRepackage.enabled = false
 
-grailsPublish {
-    githubSlug = 'longwa/build-test-data'
-    license {
-        name = 'Apache-2.0'
-    }
-
-    title = "Build Test Data Plugin"
-    desc = "Enables the easy creation of test data by automatically satisfying common constraints"
-    developers = [
-        longwa: "Aaron Long",
-        tednaleid: "Ted Naleid",
-        basejump: "Joshua Burnett"
-    ]
-    issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
-    vcsUrl = "https://github.com/longwa/$project.name"
-}
-
 //this makes the groovy docs much more readable by shorting packages and providing links
 groovydoc {
     excludes = ['**/*GrailsPlugin.groovy','**/Application.groovy' ]
@@ -75,3 +57,5 @@ groovydoc {
     link('https://testing.grails.org/latest/api',  'grails.testing.', 'org.grails.testing.')
     link('http://gorm.grails.org/latest/hibernate/api/',  'grails.gorm', 'grails.orm', 'org.grails.datastore', 'org.grails.orm')
 }
+
+apply from: rootProject.file("gradle/publishing.gradle")

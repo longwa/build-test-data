@@ -1,0 +1,40 @@
+apply plugin: "org.grails.grails-plugin-publish"
+
+// Normal Grails bintray publishing
+grailsPublish {
+    githubSlug = 'longwa/build-test-data'
+    license {
+        name = 'Apache-2.0'
+    }
+
+    title = "Build Test Data Plugin"
+    desc = "Enables the easy creation of test data by automatically satisfying common constraints"
+    developers = [
+        longwa: "Aaron Long",
+        tednaleid: "Ted Naleid",
+        basejump: "Joshua Burnett"
+    ]
+    issueTrackerUrl = "https://github.com/longwa/$project.name/issues"
+    vcsUrl = "https://github.com/longwa/$project.name"
+}
+
+// For publishing snapshots (either to private artifactory or OSS)
+publishing {
+    repositories {
+        maven {
+            def publishUrl = project.hasProperty("artifactoryPublishUrl") ? project.artifactoryPublishUrl : ''
+            def repoKey = project.projectVersion.endsWith("SNAPSHOT") ? 'plugins-snapshot-local' : 'plugins-release-local'
+            url = "$publishUrl/$repoKey"
+
+            credentials {
+                credentials {
+                    def u = project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
+                    def p = project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
+                    username = u
+                    password = p
+                }
+            }
+        }
+    }
+}
+
