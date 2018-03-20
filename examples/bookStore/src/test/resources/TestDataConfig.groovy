@@ -34,6 +34,9 @@ testDataConfig {
             def i = 1
             name = {-> "Article ${i++}" }
         }
+        'bookstore.EstablishedAuthor' {
+            metaData = ['tags': ['fiction', 'horror']]
+        }
 
         // work around for embedded objects in src/groovy
         // grails does not create Artefacts that we can query for constraints for things outside of grails-app/domain

@@ -70,7 +70,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
 
     List<Association> findRequiredAssociations() {
         persistentEntity.associations.findAll { Association assc ->
-            requiredPropertyNames.contains(assc.name) && !(assc.associatedEntity instanceof EmbeddedPersistentEntity)
+            requiredPropertyNames.contains(assc.name) && assc.associatedEntity && !(assc.associatedEntity instanceof EmbeddedPersistentEntity)
         }
     }
 
