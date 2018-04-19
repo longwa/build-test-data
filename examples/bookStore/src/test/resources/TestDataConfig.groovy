@@ -1,5 +1,6 @@
 import abstractclass.ConcreteSubClass
 import bookstore.Author
+import config.Article
 import embedded.Embedded
 
 testDataConfig {
@@ -8,7 +9,7 @@ testDataConfig {
     // we also want to include Article and Author. This is useful if you define defaults in sampleData that explicitly
     // build other objects.
     unitAdditionalBuild = [
-        'config.Hotel': ['config.Article'],
+        'config.Hotel': [Article],
         'config.Article': [Author]
     ]
 

@@ -59,6 +59,11 @@ trait DependencyDataTest extends DataTest {
     private Set<Class> resolveAdditionalBuild(Class<?>... domainClassesToMock) {
         Set<Class> allClasses = domainClassesToMock as Set<Class>
         allClasses.addAll(domainClassesToMock.collectMany { TestDataConfigurationHolder.getUnitAdditionalBuildFor(it.name) })
-        allClasses
+        if (allClasses.size() > domainClassesToMock.size()) {
+            return resolveAdditionalBuild(allClasses as Class[])
+        }
+        else {
+            allClasses
+        }
     }
 }

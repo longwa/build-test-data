@@ -3,82 +3,109 @@ package base
 import bookstore.Author
 import config.Article
 import config.Hotel
-import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.BuildDataTest
-import org.junit.After
+import grails.buildtestdata.TestDataConfigurationHolder
+import spock.lang.Specification
 
-class TestDataConfigUnitTests implements BuildDataTest {
-    @After
-    void tearDown() {
+class TestDataConfigUnitTests extends Specification implements BuildDataTest {
+    void cleanup() {
         // we should reset the config holder when feeding it values in tests as it could cause issues
         // for other tests later on that are expecting the default config if we do not 
         TestDataConfigurationHolder.reset()
     }
 
     void testRealConfigFile() {
+        mockDomains(Hotel)
+
         // uses the file in grails-app/conf/TestDataConfig.groovy
         TestDataConfigurationHolder.reset() // you can reset it if you want it to get to a known value
+
+        when:
         Hotel testHotel = Hotel.build()
-        assert "Motel 6" == testHotel.name
-        assert "6125551111", testHotel.faxNumber.startsWith("612555") // 
+
+        then:
+        "Motel 6" == testHotel.name
+        testHotel.faxNumber.startsWith("612555")
     }
 
     void testStaticValue() {
+        mockDomains(Hotel)
+
         def hotelNameAlwaysHilton = [('config.Hotel'): [name: "Hilton"]]
         TestDataConfigurationHolder.sampleData = hotelNameAlwaysHilton
 
+        when:
         def hilton = Hotel.build()
-        assert "Hilton" == hilton.name
-
         def stillHilton = Hotel.build()
-        assert "Hilton" == stillHilton.name
+
+        then:
+        "Hilton" == hilton.name
+        "Hilton" == stillHilton.name
     }
 
     void testConfigClosure() {
+        mockDomains(Hotel)
+
         def i = 0
         def hotelNameAlternates = [
-                ('config.Hotel'): [name: {->
-                    i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
-                }]
+            ('config.Hotel'): [name: { ->
+                i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
+            }]
         ]
         TestDataConfigurationHolder.sampleData = hotelNameAlternates
-        
+
+        when:
         def holidayInn = Hotel.build()
-        assert holidayInn.name == "Holiday Inn"
-
         def hilton = Hotel.build()
-        assert hilton.name == "Hilton"
-
         def backToHolidayInn = Hotel.build()
-        assert backToHolidayInn.name == "Holiday Inn"
+
+        then:
+        holidayInn.name == "Holiday Inn"
+        hilton.name == "Hilton"
+        backToHolidayInn.name == "Holiday Inn"
     }
 
     void testAdditionalBuild() {
+        mockDomains(Hotel)
+
+        when:
         def hotel = Hotel.build()
-        assert hotel.name == 'Motel 6'
+
+        then:
+        hotel.name == 'Motel 6'
 
         // Should also be able to build an article, even though we didn't
         // specifically include it and Hotel doesn't require it.
+        when:
         def article = Article.build()
-        assert article.name =~ 'Article'
+
+        then:
+        article.name =~ 'Article'
 
         // Make sure we can use it
-        assert Article.list().size() == 1
+        Article.list().size() == 1
     }
 
     void testRecursiveAdditionalBuild() {
+        mockDomains(Hotel)
+
+        when:
         def hotel = Hotel.build()
-        assert hotel.name == 'Motel 6'
+
+        then:
+        hotel.name == 'Motel 6'
 
         // Should also be able to build an article, even though we didn't
         // specifically include it and Hotel doesn't require it.
+        when:
         def article = Article.build()
-        assert article.name =~ 'Article'
+
+        then:
+        article.name =~ 'Article'
 
         // Make sure we can use it
-        assert Article.list().size() == 1
-
-        assert Author.build()
-        assert Author.list().size() == 1
+        Article.list().size() == 1
+        Author.build()
+        Author.list().size() == 1
     }
 }
