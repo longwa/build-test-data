@@ -18,6 +18,8 @@ class EstablishedAuthorUnitTests extends Specification implements BuildDataTest 
         establishedAuthor.hardcoverBooks.size() == 1
         establishedAuthor.paperbackBooks != null
         establishedAuthor.paperbackBooks.size() == 1
+        establishedAuthor.metaData.tags != null
+        establishedAuthor.metaData.tags.size() == 2
         establishedAuthor.id > 0
     }
 }
