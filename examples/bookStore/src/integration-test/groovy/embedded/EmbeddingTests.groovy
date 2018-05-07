@@ -10,15 +10,12 @@ import spock.lang.Specification
 @Rollback
 @Integration
 class EmbeddingTests extends Specification implements TestDataBuilder {
-    @Ignore("building of default embedded objects not currently supported")
     void "default embedded value"() {
-        TestDataConfigurationHolder.sampleData = [:]
-
         when:
         Embedding e = build(Embedding)
 
         then:
-        e.inner.someValue == 'someValue'
+        e.inner.someValue == 'value'
     }
 
     void "embedded value loaded from TestDataConfig"() {

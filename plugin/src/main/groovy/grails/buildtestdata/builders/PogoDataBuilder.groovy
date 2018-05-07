@@ -1,16 +1,12 @@
 package grails.buildtestdata.builders
 
-import grails.buildtestdata.utils.DomainUtil
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.utils.Basics
-import grails.databinding.DataBinder
-import grails.databinding.SimpleDataBinder
-import grails.databinding.SimpleMapDataBindingSource
+import grails.buildtestdata.utils.DomainUtil
 import groovy.transform.CompileStatic
 import org.springframework.core.annotation.Order
 
 @CompileStatic
-class PogoDataBuilder implements DataBuilder{
+class PogoDataBuilder implements DataBuilder {
 
     @Order
     static class Factory implements DataBuilderFactory<PogoDataBuilder> {
@@ -18,19 +14,18 @@ class PogoDataBuilder implements DataBuilder{
         PogoDataBuilder build(Class target) {
             return new PogoDataBuilder(target)
         }
+
         @Override
         boolean supports(Class clazz) {
             return true
         }
     }
 
-    DataBinder dataBinder
     Class targetClass
 
-    PogoDataBuilder(Class targetClass){
-        //findConcreteSubclass takes care of subtituing in concrete classes for abstracts
+    PogoDataBuilder(Class targetClass) {
+        // findConcreteSubclass takes care of subtituing in concrete classes for abstracts
         this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
-        this.dataBinder = new SimpleDataBinder()
     }
 
     @Override
@@ -45,24 +40,32 @@ class PogoDataBuilder implements DataBuilder{
 
     def doBuild(DataBuilderContext ctx) {
         // Nothing to do, target exists already
-        if(ctx.target) return ctx.target
+        if (ctx.target) {
+            return ctx.target
+        }
 
-        //TODO fix to use new initialProps design
-        //Map initialProps = BuildTestDataApi.initialPropsResolver.getInitialProps(target)
+        // TODO - Implement new initialProps design
+        // Map initialProps = BuildTestDataApi.initialPropsResolver.getInitialProps(target)
         Map initialProps = findMissingConfigValues(ctx.data)
-        if(initialProps){
-            if(ctx.data){
+        if (initialProps) {
+            if (ctx.data) {
                 ctx.data = [:] + initialProps + ctx.data
             }
-            else{
+            else {
                 ctx.data = [:] + initialProps
             }
         }
         def instance = getNewInstance()
 
-        if(ctx.data){
-            dataBinder.bind(instance,new SimpleMapDataBindingSource(ctx.data))
+        if (ctx.data) {
+            ctx.data.each {
+                MetaProperty metaProperty = instance.hasProperty(it.key)
+                if (metaProperty) {
+                    metaProperty.setProperty(instance, it.value)
+                }
+            }
         }
+
         instance
     }
 
@@ -72,14 +75,14 @@ class PogoDataBuilder implements DataBuilder{
     }
 
 
-    def getNewInstance(){
-        if(List.isAssignableFrom(targetClass)){
+    def getNewInstance() {
+        if (List.isAssignableFrom(targetClass)) {
             [] as List
         }
-        else if(Set.isAssignableFrom(targetClass)){
+        else if (Set.isAssignableFrom(targetClass)) {
             [] as Set
         }
-        else{
+        else {
             targetClass.newInstance()
         }
     }

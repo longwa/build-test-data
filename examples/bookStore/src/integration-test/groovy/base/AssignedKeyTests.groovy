@@ -23,7 +23,6 @@ class AssignedKeyTests extends Specification implements TestDataBuilder {
         o2 != null
     }
 
-    @Ignore //FIXME this was woking but I don't see how as its not supported
     void testBuildWithoutKey() {
         when:
         def obj = build(AssignedKey)
@@ -31,6 +30,9 @@ class AssignedKeyTests extends Specification implements TestDataBuilder {
         then:
         obj != null
         obj.attribute == "attribute"
+
+        and: "key is assigned using blank handler"
+        obj.id == 'x'
 
         def o2 = AssignedKey.get(obj.id)
         o2 != null

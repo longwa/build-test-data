@@ -22,7 +22,7 @@ dependencies {
 
     compile "org.grails:grails-core"
     compile "org.grails:grails-gorm-testing-support"
-    compile "org.grails:grails-databinding"
+    // compile "org.grails:grails-databinding"
     compile "org.grails:grails-datastore-gorm"
     console "org.grails:grails-console"
 

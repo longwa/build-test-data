@@ -42,7 +42,7 @@ testDataConfig {
         // work around for embedded objects in src/groovy
         // grails does not create Artefacts that we can query for constraints for things outside of grails-app/domain
         'embedded.Embedding' {
-            inner = new Embedded(someValue: "value")
+            inner = {-> new Embedded(someValue: "value") }
         }
 
         'standalone.ParentWithAssignedKey' {
