@@ -3,9 +3,14 @@ package base
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
 import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.TestDataConfigurationHolder
 import spock.lang.Specification
 
 class AbstractRelatedUnitTests extends Specification implements BuildDataTest {
+    void setup() {
+        TestDataConfigurationHolder.reset()
+    }
+
     void testSuccessfulBuild() {
         mockDomains(RelatedToAbstract, ConcreteSubClass)
 
