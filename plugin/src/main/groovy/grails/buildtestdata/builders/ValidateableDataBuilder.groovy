@@ -103,8 +103,11 @@ class ValidateableDataBuilder extends PogoDataBuilder {
         !nullable && bindable
     }
 
-    // TODO: Check if constraint is bindable
     boolean isBindable(Constrained constrained) {
+        if (constrained instanceof DefaultConstrainedProperty) {
+            Boolean bindable = ((DefaultConstrainedProperty)constrained).getMetaConstraintValue('bindable')
+            return bindable == null || bindable
+        }
         return true
     }
 
