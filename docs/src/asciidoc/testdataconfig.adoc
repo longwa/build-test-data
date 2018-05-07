@@ -1,6 +1,6 @@
 [[testdataconfig]]
 == Test Data Config
-For Grails 3.x, you will need to manually create a TestDataConfig.groovy (using the examples below as a starting point):
+If you want to specify global defaults, you will need to create a `TestDataConfig.groovy` (using the examples below as a starting point):
 
     src/test/resources/TestDataConfig.groovy
 
@@ -63,6 +63,8 @@ It follows the normal groovy config file pattern and you can also override thing
         }
     }
 ```
+
+You are not required to have a TestDataConfig.groovy file.
 
 === Generating Dynamic Values
 If you have a need to have different values given to a domain object (possibly for a unique constraint), you can instead specify a closure in your config file.  This closure will be called and is expected to return the property value.  Here's an example that generates a unique title for a book:
