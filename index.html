@@ -516,7 +516,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="details">
 <span id="author" class="author">Aaron Long</span><br>
 <span id="email" class="email"><a href="mailto:longwa@gmail.com">longwa@gmail.com</a></span><br>
-<span id="revdate">3.3.0.RC2</span>
+<span id="revdate">3.3.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -844,7 +844,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="grails-3-3">Grails 3.3</h3>
 <div class="paragraph">
-<p><code>compile "org.grails.plugins:build-test-data:3.3.0.RC2"</code></p>
+<p><code>compile "org.grails.plugins:build-test-data:3.3.0"</code></p>
 </div>
 </div>
 <div class="sect2">
@@ -1518,7 +1518,7 @@ The trait is not strictly required, but it does include some setup and cleanup f
 <h2 id="testdataconfig">Test Data Config</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>For Grails 3.x, you will need to manually create a TestDataConfig.groovy (using the examples below as a starting point):</p>
+<p>If you want to specify global defaults, you will need to create a <code>TestDataConfig.groovy</code> (using the examples below as a starting point):</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -1611,6 +1611,9 @@ Prior versions allowed a <strong>Class</strong> as a key for sampleData, but tha
         }
     }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You are not required to have a TestDataConfig.groovy file.</p>
 </div>
 <div class="sect2">
 <h3 id="generating-dynamic-values">Generating Dynamic Values</h3>
@@ -1919,7 +1922,7 @@ assertEquals <span class="integer">1</span>, Issue.list().size()</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-08 10:20:43 -05:00
+Last updated 2018-02-13 14:54:56 -05:00
 </div>
 </div>
 </body>
