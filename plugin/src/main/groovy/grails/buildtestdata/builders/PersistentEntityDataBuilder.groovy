@@ -22,7 +22,7 @@ import org.springframework.validation.Validator
 
 @Slf4j
 @CompileStatic
-class PersistentEntityDataBuilder extends ValidateableDataBuilder{
+class PersistentEntityDataBuilder extends ValidateableDataBuilder {
 
     @Order(100)
     static class Factory implements DataBuilderFactory<PersistentEntityDataBuilder> {
@@ -40,10 +40,10 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     Set<Class> requiredDomainClasses
 
     PersistentEntityDataBuilder(Class target) {
-        super(target)        
+        super(target)
         handlers.put(
-            ConstrainedProperty.NULLABLE_CONSTRAINT, 
-            new PersistentEntityNullableConstraintHandler(getPersistentEntity(),getMappingContext())
+            ConstrainedProperty.NULLABLE_CONSTRAINT,
+            new PersistentEntityNullableConstraintHandler(getPersistentEntity(), getMappingContext())
         )
         handlers.put(
             ConstrainedProperty.MIN_SIZE_CONSTRAINT,
@@ -63,7 +63,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     }
 
     Set<Class> findRequiredDomainClasses() {
-        findRequiredAssociations().collect{ Association assc ->
+        findRequiredAssociations().collect { Association assc ->
             assc.associatedEntity.javaClass
         } as Set<Class>
     }
@@ -79,6 +79,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
      * if databinding occured with passed in data then this will assign both side of a bi-directional association
      * for example: If value is an Author and we're a Book, add us to the Author's set of books if there is one
      */
+
     void applyBiDirectionManyToOnes(GormEntity domainInstance) {
         PersistentEntity defDomain = DomainUtil.getPersistentEntity(domainInstance.class)
         for (Association association in defDomain.associations) {
@@ -95,26 +96,26 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
     @Override
     Map<String, ConstrainedProperty> getConstraintsMap() {
         Validator validator = mappingContext.getEntityValidator(persistentEntity)
-        if(validator instanceof ConstrainedEntity){
-            return ((ConstrainedEntity)validator).constrainedProperties
+        if (validator instanceof ConstrainedEntity) {
+            return ((ConstrainedEntity) validator).constrainedProperties
         }
 
         // This would mean the object isn't mocked with Grails, really shouldn't happen
         throw new RuntimeException("No constraints found for persistent entity ${targetClass.name}. Make sure it's mocked and properly initialized.")
     }
 
-    MappingContext getMappingContext(){
+    MappingContext getMappingContext() {
         persistentEntity.getMappingContext()
     }
-    
-    PersistentEntity getPersistentEntity(){
-        ClassPropertyFetcher.getStaticPropertyValue(targetClass,'gormPersistentEntity',PersistentEntity)
+
+    PersistentEntity getPersistentEntity() {
+        ClassPropertyFetcher.getStaticPropertyValue(targetClass, 'gormPersistentEntity', PersistentEntity)
     }
 
     /**
      * builds the data using the passed in context
      *
-     * @param args  optional argument map <br>
+     * @param args optional argument map <br>
      *  - save        : (default: true) whether to call the save method when its a GormEntity <br>
      *  - find        : (default: false) whether to try and find the entity in the datastore first <br>
      *  - flush       : (default: false) passed in the args to the GormEntity save method <br>
@@ -131,15 +132,15 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
 
         GormEntity instance
         //try looking it up in the store if "lazy" of find is set.
-        if(find) {
+        if (find) {
             instance = findInStore(ctx)
         }
         //find wasn't set to true or it couldn't find anything if it was
-        if(!instance){
+        if (!instance) {
             instance = doBuild(ctx)
         }
 
-        if(saveFlag) save(instance, ctx, args)
+        if (saveFlag) save(instance, ctx, args)
         instance
     }
 
@@ -156,7 +157,8 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
         def ent
         if (ctx.data) {
             ent = targetClass.findWhere(ctx.data)
-        } else {
+        }
+        else {
             List list = targetClass.list([limit: 1])
             ent = list ? list.first() : null
         }
@@ -173,7 +175,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder{
             log.debug("{} has these properties that we need to save first: {}", domainInstance.class.name, propsToSaveFirst)
             for (propertyName in propsToSaveFirst) {
                 if (domainInstance?.hasProperty(propertyName)) {
-                    GormEntity domProp = (GormEntity)domainInstance[propertyName]
+                    GormEntity domProp = (GormEntity) domainInstance[propertyName]
                     ctx.knownInstances[domainInstance.class] = domainInstance
                     //do recursive call on this
                     save(domProp, ctx)

@@ -28,4 +28,8 @@ class ConfigWithoutResetTests extends Specification implements TestDataBuilder {
         def b = Article.build()
         assert b.name == "Article 2"
     }
+
+    void cleanupSpec() {
+        TestDataConfigurationHolder.reset()
+    }
 }

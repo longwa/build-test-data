@@ -11,7 +11,7 @@ import spock.lang.Specification
 @Rollback
 @Integration
 class TestDataConfigTests extends Specification implements TestDataBuilder {
-    void tearDown() {
+    void cleanup() {
         // we should reset the config holder when feeding it values in tests as it could cause issues
         // for other tests later on that are expecting the default config if we do not 
         TestDataConfigurationHolder.reset()
@@ -104,5 +104,9 @@ class TestDataConfigTests extends Specification implements TestDataBuilder {
         def hilton = build(Hotel)
         then:
         hilton.faxNumber == "Fax number for Hilton"
+    }
+
+    void cleanupSpec() {
+        TestDataConfigurationHolder.reset()
     }
 }

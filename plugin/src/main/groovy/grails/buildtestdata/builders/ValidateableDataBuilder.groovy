@@ -25,6 +25,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.validation.ValidationErrors
+import org.springframework.core.annotation.Order
 
 /**
  * DataBuilder to build test data for any @Validateable and command objects. not just Gorm persistence entities.
@@ -33,6 +34,19 @@ import org.grails.datastore.mapping.validation.ValidationErrors
 @Slf4j
 @CompileStatic
 class ValidateableDataBuilder extends PogoDataBuilder {
+
+    @Order(50)
+    static class Factory implements DataBuilderFactory<ValidateableDataBuilder> {
+        @Override
+        ValidateableDataBuilder build(Class target) {
+            return new ValidateableDataBuilder(target)
+        }
+
+        @Override
+        boolean supports(Class clazz) {
+            ClassPropertyFetcher.getStaticPropertyValue(clazz, 'constraintsMap', Map) != null
+        }
+    }
 
     // Reverse so that when we compare, missing items are -1, then we are orders 0 -> n least to most important
     static List<String> CONSTRAINT_SORT_ORDER = [
@@ -54,20 +68,20 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     ].reverse()
 
     static Map<String, ? extends ConstraintHandler> defaultHandlers = [
-        (ConstrainedProperty.MIN_SIZE_CONSTRAINT)   : new MinSizeConstraintHandler(),
-        (ConstrainedProperty.MAX_SIZE_CONSTRAINT)   : new MaxSizeConstraintHandler(),
-        (ConstrainedProperty.IN_LIST_CONSTRAINT)    : new InListConstraintHandler(),
+        (ConstrainedProperty.MIN_SIZE_CONSTRAINT): new MinSizeConstraintHandler(),
+        (ConstrainedProperty.MAX_SIZE_CONSTRAINT): new MaxSizeConstraintHandler(),
+        (ConstrainedProperty.IN_LIST_CONSTRAINT): new InListConstraintHandler(),
         (ConstrainedProperty.CREDIT_CARD_CONSTRAINT): new CreditCardConstraintHandler(),
-        (ConstrainedProperty.EMAIL_CONSTRAINT)      : new EmailConstraintHandler(),
-        (ConstrainedProperty.URL_CONSTRAINT)        : new UrlConstraintHandler(),
-        (ConstrainedProperty.RANGE_CONSTRAINT)      : new RangeConstraintHandler(),
-        (ConstrainedProperty.SIZE_CONSTRAINT)       : new SizeConstraintHandler(),
-        (ConstrainedProperty.MIN_CONSTRAINT)        : new MinConstraintHandler(),
-        (ConstrainedProperty.MAX_CONSTRAINT)        : new MaxConstraintHandler(),
-        (ConstrainedProperty.NULLABLE_CONSTRAINT)   : new NullableConstraintHandler(),
-        (ConstrainedProperty.MATCHES_CONSTRAINT)    : new MatchesConstraintHandler(),
-        (ConstrainedProperty.BLANK_CONSTRAINT)      : new BlankConstraintHandler(),
-        (ConstrainedProperty.VALIDATOR_CONSTRAINT)  : new ValidatorConstraintHandler()
+        (ConstrainedProperty.EMAIL_CONSTRAINT): new EmailConstraintHandler(),
+        (ConstrainedProperty.URL_CONSTRAINT): new UrlConstraintHandler(),
+        (ConstrainedProperty.RANGE_CONSTRAINT): new RangeConstraintHandler(),
+        (ConstrainedProperty.SIZE_CONSTRAINT): new SizeConstraintHandler(),
+        (ConstrainedProperty.MIN_CONSTRAINT): new MinConstraintHandler(),
+        (ConstrainedProperty.MAX_CONSTRAINT): new MaxConstraintHandler(),
+        (ConstrainedProperty.NULLABLE_CONSTRAINT): new NullableConstraintHandler(),
+        (ConstrainedProperty.MATCHES_CONSTRAINT): new MatchesConstraintHandler(),
+        (ConstrainedProperty.BLANK_CONSTRAINT): new BlankConstraintHandler(),
+        (ConstrainedProperty.VALIDATOR_CONSTRAINT): new ValidatorConstraintHandler()
     ]
 
     // TODO: filter to actual list for this class, or possibly each property value?
@@ -95,7 +109,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     }
 
     Map<String, ConstrainedProperty> getConstraintsMap() {
-        //Assume its a grails.validation.Validateable. overrides in GormEntityDataBuilder
+        // Assume its a grails.validation.Validateable, overrides in GormEntityDataBuilder
         ClassPropertyFetcher.getStaticPropertyValue(targetClass, 'constraintsMap', Map) as Map<String, ConstrainedProperty>
     }
 

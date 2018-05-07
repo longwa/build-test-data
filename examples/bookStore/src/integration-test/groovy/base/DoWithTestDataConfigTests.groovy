@@ -40,4 +40,8 @@ class DoWithTestDataConfigTests extends Specification implements TestDataBuilder
         then:
         testHotel.name == "Westin"
     }
+
+    void cleanupSpec() {
+        TestDataConfigurationHolder.reset()
+    }
 }

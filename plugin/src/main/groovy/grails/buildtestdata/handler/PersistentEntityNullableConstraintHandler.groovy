@@ -8,6 +8,7 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.ToMany
 
@@ -45,20 +46,19 @@ class PersistentEntityNullableConstraintHandler extends NullableConstraintHandle
 
         PersistentProperty domainProp = persistentEntity.getPropertyByName(propertyName)
 
-        //use the associatedEntity class and return a collection with the build object if its a ToMany
+        // Use the associatedEntity class and return a collection with the build object if its a ToMany
         if (domainProp instanceof ToMany) {
             ToMany toManyProp = domainProp as ToMany
             Class referencedClass = toManyProp?.associatedEntity?.javaClass
-            def obj = ctx.satisfyNested(instance,propertyName,referencedClass)
+            def obj = ctx.satisfyNested(instance, propertyName, referencedClass)
             return [obj]
         }
-        //set save=true on this build so we don't get transient exception in integration tests, works fine in units
-        //org.hibernate.TransientPropertyValueException: Not-null property references a transient value - transient instance must be saved before current operation
+        // Set save=true on this build so we don't get transient exception in integration tests, works fine in units
+        // org.hibernate.TransientPropertyValueException: Not-null property references a transient value - transient instance must be saved before current operation
         else if (domainProp instanceof ManyToOne) {
             return ctx.satisfyNested(instance, propertyName, constrainedProperty.propertyType, true)
         }
-        //else do normal
+
         return ctx.satisfyNested(instance, propertyName, constrainedProperty.propertyType)
     }
-
 }

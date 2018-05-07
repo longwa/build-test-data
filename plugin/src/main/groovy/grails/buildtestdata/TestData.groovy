@@ -6,6 +6,7 @@ import grails.buildtestdata.builders.DataBuilderContext
 import grails.buildtestdata.builders.DataBuilderFactory
 import grails.buildtestdata.builders.PersistentEntityDataBuilder
 import grails.buildtestdata.builders.PogoDataBuilder
+import grails.buildtestdata.builders.ValidateableDataBuilder
 import grails.buildtestdata.propsresolver.InitialPropsResolver
 import groovy.transform.CompileStatic
 import org.springframework.core.annotation.AnnotationAwareOrderComparator
@@ -22,6 +23,7 @@ class TestData {
     static final List<DataBuilderFactory> factories = []
     static{
         factories.add(new PersistentEntityDataBuilder.Factory())
+        factories.add(new ValidateableDataBuilder.Factory())
         factories.add(new PogoDataBuilder.Factory())
         AnnotationAwareOrderComparator.sort(factories)
     }

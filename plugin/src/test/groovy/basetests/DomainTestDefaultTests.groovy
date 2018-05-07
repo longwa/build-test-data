@@ -290,4 +290,8 @@ class DomainTestDefaultTests extends Specification implements DomainTestBase  {
         catch(ignored) {
         }
     }
+
+    void cleanupSpec() {
+        TestDataConfigurationHolder.reset()
+    }
 }

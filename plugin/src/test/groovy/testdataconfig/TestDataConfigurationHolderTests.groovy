@@ -1,5 +1,6 @@
 package testdataconfig
 
+import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.TestDataConfigurationHolder as TDHC
 import spock.lang.Specification
 
@@ -101,5 +102,9 @@ class TestDataConfigurationHolderTests extends Specification {
 
         then:
         thrown(IllegalArgumentException)
+    }
+
+    void cleanupSpec() {
+        TestDataConfigurationHolder.reset()
     }
 }

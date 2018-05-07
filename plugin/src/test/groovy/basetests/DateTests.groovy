@@ -152,4 +152,7 @@ class DateTests extends Specification implements DomainTestBase {
         assert domainObject.testProperty instanceof java.sql.Timestamp
     }
 
+    void cleanupSpec() {
+        TestDataConfigurationHolder.reset()
+    }
 }
