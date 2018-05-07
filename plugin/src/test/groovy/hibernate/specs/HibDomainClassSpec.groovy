@@ -1,17 +1,20 @@
 package hibernate.specs
 
+import grails.buildtestdata.BuildHibernateTest
 import grails.test.hibernate.HibernateSpec
 import hibernate.domains.Bar
 import hibernate.domains.Foo
+import spock.lang.Stepwise
+
 import static grails.buildtestdata.TestData.*
 
-//don't use trait on this one, use the TestDataBuilder
-class HibDomainClassSpec extends HibernateSpec{
+@Stepwise
+class HibDomainClassSpec extends HibernateSpec implements BuildHibernateTest {
 
-    //dont' need to give it Bar as it will see its an association and mock it
-    List<Class> getDomainClasses() {[ Foo ]}
+    // Dont' need to give it Bar as it will see its an association and mock it
+    List<Class> getDomainClasses() { [Foo] }
 
-    void setupSpec(){
+    void setupSpec() {
         //build a Bar here to test buildLazy
         Bar.withTransaction {
             build(Bar)
@@ -49,6 +52,31 @@ class HibDomainClassSpec extends HibernateSpec{
         foo.id == 2
         foo.bar.id == 3
 
+    }
+
+    void "test that Foo gets the build meta methods automatically"() {
+        when:
+        def foo = Foo.build()
+
+        then:
+        foo
+        foo.id
+        foo.name
+    }
+
+    void "test that Foo can use hibernate specific functionality"() {
+        given:
+        Foo.build(flush: true, name: 'Arrow', bar: build(save: false, Bar, name: 'TheBar'))
+
+        when:
+        Foo foo = Foo.createCriteria().get {
+            createAlias 'bar', 'b'
+            eq 'b.name', 'TheBar'
+        }
+
+        then:
+        foo
+        foo.bar.name == "TheBar"
     }
 }
 
