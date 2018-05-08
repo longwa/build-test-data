@@ -2,6 +2,9 @@ package grails.buildtestdata.builders
 
 import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.utils.DomainUtil
+import grails.databinding.DataBinder
+import grails.databinding.SimpleDataBinder
+import grails.databinding.SimpleMapDataBindingSource
 import groovy.transform.CompileStatic
 import org.springframework.core.annotation.Order
 
@@ -21,11 +24,13 @@ class PogoDataBuilder implements DataBuilder {
         }
     }
 
+    DataBinder dataBinder
     Class targetClass
 
     PogoDataBuilder(Class targetClass) {
         // findConcreteSubclass takes care of subtituing in concrete classes for abstracts
         this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
+        this.dataBinder = new SimpleDataBinder()
     }
 
     @Override
@@ -58,12 +63,7 @@ class PogoDataBuilder implements DataBuilder {
         def instance = getNewInstance()
 
         if (ctx.data) {
-            ctx.data.each {
-                MetaProperty metaProperty = instance.hasProperty(it.key)
-                if (metaProperty) {
-                    metaProperty.setProperty(instance, it.value)
-                }
-            }
+            dataBinder.bind(instance, new SimpleMapDataBindingSource(ctx.data))
         }
 
         instance

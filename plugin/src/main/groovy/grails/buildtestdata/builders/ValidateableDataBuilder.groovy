@@ -97,29 +97,17 @@ class ValidateableDataBuilder extends PogoDataBuilder {
 
     }
 
-    def isRequiredConstrained(Constrained constrained) {
-        boolean bindable = isBindable(constrained)
-        boolean nullable = constrained.nullable
-        !nullable && bindable
+    boolean isRequiredConstrained(Constrained constrained) {
+        !constrained.nullable
     }
 
-    boolean isBindable(Constrained constrained) {
-        if (constrained instanceof DefaultConstrainedProperty) {
-            Boolean bindable = ((DefaultConstrainedProperty)constrained).getMetaConstraintValue('bindable')
-            return bindable == null || bindable
-        }
-        return true
-    }
-
+    // Assume its a grails.validation.Validateable, overrides in GormEntityDataBuilder
     Map<String, ConstrainedProperty> getConstraintsMap() {
-        // Assume its a grails.validation.Validateable, overrides in GormEntityDataBuilder
         ClassPropertyFetcher.getStaticPropertyValue(targetClass, 'constraintsMap', Map) as Map<String, ConstrainedProperty>
     }
 
     Set<String> findRequiredPropertyNames() {
         Map<String, ConstrainedProperty> constraints = constraintsMap
-        //println constraintsMap
-
         if (constraints) {
             return constraints.keySet().findAll {
                 isRequiredConstrained(constraints.get(it))
