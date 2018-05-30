@@ -107,6 +107,6 @@ class Basics {
     }
     
     static def getBasicValue(Class type){
-        type.isArray()? getArrayValue(type):getDefaultValue(type)        
+        type.isArray() ? getArrayValue(type) : getDefaultValue(type)
     }
 }

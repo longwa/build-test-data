@@ -1,6 +1,7 @@
 package grails.buildtestdata.builders
 
 import grails.buildtestdata.TestDataConfigurationHolder
+import grails.buildtestdata.utils.Basics
 import grails.buildtestdata.utils.DomainUtil
 import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
@@ -81,6 +82,9 @@ class PogoDataBuilder implements DataBuilder {
         }
         else if (Set.isAssignableFrom(targetClass)) {
             [] as Set
+        }
+        else if (targetClass.isEnum()) {
+            Basics.getDefaultValue(targetClass)
         }
         else {
             targetClass.newInstance()
