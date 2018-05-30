@@ -130,7 +130,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
         boolean saveFlag = args["save"] == null ? true : args.remove("save")
         boolean find = args["find"] == null ? false : args.remove("find")
 
-        GormEntity instance
+        GormEntity instance = null
         //try looking it up in the store if "lazy" of find is set.
         if (find) {
             instance = findInStore(ctx)

@@ -8,7 +8,7 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.types.Embedded
+import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.ToMany
 
@@ -32,7 +32,6 @@ class PersistentEntityNullableConstraintHandler extends NullableConstraintHandle
             owningObject.addTo(toOneProp.referencedPropertyName, instance)
         }
         else if (domainProp instanceof ToMany) {
-            ToMany toManyProp = domainProp as ToMany
             ((GormEntity) instance).addTo(propertyName, value)
         }
         else {
@@ -49,7 +48,15 @@ class PersistentEntityNullableConstraintHandler extends NullableConstraintHandle
         // Use the associatedEntity class and return a collection with the build object if its a ToMany
         if (domainProp instanceof ToMany) {
             ToMany toManyProp = domainProp as ToMany
-            Class referencedClass = toManyProp?.associatedEntity?.javaClass
+
+            Class referencedClass
+            if (toManyProp.basic) {
+                referencedClass = ((Basic)toManyProp).componentType
+            }
+            else {
+                referencedClass = toManyProp.associatedEntity?.javaClass
+            }
+
             def obj = ctx.satisfyNested(instance, propertyName, referencedClass)
             return [obj]
         }
