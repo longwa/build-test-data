@@ -1,5 +1,7 @@
 package base
 
+import bookstore.Author
+import bookstore.Book
 import config.Hotel
 import grails.buildtestdata.TestDataBuilder
 import grails.buildtestdata.TestDataConfigurationHolder
@@ -104,6 +106,27 @@ class TestDataConfigTests extends Specification implements TestDataBuilder {
         def hilton = build(Hotel)
         then:
         hilton.faxNumber == "Fax number for Hilton"
+    }
+
+    void testConfigClosureWithPassedInstanceValue() {
+        TestDataConfigurationHolder.sampleData = [
+            ('bookstore.Author'): [books: { values, obj ->
+                [
+                    build([save: false], Book, [author: obj, title: 'James']),
+                    build([save: false], Book, [author: obj, title: 'Kevin'])
+                ]
+            }]
+        ]
+        when:
+        def author = build(Author, [name: "Aaron"])
+
+        then:
+        author.books
+        author.books.each {
+            assert it.author == author
+        }
+        author.books.find { it.title == 'James' }
+        author.books.find { it.title == 'Kevin' }
     }
 
     void cleanupSpec() {

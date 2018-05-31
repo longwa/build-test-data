@@ -50,9 +50,10 @@ class PogoDataBuilder implements DataBuilder {
             return ctx.target
         }
 
-        // TODO - Implement new initialProps design
-        // Map initialProps = BuildTestDataApi.initialPropsResolver.getInitialProps(target)
-        Map initialProps = findMissingConfigValues(ctx.data)
+        // Create a new empty instance
+        def instance = getNewInstance()
+
+        Map initialProps = findMissingConfigValues(ctx.data, instance)
         if (initialProps) {
             if (ctx.data) {
                 ctx.data = [:] + initialProps + ctx.data
@@ -61,8 +62,6 @@ class PogoDataBuilder implements DataBuilder {
                 ctx.data = [:] + initialProps
             }
         }
-        def instance = getNewInstance()
-
         if (ctx.data) {
             dataBinder.bind(instance, new SimpleMapDataBindingSource(ctx.data))
         }
@@ -70,11 +69,10 @@ class PogoDataBuilder implements DataBuilder {
         instance
     }
 
-    Map<String, Object> findMissingConfigValues(Map propValues) {
+    Map<String, Object> findMissingConfigValues(Map propValues, Object newInstance) {
         Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(targetClass.name) - propValues.keySet()
-        TestDataConfigurationHolder.getPropertyValues(targetClass.name, missingProperties, propValues)
+        TestDataConfigurationHolder.getPropertyValues(targetClass.name, newInstance, missingProperties, propValues)
     }
-
 
     def getNewInstance() {
         if (List.isAssignableFrom(targetClass)) {

@@ -66,6 +66,34 @@ It follows the normal groovy config file pattern and you can also override thing
 
 You are not required to have a TestDataConfig.groovy file.
 
+=== Test Specific Config
+It's also possible to specify a config that is used during a particular test.
+
+Your test should implement the `TestDataBuilder` for integration tests or `BuildDataTest` for unit tests. Just override the `doWithTestDataConfig` method and return a Closure just like your `TestDataConfig.groovy`:
+```groovy
+    Closure doWithTestDataConfig() {{->
+        testDataConfig {
+            sampleData {
+                'config.Hotel' {
+                    name = {-> "Westin" }
+                }
+            }
+        }  
+    }}
+```
+This will merge the config provided from this method with the global configuration (if any) in `TestDataConfig.groovy`.
+
+NOTE: The configuration is merged at the entity level, not the attribute level. In the above example, the global sample data for the `'config.Hotel'` entity will be completely replaced by this configuration.
+
+
+After using this method, you'll likely want to call `TestDataConfigurationHolder.reset()` to put the configuration back to the normal config file.
+```groovy
+    void cleanup() {
+        TestDataConfigurationHolder.reset()
+    }
+```
+
+
 === Generating Dynamic Values
 If you have a need to have different values given to a domain object (possibly for a unique constraint), you can instead specify a closure in your config file.  This closure will be called and is expected to return the property value.  Here's an example that generates a unique title for a book:
 ```groovy
@@ -86,44 +114,27 @@ void setup() {
 }
 ```
 
-=== Test Specific Config
-It's also possible to specify a config that is used during a particular test.  Just set the sampleData property on the `TestDataConfigurationHolder` to a map containing your configuration values, where the key in the map is the Domain class (with package) and the value is another map where the keys are property names and the values are the value to assign to the property.
-
-Using a static value:
+When a `Closure` is used as an attribute, it can additionally take 1 or 2 parameters. The first parameter is a `Map` of all of the properties that have been resolved so far. This allows you to configure defaults based on the values of other properties given or defaulted on the object. For example:
 ```groovy
-    def hotelNameAlwaysHilton = ['example.Hotel': [name: "Hilton"]]
-    TestDataConfigurationHolder.sampleData = hotelNameAlwaysHilton
-
-    def hilton = Hotel.build()
-    assertEquals "Hilton", hilton.name
-```
-
-Using a closure for dynamic values:
-```groovy
-    def i = 0
-    def hotelNameAlternates = [
-            ('config.Hotel'): [name: {->
-                i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
-            }]
-    ]
-    TestDataConfigurationHolder.sampleData = hotelNameAlternates
-
-    def holidayInn = Hotel.build()
-    assertEquals "Holiday Inn", holidayInn.name
-
-    def hilton = Hotel.build()
-    assertEquals "Hilton", hilton.name
-
-    def backToHolidayInn = Hotel.build()
-    assertEquals "Holiday Inn", backToHolidayInn.name
-```
-
-After using this method, you'll likely want to call `TestDataConfigurationHolder.reset()` to put the configuration back to the normal config file.
-```groovy
-    void cleanup() {
-        TestDataConfigurationHolder.reset()
+'config.Hotel': {
+    name: { ->
+        i++ % 2 == 0 ? "Holiday Inn" : "Hilton"
+    },
+    faxNumber: { values ->
+        "Fax number for $values.name"
     }
+}
 ```
+The second parameter is the instance that is currently being built. In the above example, that would be the new (unsaved) instance of `Hotel`. This is useful if you want to build associated data and you need a reference to the parent object. For example:
+```groovy
+'bookstore.Author': {
+    books: { values, obj -> [Book.build(save: false, author: obj, title: 'James')] }
+}
+```
+In this case, the transient `obj` instance is needed so that the `Book` instance can associate back to the parent.
+
+NOTE: In this case, you must use the [save: false] argument, otherwise build test data will attempt to save the `Book` and fail with a transient object exception on `Author`.
+
 
 === Specifying Additional Dependencies
 Occasionally it is necessary to build another object manually in your `TestDataConfig` file. Usually this will look something like this:

@@ -63,8 +63,8 @@ class TestDataConfigurationHolder {
         config.getSuppliedPropertyValue(propertyValues, domainName, propertyName)
     }
 
-    static Map<String, Object> getPropertyValues(String domainName, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
-        config.getPropertyValues(domainName, propertyNames, propertyValues)
+    static Map<String, Object> getPropertyValues(String domainName, Object newInstance, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
+        config.getPropertyValues(domainName, newInstance, propertyNames, propertyValues)
     }
 
     /**
@@ -149,24 +149,31 @@ class TestDataConfiguration {
         getConfigFor(domainName)?.keySet() ?: [] as Set<String>
     }
 
-    Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
+    Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName, Object newInstance = null) {
         if (!sampleData[domainName]) {
             throw new IllegalArgumentException("Sample data for $domainName does not exist")
         }
 
         // Fetch both and either invoke the closure or just return raw values
         Object value = sampleData[domainName][propertyName]
-        if (value instanceof Closure) {
-            Closure block = value as Closure
-            return block.maximumNumberOfParameters > 0 ? block.call(propertyValues) : block.call()
+        if (!(value instanceof Closure)) {
+            return value
         }
 
-        value
+        Closure block = value as Closure
+        switch(block.maximumNumberOfParameters) {
+            case 1:
+                return block.call(propertyValues)
+            case 2:
+                return block.call(propertyValues, newInstance)
+            default:
+                return block.call()
+        }
     }
 
-    Map<String, Object> getPropertyValues(String domainName, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
+    Map<String, Object> getPropertyValues(String domainName, Object newInstance, Set<String> propertyNames, Map<String, Object> propertyValues = [:]) {
         for (propertyName in propertyNames) {
-            propertyValues[propertyName] = getSuppliedPropertyValue(propertyValues, domainName, propertyName)
+            propertyValues[propertyName] = getSuppliedPropertyValue(propertyValues, domainName, propertyName, newInstance)
         }
         return propertyValues
     }
