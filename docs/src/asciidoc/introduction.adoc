@@ -21,6 +21,15 @@ def author = TestData.build(Author, name: 'Ted Naleid')
 ** Support for Grails 3.3.x
 ** Major cleanup and performance improvements
 ** Trait based API
+* May 7th, 2018 - 3.3.0
+** Official release
+** Minor bug fixes from release candidate
+* June 1st, 2018 - 3.3.1
+** Support building of any nested `Validateable`
+** Fix misc data binding issues
+** Fix build issues with Basic to-many collections
+** Add 2nd `obj` parameter to TestDataConfig closures
+** Other minor bug fixes and cleanup
 
 
 
