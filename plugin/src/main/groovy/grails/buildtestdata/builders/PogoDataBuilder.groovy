@@ -7,12 +7,13 @@ import grails.databinding.DataBinder
 import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
 import groovy.transform.CompileStatic
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
 @CompileStatic
 class PogoDataBuilder implements DataBuilder {
 
-    @Order
+    @Order(Ordered.LOWEST_PRECEDENCE)
     static class Factory implements DataBuilderFactory<PogoDataBuilder> {
         @Override
         PogoDataBuilder build(Class target) {

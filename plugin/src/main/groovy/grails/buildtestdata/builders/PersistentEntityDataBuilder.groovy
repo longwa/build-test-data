@@ -17,6 +17,7 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.validation.Validator
 
@@ -24,7 +25,7 @@ import org.springframework.validation.Validator
 @CompileStatic
 class PersistentEntityDataBuilder extends ValidateableDataBuilder {
 
-    @Order(100)
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     static class Factory implements DataBuilderFactory<PersistentEntityDataBuilder> {
         @Override
         PersistentEntityDataBuilder build(Class target) {
@@ -60,6 +61,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
                 prop instanceof OneToOne && ((OneToOne) prop).isOwningSide()
             }
         }
+        null
     }
 
     Set<Class> findRequiredDomainClasses() {

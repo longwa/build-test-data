@@ -35,7 +35,7 @@ import org.springframework.core.annotation.Order
 @CompileStatic
 class ValidateableDataBuilder extends PogoDataBuilder {
 
-    @Order(50)
+    @Order(100)
     static class Factory implements DataBuilderFactory<ValidateableDataBuilder> {
         @Override
         ValidateableDataBuilder build(Class target) {
