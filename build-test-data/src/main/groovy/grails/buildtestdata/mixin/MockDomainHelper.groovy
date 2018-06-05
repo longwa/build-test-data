@@ -46,8 +46,38 @@ class MockDomainHelper {
         // call to mockDomains() later with all the of the needed classes.
         List<GrailsDomainClass> initialDomainClassesToMock = classes.collect { getGrailsDomainClass(it) }
 
+        // Read the abstract defaults from the config file and pre-fill the sub class cache
+        // This helps avoid having to scan for subclasses, which is very expensive
+        fillSubclassCacheWithAbstractDefaults(initialDomainClassesToMock)
+
         // Resolve additional classes to mock
         findDomainClassesToMock(initialDomainClassesToMock)*.clazz
+    }
+
+    /**
+     * Gets the Abstract Default classes from the configuration file for each domain class and pre-fills the
+     * subClassCache with them
+     * @param domainClasses
+     */
+    void fillSubclassCacheWithAbstractDefaults(List<GrailsDomainClass> domainClasses) {
+        // Iterate all abstract classes
+        domainClasses.findAll { it.isAbstract() }.each {
+            String className = it.fullName
+            Class abstractDefault = TestDataConfigurationHolder.getAbstractDefaultFor(className) as Class
+
+            // Check if there is a configuration for abstract default
+            if (abstractDefault) {
+                GrailsDomainClass domainClass = getGrailsDomainClass(abstractDefault)
+
+                // Initialize the subclass cache for the given class if it's empty
+                if (!subClassCache.containsKey(className)) {
+                    subClassCache[className] = []
+                }
+
+                // Append concrete subclass to the subclass cache
+                subClassCache[className] << domainClass
+            }
+        }
     }
 
     /**
