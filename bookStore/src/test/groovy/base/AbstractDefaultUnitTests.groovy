@@ -21,10 +21,9 @@ class AbstractDefaultUnitTests {
     @Test
     void testSuccessfulBuildNoDefault() {
         TestDataConfigurationHolder.abstractDefault = [:]
-        mockForBuild([AbstractSubClass])
+        mockForBuild([AbstractClass])
 
-        // Chosen alphabetically since no default
-        def obj = AbstractSubClass.build()
+        def obj = AbstractClass.build()
         assert obj instanceof AnotherConcreteSubClass
     }
 
