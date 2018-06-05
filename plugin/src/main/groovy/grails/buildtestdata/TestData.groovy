@@ -7,7 +7,7 @@ import grails.buildtestdata.builders.DataBuilderFactory
 import grails.buildtestdata.builders.PersistentEntityDataBuilder
 import grails.buildtestdata.builders.PogoDataBuilder
 import grails.buildtestdata.builders.ValidateableDataBuilder
-import grails.buildtestdata.propsresolver.InitialPropsResolver
+import grails.buildtestdata.propsresolver.InitialPropertyResolver
 import groovy.transform.CompileStatic
 import org.springframework.core.annotation.AnnotationAwareOrderComparator
 
@@ -17,7 +17,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator
 @CompileStatic
 class TestData {
 
-    static InitialPropsResolver initialPropsResolver
+    static InitialPropertyResolver initialPropsResolver
 
     static final Map builders = new HashMap<Class, DataBuilder>()
     static final List<DataBuilderFactory> factories = []
@@ -90,7 +90,7 @@ class TestData {
 
     static getInitialPropsResolver(){
         if(initialPropsResolver == null){
-            initialPropsResolver = new InitialPropsResolver.EmptyInitialPropsResolver()
+            initialPropsResolver = new InitialPropertyResolver.EmptyInitialPropsResolver()
         }
         initialPropsResolver
     }

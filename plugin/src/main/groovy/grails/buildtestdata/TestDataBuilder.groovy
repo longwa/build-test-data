@@ -1,5 +1,8 @@
 package grails.buildtestdata
 
+import grails.buildtestdata.propsresolver.InitialPropertyResolver
+import grails.buildtestdata.propsresolver.PropertyResolverRegistry
+import grails.buildtestdata.propsresolver.TestDataConfigResolver
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
 import org.junit.Before
@@ -40,7 +43,12 @@ trait TestDataBuilder {
     }
 
     @Before
-    void setupCustomTestDataConfig() {
+    void setupTestDataConfig() {
+        def testDataConfigFile = TestDataConfigurationHolder.getDefaultTestDataConfigResource()
+        if (testDataConfigFile) {
+            PropertyResolverRegistry.registerResolver(new TestDataConfigResolver())
+        }
+
         Closure testDataConfig = doWithTestDataConfig()
         if (testDataConfig) {
             TestDataConfigurationHolder.mergeConfig(testDataConfig)

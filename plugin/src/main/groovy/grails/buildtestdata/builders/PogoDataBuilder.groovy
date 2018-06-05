@@ -1,6 +1,8 @@
 package grails.buildtestdata.builders
 
 import grails.buildtestdata.TestDataConfigurationHolder
+import grails.buildtestdata.propsresolver.InitialPropertyResolver
+import grails.buildtestdata.propsresolver.PropertyResolverRegistry
 import grails.buildtestdata.utils.Basics
 import grails.buildtestdata.utils.DomainUtil
 import grails.databinding.DataBinder
@@ -28,11 +30,13 @@ class PogoDataBuilder implements DataBuilder {
 
     DataBinder dataBinder
     Class targetClass
+    List<InitialPropertyResolver> initialPropertyResolvers
 
     PogoDataBuilder(Class targetClass) {
         // findConcreteSubclass takes care of subtituing in concrete classes for abstracts
         this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
         this.dataBinder = new SimpleDataBinder()
+        this.initialPropertyResolvers = PropertyResolverRegistry.lookupResolversFor(this.targetClass)
     }
 
     @Override
@@ -54,15 +58,20 @@ class PogoDataBuilder implements DataBuilder {
         // Create a new empty instance
         def instance = getNewInstance()
 
-        Map initialProps = findMissingConfigValues(ctx.data, instance)
-        if (initialProps) {
-            if (ctx.data) {
-                ctx.data = [:] + initialProps + ctx.data
-            }
-            else {
-                ctx.data = [:] + initialProps
+        // Resolve initial properties.
+        initialPropertyResolvers.each {
+            Map<String, ?> initialProps = it.getInitialProps(targetClass, instance, ctx.data)
+            if (initialProps) {
+                if (ctx.data) {
+                    ctx.data = [:] + initialProps + ctx.data
+                }
+                else {
+                    ctx.data = [:] + initialProps
+                }
             }
         }
+
+        // Now bind the final result into the instance
         if (ctx.data) {
             dataBinder.bind(instance, new SimpleMapDataBindingSource(ctx.data))
         }
@@ -70,10 +79,12 @@ class PogoDataBuilder implements DataBuilder {
         instance
     }
 
+    /*
     Map<String, Object> findMissingConfigValues(Map propValues, Object newInstance) {
         Set<String> missingProperties = TestDataConfigurationHolder.getConfigPropertyNames(targetClass.name) - propValues.keySet()
         TestDataConfigurationHolder.getPropertyValues(targetClass.name, newInstance, missingProperties, propValues)
     }
+    */
 
     def getNewInstance() {
         if (List.isAssignableFrom(targetClass)) {

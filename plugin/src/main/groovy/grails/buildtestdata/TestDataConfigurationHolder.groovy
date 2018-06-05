@@ -33,7 +33,6 @@ class TestDataConfigurationHolder {
         }
         ClassPathResource resource = new ClassPathResource(configPath, TestDataConfigurationHolder.classLoader)
         if (!resource.exists()) {
-            log.warn("{} not found in classpath, build-test-data plugin proceeding without config file", resource)
             return null
         }
         resource
