@@ -3,6 +3,7 @@ package grails.buildtestdata.builders
 import grails.buildtestdata.handler.AssociationMinSizeHandler
 import grails.buildtestdata.handler.PersistentEntityNullableConstraintHandler
 import grails.buildtestdata.utils.DomainUtil
+import grails.gorm.api.GormAllOperations
 import grails.gorm.validation.ConstrainedEntity
 import grails.gorm.validation.ConstrainedProperty
 import groovy.transform.CompileDynamic
@@ -158,10 +159,17 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
     GormEntity findInStore(DataBuilderContext ctx) {
         def ent
         if (ctx.data) {
-            ent = targetClass.findWhere(ctx.data)
+            // If we are given the id specifically, fetch the object via get to ensure that we pull from the session
+            // if it has already been inserted but not flushed.
+            if (ctx.data.id) {
+                ent = targetClass.get(ctx.data.id)
+            }
+            else {
+                ent = targetClass.findWhere(ctx.data)
+            }
         }
         else {
-            List list = targetClass.list([limit: 1])
+            List list = targetClass.list([max: 1])
             ent = list ? list.first() : null
         }
         return (GormEntity) ent
