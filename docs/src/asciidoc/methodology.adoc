@@ -25,8 +25,8 @@ Text fixtures allow you to use a DSL to define a named object graph.  You can th
 * Full control over values in every object in the object graph
 
 ==== Weaknesses
-* Removes definition of testing data from test which can hurt test clarity.  Who knows how many who knows how many family members the `johnsonFamily` fixture has and how many `smithFamily` has?  You have to look at another file to find out.
-* Starts out well, but more and more tests start to rely on the same fixtures making them fragile "I'll just add another Widget to this fixture" ends up breaking 10 other tests
+* Removes definition of testing data from test which can hurt test clarity.  Who knows how many family members the `johnsonFamily` fixture has and how many the `smithFamily` has?  You have to look at another file to find out.
+* Starts out well, but more and more tests start to rely on the same fixtures making them fragile.  "I'll just add another Widget to this fixture" ends up breaking 10 other tests.
 * Any changes to domain objects necessitate modifying every fixture that has that domain object within the object graph
 
 
