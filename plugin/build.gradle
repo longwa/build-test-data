@@ -21,7 +21,7 @@ dependencies {
     compile "dk.brics.automaton:automaton:1.11-8"
 
     compile "org.grails:grails-core"
-    compile "org.grails:grails-gorm-testing-support"
+    compile "org.grails:grails-gorm-testing-support:2.0.0"
     compile "org.grails:grails-databinding"
     compile "org.grails:grails-datastore-gorm"
     console "org.grails:grails-console"
@@ -32,8 +32,8 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.grails:grails-web-boot"
 
-    testCompile "org.grails.plugins:hibernate5"
-    testCompile "org.hibernate:hibernate-core:5.2.12.Final"
+    testCompile "org.grails.plugins:hibernate5:7.0.1"
+    testCompile "org.hibernate:hibernate-core:5.4.0.Final"
     testRuntime "com.h2database:h2"
     testRuntime "org.apache.tomcat:tomcat-jdbc"
 
@@ -41,11 +41,11 @@ dependencies {
 
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
-    addResources = true
+    sourceResources sourceSets.main
 }
 
 // Enable if you wish to package this plugin as a standalone application
-bootRepackage.enabled = false
+bootJar.enabled = false
 
 //this makes the groovy docs much more readable by shorting packages and providing links
 groovydoc {
