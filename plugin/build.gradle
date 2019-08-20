@@ -32,6 +32,8 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.grails:grails-web-boot"
 
+    runtime 'org.codehaus.groovy:groovy-dateutil'
+
     testCompile "org.grails.plugins:hibernate5:7.0.1"
     testCompile "org.hibernate:hibernate-core:5.4.0.Final"
     testRuntime "com.h2database:h2"
