@@ -1,5 +1,6 @@
 package base
 
+import assigned.AssignedKeyComplex
 import grails.buildtestdata.TestDataBuilder
 import grails.testing.mixin.integration.Integration
 import grails.gorm.transactions.Rollback
@@ -97,5 +98,16 @@ class AssignedKeyTests extends Specification implements TestDataBuilder {
         def belongs = AssignedKeyBelongs.get(obj.id)
         belongs != null
         belongs.keyHas != null
+    }
+
+    void testBuildWithoutKeyInDeepRelationship() {
+        when: "building an object graph that contains multiples of the same type using assigned String keys"
+        def obj = build(AssignedKeyComplex)
+
+        then:
+        obj != null
+        obj.keyHas != null
+        obj.keyBelongs != null
+        obj.keyHas.keyBelongs != null
     }
 }
