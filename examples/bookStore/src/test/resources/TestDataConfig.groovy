@@ -45,11 +45,11 @@ testDataConfig {
             inner = {-> new Embedded(someValue: "value") }
         }
 
-        'standalone.ParentWithAssignedKey' {
+        'assigned.ParentWithAssignedKey' {
             def i = 1
             id = {-> "pid${i++}" }
         }
-        'standalone.ChildWithAssignedKey' {
+        'assigned.ChildWithAssignedKey' {
             def i = 1
             id = {-> "cid${i++}" }
         }

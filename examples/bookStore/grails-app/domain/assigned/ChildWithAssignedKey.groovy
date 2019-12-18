@@ -1,4 +1,4 @@
-package standalone
+package assigned
 
 /**
  * Test parent domain object with assigned key

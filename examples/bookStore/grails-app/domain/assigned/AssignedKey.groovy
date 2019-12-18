@@ -1,4 +1,4 @@
-package standalone
+package assigned
 
 /**
  * Test domain object with assigned key
