@@ -37,47 +37,74 @@ class BuildLazyTests extends Specification implements TestDataBuilder {
     void "Test with new findOrBuild"() {
         assert Author.count() == 0
 
+        when:
         def domainObject = Author.findOrBuild(firstName: "Bar")
-        assert domainObject
-        assert Author.count() == 1
+
+        then:
+        domainObject
+        Author.count() == 1
     }
 
     void "Test build find with legacy buildLazy method"() {
         assert Author.count() == 0
 
+        when:
         def domainObject = Author.findOrBuild(firstName: "Bar")
-        assert domainObject
-        assert Author.count() == 1
+
+        then:
+        domainObject
+        Author.count() == 1
+    }
+
+    void "Test build lazy with specific id property given"() {
+        def auth1 = build(Author, [firstName: "Foo", lastName: "Qux"])
+        build(Author, [firstName: "Bar", lastName: "Baz"])
+
+        when:
+        def domainObject = Author.findOrBuild(id: auth1.id)
+
+        then:
+        domainObject
+        domainObject.id == auth1.id
     }
 
     void testBuildLazyWithParamsCreatesNewWhenNoMatchingExist() {
         Author.build(firstName: "Foo")
         assert Author.count() == 1
 
+        when:
         def domainObject = Author.findOrBuild(firstName: "Bar")
-        assert domainObject
-        assert Author.count() == 2
+
+        then:
+        domainObject
+        Author.count() == 2
     }
 
     void testBuildLazyWithParamsFindsExistingWithoutCreateNew() {
         Author.build(firstName: "Foo", lastName: "Qux")
         assert Author.count() == 1
 
+        when:
         def domainObject = Author.findOrBuild(firstName: "Foo")
-        assert domainObject
-        assert domainObject.firstName == "Foo"
-        assert domainObject.lastName == "Qux"
-        assert Author.count() == 1
+
+        then:
+        domainObject
+        domainObject.firstName == "Foo"
+        domainObject.lastName == "Qux"
+        Author.count() == 1
     }
 
     void testBuildLazyWithParamsCreatesNewWithOnlyPartialMatch() {
         Author.build(firstName: "Foo", lastName: "Qux")
         assert Author.count() == 1
 
+        when:
         def domainObject = Author.findOrBuild(firstName: "Foo", lastName: "Bar")
-        assert domainObject
-        assert domainObject.firstName == "Foo"
-        assert domainObject.lastName == "Bar"
-        assert Author.count() == 2
+
+        then:
+        domainObject
+        domainObject.firstName == "Foo"
+        domainObject.lastName == "Bar"
+        Author.count() == 2
     }
 }
