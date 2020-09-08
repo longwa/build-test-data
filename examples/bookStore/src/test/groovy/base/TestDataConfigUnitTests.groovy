@@ -3,14 +3,14 @@ package base
 import bookstore.Author
 import config.Article
 import config.Hotel
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import grails.buildtestdata.TestDataConfigurationHolder
 import spock.lang.Specification
 
-class TestDataConfigUnitTests extends Specification implements BuildDataTest {
+class TestDataConfigUnitTests extends Specification implements BuildDataUnitTest {
     void cleanup() {
         // we should reset the config holder when feeding it values in tests as it could cause issues
-        // for other tests later on that are expecting the default config if we do not 
+        // for other tests later on that are expecting the default config if we do not
         TestDataConfigurationHolder.reset()
     }
 

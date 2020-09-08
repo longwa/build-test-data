@@ -1,8 +1,8 @@
 package basetests
 
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 
-trait DomainTestBase extends BuildDataTest {
+trait DomainTestBase extends BuildDataUnitTest {
 
     Class createDomainClass(String classText) {
         Class domainClass = new GroovyClassLoader().parseClass(classText)

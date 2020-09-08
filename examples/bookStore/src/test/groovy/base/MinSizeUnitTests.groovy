@@ -1,10 +1,10 @@
 package base
 
 import bookstore.Address
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 
-class MinSizeUnitTests extends Specification implements BuildDataTest {
+class MinSizeUnitTests extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(Address)
     }

@@ -2,11 +2,11 @@ package base
 
 import bookstore.BookInfo
 import enums.BookType
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import grails.buildtestdata.TestDataConfigurationHolder
 import spock.lang.Specification
 
-class ToManyBasicTypeSpec extends Specification implements BuildDataTest {
+class ToManyBasicTypeSpec extends Specification implements BuildDataUnitTest {
     void setup() {
         TestDataConfigurationHolder.reset()
     }

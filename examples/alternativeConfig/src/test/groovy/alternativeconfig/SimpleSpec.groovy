@@ -1,10 +1,10 @@
 package alternativeconfig
 
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import grails.util.Holders
 import spock.lang.Specification
 
-class SimpleSpec extends Specification implements BuildDataTest {
+class SimpleSpec extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(Simple)
     }
