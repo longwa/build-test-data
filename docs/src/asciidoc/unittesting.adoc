@@ -78,10 +78,10 @@ class BookUnitSpec extends Specification implements BuildDataTest {
 }
 ```
 
-NOTE: Even if you are using the `@Build` annotation, you must still implement the `BuildDataTest` trait.
+NOTE: Even if you are using the `@Build` annotation, you must still implement the `BuildDataUnitTest` trait.
 
 === Trait Methods
-The `TestDataBuilder` and therefore the `BuildDataTest` trait adds the builder methods to your test class if you prefer to call them directly.
+The `TestDataBuilder` and therefore the `BuildDataUnitTest` trait adds the builder methods to your test class if you prefer to call them directly.
 These call out to statics in the `TestData` class.
 ```groovy
     public <T> T build(Map args = [:], Class<T> clazz) {

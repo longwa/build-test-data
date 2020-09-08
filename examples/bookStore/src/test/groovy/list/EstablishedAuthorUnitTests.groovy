@@ -1,10 +1,10 @@
 package list
 
 import bookstore.EstablishedAuthor
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 
-class EstablishedAuthorUnitTests extends Specification implements BuildDataTest {
+class EstablishedAuthorUnitTests extends Specification implements BuildDataUnitTest {
     @Override
     Class[] getDomainClassesToMock() {
         [EstablishedAuthor]

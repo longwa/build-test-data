@@ -2,10 +2,10 @@ package base
 
 import config.Article
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 
-class ConfigWithoutResetUnitTests extends Specification implements BuildDataTest {
+class ConfigWithoutResetUnitTests extends Specification implements BuildDataUnitTest {
     void setup() {
         mockDomain(Article)
     }

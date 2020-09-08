@@ -7,11 +7,11 @@ import abstractclass.AnotherConcreteSubClass
 import abstractclass.ConcreteSubClass
 import grails.buildtestdata.TestData
 import grails.buildtestdata.TestDataConfigurationHolder
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 
 import spock.lang.Specification
 
-class AbstractDefaultUnitTests extends Specification implements BuildDataTest {
+class AbstractDefaultUnitTests extends Specification implements BuildDataUnitTest {
     void setup() {
         TestDataConfigurationHolder.reset()
 

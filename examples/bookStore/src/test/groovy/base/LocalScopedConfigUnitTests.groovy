@@ -1,11 +1,11 @@
 package base
 
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import magazine.Issue
 import magazine.Page
 import spock.lang.Specification
 
-class LocalScopedConfigUnitTests extends Specification implements BuildDataTest {
+class LocalScopedConfigUnitTests extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(Issue, Page)
     }

@@ -1,10 +1,10 @@
 package base
 
 import bookstore.Invoice
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 
-class MatchesUnitTests extends Specification implements BuildDataTest {
+class MatchesUnitTests extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(Invoice)
     }

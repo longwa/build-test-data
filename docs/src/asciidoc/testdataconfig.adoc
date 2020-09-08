@@ -69,7 +69,7 @@ You are not required to have a TestDataConfig.groovy file.
 === Test Specific Config
 It's also possible to specify a config that is used during a particular test.
 
-Your test should implement the `TestDataBuilder` for integration tests or `BuildDataTest` for unit tests. Just override the `doWithTestDataConfig` method and return a Closure just like your `TestDataConfig.groovy`:
+Your test should implement the `TestDataBuilder` for integration tests or `BuildDataUnitTest` for unit tests. Just override the `doWithTestDataConfig` method and return a Closure just like your `TestDataConfig.groovy`:
 ```groovy
     Closure doWithTestDataConfig() {{->
         testDataConfig {
@@ -78,7 +78,7 @@ Your test should implement the `TestDataBuilder` for integration tests or `Build
                     name = {-> "Westin" }
                 }
             }
-        }  
+        }
     }}
 ```
 This will merge the config provided from this method with the global configuration (if any) in `TestDataConfig.groovy`.
