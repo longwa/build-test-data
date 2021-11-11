@@ -529,8 +529,8 @@ table.CodeRay td.code>pre{padding:0}
 <div class="details">
 <span id="author" class="author">Aaron Long</span><br>
 <span id="email" class="email"><a href="mailto:longwa@gmail.com">longwa@gmail.com</a></span><br>
-<span id="revnumber">version 4.0.0,</span>
-<span id="revdate">4.0.0</span>
+<span id="revnumber">version 5.0.0,</span>
+<span id="revdate">5.0.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -554,6 +554,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#installation">Installation</a>
 <ul class="sectlevel2">
+<li><a href="#grails-5-0-or-later">Grails 5.0 or later</a></li>
 <li><a href="#grails-4-0">Grails 4.0</a></li>
 <li><a href="#grails-3-3">Grails 3.3</a></li>
 <li><a href="#grails-3-1-and-3-2">Grails 3.1 and 3.2</a></li>
@@ -892,21 +893,27 @@ table.CodeRay td.code>pre{padding:0}
 <p>Unfortunately, this makes it impossible to have one plugin which is compatible with all prior versions.</p>
 </div>
 <div class="sect2">
+<h3 id="grails-5-0-or-later">Grails 5.0 or later</h3>
+<div class="paragraph">
+<p><code>testImplementation "io.github.longwa:build-test-data:5.0.0"</code></p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="grails-4-0">Grails 4.0</h3>
 <div class="paragraph">
-<p><code>compile "org.grails.plugins:build-test-data:4.0.0"</code></p>
+<p><code>testCompile "org.grails.plugins:build-test-data:4.0.0"</code></p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="grails-3-3">Grails 3.3</h3>
 <div class="paragraph">
-<p><code>compile "org.grails.plugins:build-test-data:3.3.1"</code></p>
+<p><code>testCompile "org.grails.plugins:build-test-data:3.3.1"</code></p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="grails-3-1-and-3-2">Grails 3.1 and 3.2</h3>
 <div class="paragraph">
-<p><code>compile "org.grails.plugins:build-test-data:3.0.1"</code></p>
+<p><code>testCompile "org.grails.plugins:build-test-data:3.0.1"</code></p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -2014,7 +2021,7 @@ assertEquals <span class="integer">1</span>, Issue.list().size()</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 4.0.0<br>
+Version 5.0.0<br>
 Last updated 2018-02-13 14:54:56 -0500
 </div>
 </div>
