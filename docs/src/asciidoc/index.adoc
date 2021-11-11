@@ -1,5 +1,4 @@
 = Build Test Data Users Guide
-Aaron Long <longwa@gmail.com>
 {version}
 
 include::introduction.adoc[]
