@@ -4,7 +4,7 @@ buildscript {
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
     }
 }
 
@@ -16,29 +16,34 @@ apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-logging"
-    compile "org.springframework.boot:spring-boot-autoconfigure"
-    compile "dk.brics.automaton:automaton:1.11-8"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "dk.brics.automaton:automaton:1.11-8"
 
-    compile "org.grails:grails-core"
-    compile "org.grails:grails-gorm-testing-support:2.0.0"
-    compile "org.grails:grails-databinding"
-    compile "org.grails:grails-datastore-gorm"
-    console "org.grails:grails-console"
+    implementation "org.grails:grails-core"
+    implementation "org.grails:grails-gorm-testing-support"
+    implementation "org.grails:grails-databinding"
+    implementation "org.grails:grails-datastore-gorm"
+    implementation "org.grails:grails-console"
 
-    //so we can run 'grails' and/or 'grails test-app' inside build-test-data
+    // So we can run 'grails' and/or 'grails test-app' inside build-test-data
     profile "org.grails.profiles:web-plugin"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
-    compile "org.springframework.boot:spring-boot-starter-tomcat"
-    compile "org.grails:grails-web-boot"
 
-    runtime 'org.codehaus.groovy:groovy-dateutil'
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+    implementation "org.grails:grails-web-boot"
 
-    testCompile "org.grails.plugins:hibernate5:7.0.1"
-    testCompile "org.hibernate:hibernate-core:5.4.0.Final"
-    testRuntime "com.h2database:h2"
-    testRuntime "org.apache.tomcat:tomcat-jdbc"
+    runtimeOnly 'org.codehaus.groovy:groovy-dateutil'
 
+    testImplementation "org.grails.plugins:hibernate5"
+    testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    testImplementation "com.h2database:h2"
+    testImplementation "org.apache.tomcat:tomcat-jdbc"
+
+    testImplementation "io.micronaut:micronaut-inject-groovy"
+    testImplementation "org.grails:grails-gorm-testing-support"
+    testImplementation "org.mockito:mockito-core"
+    testImplementation "org.grails:grails-web-testing-support"
 }
 
 bootRun {

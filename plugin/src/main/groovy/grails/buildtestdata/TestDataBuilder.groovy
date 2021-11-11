@@ -3,6 +3,8 @@ package grails.buildtestdata
 import groovy.transform.CompileStatic
 import org.junit.AfterClass
 import org.junit.Before
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeEach
 
 /**
  * Integration tests, any class really, can implement this trait to add build-test-data functionality
@@ -39,7 +41,7 @@ trait TestDataBuilder {
         null
     }
 
-    @Before
+    @BeforeEach
     void setupCustomTestDataConfig() {
         Closure testDataConfig = doWithTestDataConfig()
         if (testDataConfig) {
@@ -48,7 +50,7 @@ trait TestDataBuilder {
         }
     }
 
-    @AfterClass
+    @AfterAll
     static void cleanupTestDataBuilder() {
         TestData.clear()
         if (hasCustomTestDataConfig) {

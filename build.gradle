@@ -5,12 +5,15 @@ buildscript {
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
         classpath "org.grails:grails-docs:${project.ext.properties.grailsDocsVersion ?: grailsVersion}"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
         classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
     }
+}
+
+plugins {
+    id "com.adarshr.test-logger" version "2.0.0"
 }
 
 repositories {
@@ -44,13 +47,20 @@ subprojects {
     targetCompatibility = '1.8'
 
     dependencies {
-        //testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+        //testImplementation "org.codehaus.groovy:groovy-test:$groovyVersion"
     }
 
     tasks.withType(Test) {
+        useJUnitPlatform()
         testLogging {
             events "failed"
             exceptionFormat "full"
         }
+
+    }
+
+    apply plugin: 'com.adarshr.test-logger'
+    testlogger {
+        theme 'mocha'
     }
 }
