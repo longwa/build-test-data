@@ -8,6 +8,11 @@ buildscript {
     }
 }
 
+plugins {
+    id 'maven-publish'
+    id 'signing'
+}
+
 // Plugin version is set in the root/build.gradle
 group "org.grails.plugins"
 
