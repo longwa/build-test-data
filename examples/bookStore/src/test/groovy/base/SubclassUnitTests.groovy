@@ -1,12 +1,12 @@
 package base
 
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 import subclassing.RelatedClass
 import subclassing.SubClass
 import subclassing.SuperClass
 
-class SubclassUnitTests extends Specification implements BuildDataTest {
+class SubclassUnitTests extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(SubClass, RelatedClass, SuperClass)
     }

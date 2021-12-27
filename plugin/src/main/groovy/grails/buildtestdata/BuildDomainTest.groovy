@@ -10,7 +10,7 @@ import org.springframework.core.GenericTypeResolver
  * implement BuildDomainTest<Book> and it will take care of mocking the Author for you.
  */
 @CompileStatic
-trait BuildDomainTest<D> implements BuildDataTest {
+trait BuildDomainTest<D> implements BuildDataUnitTest {
 
     private D entity
     private static Class<D> entityClass

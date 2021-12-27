@@ -13,7 +13,7 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
-trait BuildDataTest extends DependencyDataTest implements TestDataBuilder {
+trait BuildDataUnitTest extends DependencyDataTest implements TestDataBuilder {
 
     @Override
     void mockDomains(Class<?>... domainClassesToMock) {
