@@ -3,41 +3,41 @@ buildscript {
 		maven { url "https://repo.grails.org/grails/core" }
 	}
 	dependencies {
-		classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+		classpath "org.apache.grails:grails-gradle-plugins:$grailsGradlePluginVersion"
 	}
 }
 
 group "org.grails.plugins"
 apply plugin: "eclipse"
 apply plugin: "idea"
-apply plugin: "org.grails.grails-plugin"
+apply plugin: "org.apache.grails.gradle.grails-plugin"
 
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-logging"
 	implementation "org.springframework.boot:spring-boot-autoconfigure"
 	implementation "dk.brics:automaton:1.12-4"
 
-	implementation "org.grails:grails-core"
-	implementation "org.grails:grails-gorm-testing-support"
-	implementation "org.grails:grails-databinding"
-	implementation "org.grails:grails-datastore-gorm"
-	implementation "org.grails:grails-console"
+	implementation "org.apache.grails:grails-core"
+	implementation "org.apache.grails:grails-testing-support-datamapping"
+	implementation "org.apache.grails:grails-databinding"
+	implementation "org.apache.grails.data:grails-datastore-core"
+	implementation "org.apache.grails:grails-console"
 
 	// So we can run 'grails' and/or 'grails test-app' inside build-test-data
-	profile "org.grails.profiles:web-plugin"
+	profile "org.apache.grails.profiles:web-plugin"
 
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation "org.springframework.boot:spring-boot-starter-tomcat"
-	implementation "org.grails:grails-web-boot"
+	implementation "org.apache.grails:grails-web-boot"
 
 	runtimeOnly 'org.apache.groovy:groovy-dateutil'
 
-	testImplementation "org.grails.plugins:hibernate5"
+	testImplementation "org.apache.grails:grails-data-hibernate5"
 	testImplementation "com.h2database:h2"
 	testImplementation "org.apache.tomcat:tomcat-jdbc"
 
-	testImplementation "org.grails:grails-gorm-testing-support"
-	testImplementation "org.grails:grails-web-testing-support"
+	testImplementation "org.apache.grails:grails-testing-support-datamapping"
+	testImplementation "org.apache.grails:grails-testing-support-web"
 }
 
 // Enable if you wish to package this plugin as a standalone application

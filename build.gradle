@@ -3,7 +3,7 @@ buildscript {
 		maven { url "https://repo.grails.org/grails/core/" }
 	}
 	dependencies {
-		classpath "org.grails:grails-gradle-plugin:${grailsGradlePluginVersion}"
+		classpath "org.apache.grails:grails-gradle-plugins:${grailsGradlePluginVersion}"
 	}
 }
 
@@ -52,7 +52,7 @@ subprojects {
 	}
 
 	if (project.name == 'build-test-data') {
-		apply plugin: "org.grails.grails-publish"
+		apply plugin: 'org.apache.grails.gradle.grails-publish'
 		grailsPublish {
 			githubSlug = 'longwa/build-test-data'
 			artifactId = 'build-test-data'
