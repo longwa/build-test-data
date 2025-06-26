@@ -1,47 +1,34 @@
-buildscript {
-	repositories {
-		maven { url "https://repo.grails.org/grails/core" }
-	}
-	dependencies {
-		classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
-	}
+plugins {
+    id 'org.apache.grails.gradle.grails-plugin'
 }
 
-group "org.grails.plugins"
-apply plugin: "eclipse"
-apply plugin: "idea"
-apply plugin: "org.grails.grails-plugin"
+group 'io.github.longwa'
 
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-logging"
-	implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
 	implementation "dk.brics:automaton:1.12-4"
 
-	implementation "org.grails:grails-core"
-	implementation "org.grails:grails-gorm-testing-support"
-	implementation "org.grails:grails-databinding"
-	implementation "org.grails:grails-datastore-gorm"
-	implementation "org.grails:grails-console"
-
-	// So we can run 'grails' and/or 'grails test-app' inside build-test-data
-	profile "org.grails.profiles:web-plugin"
-
-	implementation "org.springframework.boot:spring-boot-starter-actuator"
-	implementation "org.springframework.boot:spring-boot-starter-tomcat"
-	implementation "org.grails:grails-web-boot"
+    // Use compileOnly for dependencies that are provided by the Grails runtime to allow us to depend on a grails snapshot and
+    // and not have any users of this library use a snapshot dependency
+	compileOnly "org.apache.grails:grails-core"
+    compileOnly "org.apache.grails:grails-testing-support-datamapping"
+    compileOnly "org.apache.grails.databinding:grails-databinding-core"
+    compileOnly "org.apache.grails.data:grails-datamapping-core"
+    compileOnly "org.apache.grails:grails-web-boot"
 
 	runtimeOnly 'org.apache.groovy:groovy-dateutil'
 
-	testImplementation "org.grails.plugins:hibernate5"
+	testImplementation "org.apache.grails:grails-data-hibernate5"
 	testImplementation "com.h2database:h2"
 	testImplementation "org.apache.tomcat:tomcat-jdbc"
 
-	testImplementation "org.grails:grails-gorm-testing-support"
-	testImplementation "org.grails:grails-web-testing-support"
+	testImplementation "org.apache.grails:grails-testing-support-datamapping"
+	testImplementation "org.apache.grails:grails-testing-support-web"
 }
 
-// Enable if you wish to package this plugin as a standalone application
-bootJar.enabled = false
+grails {
+    springDependencyManagement = false
+}
 
 //this makes the groovy docs much more readable by shorting packages and providing links
 groovydoc {
