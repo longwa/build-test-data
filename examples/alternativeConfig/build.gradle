@@ -1,22 +1,6 @@
-buildscript {
-	repositories {
-		maven { url "https://repo.grails.org/grails/core" }
-	}
-	dependencies {
-		classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
-		classpath "org.grails.plugins:hibernate5:${project.'gorm.version' - ".RELEASE"}"
-	}
-}
-
 plugins {
-	id "groovy"
-	id "org.grails.grails-web"
-	id "org.grails.grails-gsp"
-	id "war"
-	id "idea"
-	// Not needed because no /assets directory
-	// id "com.bertramlabs.asset-pipeline" version "${assetPipelineVersion}"
-	id "eclipse"
+	id "org.apache.grails.gradle.grails-web"
+	id "org.apache.grails.gradle.grails-gsp"
 }
 
 version "0.1"
@@ -25,40 +9,41 @@ group "alternativeconfig"
 dependencies {
 	implementation project(':build-test-data')
 
-	profile("org.grails.profiles:web")
+	profile("org.apache.grails.profiles:web")
 
-	implementation("org.grails:grails-core")
-	implementation("org.grails:grails-logging")
-	implementation("org.grails:grails-plugin-databinding")
-	implementation("org.grails:grails-plugin-i18n")
-	implementation("org.grails:grails-plugin-interceptors")
-	implementation("org.grails:grails-plugin-rest")
-	implementation("org.grails:grails-plugin-services")
-	implementation("org.grails:grails-plugin-url-mappings")
-	implementation("org.grails:grails-web-boot")
-	implementation("org.grails.plugins:gsp")
-	implementation("org.grails.plugins:hibernate5")
-	implementation("org.grails.plugins:scaffolding")
-	implementation("org.sitemesh:grails-plugin-sitemesh3:${grailsVersion}")
-	implementation("org.springframework.boot:spring-boot-autoconfigure")
-	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-logging")
-	implementation("org.springframework.boot:spring-boot-starter-tomcat")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
 
-	console("org.grails:grails-console")
+    implementation "org.apache.grails:grails-core"
+    implementation "org.apache.grails:grails-data-hibernate5"
+    implementation "org.apache.grails:grails-databinding"
+    implementation "org.apache.grails:grails-gsp"
+    implementation "org.apache.grails:grails-i18n"
+    implementation "org.apache.grails:grails-interceptors"
+    implementation "org.apache.grails:grails-logging"
+    implementation "org.apache.grails:grails-rest-transforms"
+    implementation "org.apache.grails:grails-scaffolding"
+    implementation "org.apache.grails:grails-services"
+    implementation "org.apache.grails:grails-url-mappings"
+    implementation "org.apache.grails:grails-web-boot"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
 
-	runtimeOnly("com.bertramlabs.plugins:asset-pipeline-grails")
-	runtimeOnly("com.h2database:h2")
-	runtimeOnly("org.apache.tomcat:tomcat-jdbc")
-	runtimeOnly("org.fusesource.jansi:jansi")
+    console "org.apache.grails:grails-console"
 
-	integrationTestImplementation testFixtures("org.grails.plugins:geb")
+    runtimeOnly "cloud.wondrify:asset-pipeline-grails"
+    runtimeOnly "com.h2database:h2"
+    runtimeOnly "com.zaxxer:HikariCP"
+    runtimeOnly "org.fusesource.jansi:jansi"
 
-	testImplementation("org.grails:grails-gorm-testing-support")
-	testImplementation("org.grails:grails-web-testing-support")
-	testImplementation("org.spockframework:spock-core")
+	integrationTestImplementation testFixtures("org.apache.grails:grails-geb")
+
+    testImplementation "org.apache.grails:grails-testing-support-datamapping"
+    testImplementation "org.apache.grails:grails-testing-support-web"
+    testImplementation "org.spockframework:spock-core"
 }
 
 // No assets in test project

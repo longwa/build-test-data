@@ -2,10 +2,21 @@
 == Installation
 The test framework and testing methodology for Grails has undergone several major revisions over the past few releases.
 
-Unfortunately, this makes it impossible to have one plugin which is compatible with all prior versions.
+Unfortunately, this makes it impossible to have one plugin which is compatible with all prior versions. Please see the below sections to determine which version of the plugin you should use for your Grails version.
 
 === Grails 7.0 or later
 `testImplementation "io.github.longwa:build-test-data:{version}"`
+
+Build Test Data versions after 6.0.0-M1 no longer export dependencies that are available to a Grails application:
+
+    "org.apache.grails:grails-core"
+    "org.apache.grails:grails-testing-support-datamapping"
+    "org.apache.grails.databinding:grails-databinding-core"
+    "org.apache.grails.data:grails-datamapping-core"
+    "org.apache.grails:grails-web-boot"
+    "org.apache.grails:grails-testing-support-web"
+
+If these dependencies are missing from your `build.gradle`, build test data may not function correctly. Not exporting these dependencies ensures the plugin is forward compatible with Grails Versions and minimizes the need to release this plugin for minor changes to Grails.
 
 === Grails 5.0 or Grails 6.0
 `testImplementation "io.github.longwa:build-test-data:5.0.0"`
