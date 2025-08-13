@@ -20,7 +20,7 @@ trait BuildDataTest extends DependencyDataTest implements TestDataBuilder {
         super.mockDomains(domainClassesToMock)
 
         // Add build methods
-        Class[] domainClasses = dataStore.mappingContext.getPersistentEntities()*.javaClass
+        Class[] domainClasses = datastore.mappingContext.getPersistentEntities()*.javaClass
         MetaHelper.addBuildMetaMethods(domainClasses)
     }
 
