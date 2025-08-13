@@ -64,7 +64,7 @@ jobs:
       - name: "📤 Publish to Snapshot"
         if: ${{ success() && endsWith( steps.version.outputs.version, '-SNAPSHOT' ) }}
         env:
-          MAVEN_PUBLISH_USERNAME: ${{ secrets.GITHUB_ACTOR }}
+          MAVEN_PUBLISH_USERNAME: ${{ github.actor }}
           MAVEN_PUBLISH_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_PUBLISH_URL: 'https://maven.pkg.github.com/longwa/build-test-data'
           GRAILS_PUBLISH_RELEASE: "false"
