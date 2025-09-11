@@ -23,5 +23,6 @@ repositories {
 dependencies {
     implementation platform("org.apache.grails:grails-bom:${gradleProperties.grailsVersion}")
     implementation "org.apache.grails:grails-gradle-plugins"
+    implementation 'org.apache.grails.gradle:grails-publish'
     implementation "cloud.wondrify:asset-pipeline-gradle"
 }
