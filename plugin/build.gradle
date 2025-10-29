@@ -5,23 +5,23 @@ plugins {
 group 'io.github.longwa'
 
 dependencies {
-    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
-	implementation "dk.brics:automaton:1.12-4"
+    implementation "dk.brics:automaton:1.12-4"
 
     // Use compileOnly for dependencies that are provided by the Grails runtime to allow us to depend on a grails snapshot and
     // and not have any users of this library use a snapshot dependency
-	compileOnly "org.apache.grails:grails-core"
+    compileOnly platform("org.apache.grails:grails-bom:$grailsVersion")
+    compileOnly "org.apache.grails:grails-core"
     compileOnly "org.apache.grails:grails-testing-support-datamapping"
     compileOnly "org.apache.grails.databinding:grails-databinding-core"
     compileOnly "org.apache.grails.data:grails-datamapping-core"
     compileOnly "org.apache.grails:grails-web-boot"
 
-	runtimeOnly 'org.apache.groovy:groovy-dateutil'
+	runtimeOnly 'org.apache.groovy:groovy-dateutil:4.0.29'
 
+    testImplementation platform("org.apache.grails:grails-bom:$grailsVersion")
 	testImplementation "org.apache.grails:grails-data-hibernate5"
 	testImplementation "com.h2database:h2"
 	testImplementation "org.apache.tomcat:tomcat-jdbc"
-
 	testImplementation "org.apache.grails:grails-testing-support-datamapping"
 	testImplementation "org.apache.grails:grails-testing-support-web"
 }
