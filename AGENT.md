@@ -40,7 +40,7 @@ The plugin project is renamed from `:plugin` to `:build-test-data` in `settings.
 ./gradlew docs
 ```
 
-Java 17 is required (see `.sdkmanrc`). Tests run with `useJUnitPlatform()` and locale forced to `en_US`.
+Java 21 is required (see `.sdkmanrc`). Tests run with `useJUnitPlatform()` and locale forced to `en_US`.
 
 ## Core Architecture
 

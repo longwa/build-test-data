@@ -4,7 +4,8 @@ plugins {
 
 allprojects {
 	repositories {
-		maven { url "https://repo.grails.org/grails/core" }
+		mavenCentral()
+		maven { url "https://repo.grails.org/grails/restricted" }
         maven {
             url = 'https://central.sonatype.com/repository/maven-snapshots'
             content {
@@ -29,7 +30,7 @@ subprojects {
 
 	apply plugin: 'groovy'
 
-	project.compileJava.options.release = 17
+	project.compileJava.options.release = 21
 
 	apply plugin: 'com.adarshr.test-logger'
 	testlogger {

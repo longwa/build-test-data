@@ -1,5 +1,5 @@
 tasks.register('cleanDocs', Delete) {
-	delete file("${rootProject.buildDir}/docs")
+	delete rootProject.layout.buildDirectory.dir('docs')
 }
 
 tasks.register('aggregateGroovyApiDoc', Groovydoc) {
@@ -14,7 +14,7 @@ tasks.register('aggregateGroovyApiDoc', Groovydoc) {
 	includeMainForScripts = true
 	processScripts = true
 	source = groovyDocProjects.groovydoc.source
-	destinationDir = file("${rootProject.buildDir}/docs/gapi")
+	destinationDir = rootProject.layout.buildDirectory.dir('docs/gapi').get().asFile
 	classpath = files(groovyDocProjects.groovydoc.classpath)
 	groovyClasspath = files(groovyDocProjects.groovydoc.groovyClasspath)
 }
@@ -30,7 +30,7 @@ tasks.register('copyAsciiDoctorDocs', Copy) {
 	dependsOn = ['docs']
 	from "${rootProject.allprojects.find { it.name == 'docs'}.projectDir}/build"
 	includes = ['docs/**']
-	into rootProject.buildDir
+	into rootProject.layout.buildDirectory
 	includeEmptyDirs = false
 }
 
@@ -38,6 +38,6 @@ tasks.register('ghPagesRootIndexPage', Copy) {
 	group = 'documentation'
 	dependsOn = ['docs']
 	from file("${rootProject.allprojects.find { it.name == 'docs'}.projectDir}/src/docs/index.tmpl")
-	into rootProject.buildDir.toPath().resolve('docs').toFile()
+	into rootProject.layout.buildDirectory.dir('docs')
 	rename 'index.tmpl', 'ghpages.html'
 }
