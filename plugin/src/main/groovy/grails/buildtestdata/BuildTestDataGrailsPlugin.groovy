@@ -6,7 +6,7 @@ import groovy.transform.CompileDynamic
 //@CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
 class BuildTestDataGrailsPlugin extends Plugin {
-    def grailsVersion = "3.3.0 > *"
+    def grailsVersion = "7.0.0 > *"
 
     def title = "Build Test Data Plugin"
     def description = 'Enables the easy creation of test data by automatically satisfying most constraints.'
