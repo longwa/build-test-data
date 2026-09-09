@@ -37,7 +37,7 @@ groovydoc {
 	link('https://jakarta.ee/specifications/platform/9/apidocs', 'jakarta.')
 	link("https://docs.spring.io/spring/docs/6.1.x/javadoc-api", 'org.springframework')
 	link('https://docs.groovy-lang.org/4.0.24/html/gapi', 'groovy.', 'org.apache.groovy.')
-	link('https://docs.grails.org/7.0.0/api', 'grails.', 'org.grails.')
+	link('https://docs.grails.org/8.0.0/api', 'grails.', 'org.grails.')
 	link('https://testing.grails.org/latest/api', 'grails.testing.', 'org.grails.testing.')
 	link('http://gorm.grails.org/9.0.x/hibernate/api/', 'grails.gorm', 'grails.orm', 'org.grails.datastore', 'org.grails.orm')
 }

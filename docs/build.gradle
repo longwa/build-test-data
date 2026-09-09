@@ -37,7 +37,7 @@ tasks.named('asciidoctor', AsciidoctorTask) { AsciidoctorTask it ->
 	it.baseDirFollowsSourceDir()
 	it.sourceDir project.file('src/docs')
 	it.sources { include 'index.adoc' }
-	it.outputDir = project.buildDir.toPath().resolve('docs').toFile()
+	it.outputDir = project.layout.buildDirectory.dir('docs').get().asFile
 	it.options doctype: 'book'
 	it.attributes asciidoctorAttributes
 }
