@@ -184,16 +184,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     }
 
     Object satisfyConstrained(Object instance, String propertyName, ConstrainedProperty constrained, DataBuilderContext ctx) {
-        Collection<Constraint> appliedConstraints = constrained.appliedConstraints
-        if (!appliedConstraints) {
-            // GORM never applies a nullable constraint to its auto-timestamp properties (dateCreated, lastUpdated), yet
-            // ConstrainedProperty.isNullable() reports them as not nullable, so they arrive here as required with nothing
-            // for the handler loop to act on. Fall back to the nullable handler so the property still gets a basic value.
-            log.debug "${targetClass?.name}.$propertyName has no applied constraints, using the nullable handler"
-            handlers[ConstrainedProperty.NULLABLE_CONSTRAINT].handle(instance, propertyName, null, constrained, ctx)
-            return null
-        }
-        return sortedConstraints(appliedConstraints).find { Constraint constraint ->
+        return sortedConstraints(constrained.appliedConstraints).find { Constraint constraint ->
             log.debug "${targetClass?.name}.${constraint?.name} constraint, field before adjustment: ${instance[propertyName]}"
             ConstraintHandler handler = handlers[constraint.name]
             if (handler) {

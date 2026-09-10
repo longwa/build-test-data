@@ -3,6 +3,7 @@ package grails.buildtestdata.builders
 import grails.buildtestdata.handler.AssociationMinSizeHandler
 import grails.buildtestdata.handler.PersistentEntityNullableConstraintHandler
 import grails.buildtestdata.utils.DomainUtil
+import grails.gorm.annotation.AutoTimestamp
 import grails.gorm.api.GormAllOperations
 import grails.gorm.validation.ConstrainedEntity
 import grails.gorm.validation.ConstrainedProperty
@@ -10,17 +11,23 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.util.ReflectionUtils
 import org.springframework.validation.Validator
+
+import java.lang.annotation.Annotation
+import java.lang.reflect.Field
 
 @Slf4j
 @CompileStatic
@@ -39,7 +46,13 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
         }
     }
 
+    // Spring Data's audit annotations, which GORM 7.1+ also honours. Matched by simple name so there is no hard dependency.
+    static final List<String> SPRING_DATA_TIMESTAMP_ANNOTATIONS = ['CreatedDate', 'LastModifiedDate'].asImmutable()
+
     Set<Class> requiredDomainClasses
+
+    /** properties GORM stamps itself on insert/update, see {@link #findAutoTimestampPropertyNames()} */
+    Set<String> autoTimestampPropertyNames
 
     PersistentEntityDataBuilder(Class target) {
         super(target)
@@ -53,6 +66,36 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
         )
 
         requiredDomainClasses = findRequiredDomainClasses()
+        autoTimestampPropertyNames = findAutoTimestampPropertyNames()
+    }
+
+    /**
+     * Mirrors how GORM's AutoTimestampEventListener decides which properties it stamps: nothing when the entity is mapped
+     * with autoTimestamp false, otherwise dateCreated, lastUpdated and anything annotated with @AutoTimestamp (or Spring
+     * Data's @CreatedDate / @LastModifiedDate).
+     */
+    Set<String> findAutoTimestampPropertyNames() {
+        PersistentEntity entity = persistentEntity
+        Entity mappedForm = (Entity) entity.mapping?.mappedForm
+        if (mappedForm != null && !mappedForm.autoTimestamp) {
+            return [] as Set<String>
+        }
+        entity.persistentProperties.findAll { PersistentProperty property ->
+            isAutoTimestampProperty(property)
+        }*.name as Set<String>
+    }
+
+    boolean isAutoTimestampProperty(PersistentProperty property) {
+        if (property.name == GormProperties.DATE_CREATED || property.name == GormProperties.LAST_UPDATED) {
+            return true
+        }
+        Field field = ReflectionUtils.findField(persistentEntity.javaClass, property.name)
+        if (field == null) {
+            return false
+        }
+        field.isAnnotationPresent(AutoTimestamp) || field.annotations.any { Annotation annotation ->
+            annotation.annotationType().simpleName in SPRING_DATA_TIMESTAMP_ANNOTATIONS
+        }
     }
 
     Set<String> findPropsToSaveFirst() {
@@ -152,7 +195,27 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
         def instance = super.doBuild(ctx)
         applyBiDirectionManyToOnes((GormEntity) instance)
         populateRequiredValues(instance, ctx)
+        populateAutoTimestamps(instance, ctx)
         (GormEntity) instance
+    }
+
+    /**
+     * GORM stamps the auto-timestamp properties itself, but only when the insert actually happens. In the unit datastore,
+     * or in Hibernate with a sequence generator, that is at flush time, so build() would otherwise hand back null
+     * timestamps. GORM also never applies a nullable constraint to them, so populateRequiredValues has nothing to act on
+     * and leaves them alone. Give them a value here; GORM replaces it with its own timestamp when the insert runs.
+     */
+    void populateAutoTimestamps(Object instance, DataBuilderContext ctx) {
+        for (String propertyName in autoTimestampPropertyNames) {
+            if (instance[propertyName] != null) {
+                continue
+            }
+            ConstrainedProperty constrained = constraintsMap.get(propertyName)
+            if (constrained) {
+                log.debug("{}.{} is an auto-timestamp property GORM has not stamped yet, generating a value", targetClass.name, propertyName)
+                handlers[ConstrainedProperty.NULLABLE_CONSTRAINT].handle(instance, propertyName, null, constrained, ctx)
+            }
+        }
     }
 
     @CompileDynamic
