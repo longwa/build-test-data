@@ -158,6 +158,16 @@ extends <a href='../../../grails/buildtestdata/builders/ValidateableDataBuilder.
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>static&nbsp;java.util.List&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#SPRING_DATA_TIMESTAMP_ANNOTATIONS">SPRING_DATA_TIMESTAMP_ANNOTATIONS</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.util.Set&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autoTimestampPropertyNames">autoTimestampPropertyNames</a></code><br>properties GORM stamps itself on insert/update, see <a href='#findAutoTimestampPropertyNames()'>findAutoTimestampPropertyNames()</a></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;groovy.lang.Closure</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#entitySave">entitySave</a></code><br>allows implementing tools to replace the closure for any special saving requirements</td>
                         </tr>
@@ -256,47 +266,67 @@ extends <a href='../../../grails/buildtestdata/builders/ValidateableDataBuilder.
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAutoTimestampPropertyNames()">findAutoTimestampPropertyNames</a></strong>()</code><br>Mirrors how GORM's AutoTimestampEventListener decides which properties it stamps: nothing when the entity is mapped
+ with autoTimestamp false, otherwise dateCreated, lastUpdated and anything annotated with<DL><DT><B>AutoTimestamp:</B></DT><DD>(or Spring
+ Data's</DD></DL><DL><DT><B>CreatedDate:</B></DT><DD>/</DD></DL> @LastModifiedDate). </td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.grails.datastore.gorm.GormEntity</code></td>
                             <td class="colLast"><code><strong><a href="#findInStore(grails.buildtestdata.builders.DataBuilderContext)">findInStore</a></strong>(<a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findPropsToSaveFirst()">findPropsToSaveFirst</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List&lt;org.grails.datastore.mapping.model.types.Association&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findRequiredAssociations()">findRequiredAssociations</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Set&lt;java.lang.Class&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findRequiredDomainClasses()">findRequiredDomainClasses</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Map&lt;java.lang.String, grails.gorm.validation.ConstrainedProperty&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getConstraintsMap()">getConstraintsMap</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.grails.datastore.mapping.model.MappingContext</code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.grails.datastore.mapping.model.PersistentEntity</code></td>
                             <td class="colLast"><code><strong><a href="#getPersistentEntity()">getPersistentEntity</a></strong>()</code><br></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isAutoTimestampProperty(org.grails.datastore.mapping.model.PersistentProperty)">isAutoTimestampProperty</a></strong>(org.grails.datastore.mapping.model.PersistentProperty property)</code><br></td>
+                        </tr>
+                        
                         <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code><strong><a href="#populateAutoTimestamps(java.lang.Object, grails.buildtestdata.builders.DataBuilderContext)">populateAutoTimestamps</a></strong>(java.lang.Object instance, <a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</code><br>GORM stamps the auto-timestamp properties itself, but only when the insert actually happens. </td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.grails.datastore.gorm.GormEntity</code></td>
                             <td class="colLast"><code><strong><a href="#save(org.grails.datastore.gorm.GormEntity, grails.buildtestdata.builders.DataBuilderContext, java.util.Map)">save</a></strong>(org.grails.datastore.gorm.GormEntity domainInstance, <a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx, java.util.Map saveArgs)</code><br></td>
@@ -348,6 +378,22 @@ extends <a href='../../../grails/buildtestdata/builders/ValidateableDataBuilder.
                     <!--   -->
                 </a>
                     <h3>Property Detail</h3>
+                    
+                        <a name="SPRING_DATA_TIMESTAMP_ANNOTATIONS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;final&nbsp;java.util.List&lt;java.lang.String&gt; <strong>SPRING_DATA_TIMESTAMP_ANNOTATIONS</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="autoTimestampPropertyNames"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Set&lt;java.lang.String&gt; <strong>autoTimestampPropertyNames</strong></h4>
+                                <p>properties GORM stamps itself on insert/update, see <a href='#findAutoTimestampPropertyNames()'>findAutoTimestampPropertyNames()</a></p>
+                            </li>
+                        </ul>
                     
                         <a name="entitySave"><!-- --></a>
                         <ul class="blockListLast">
@@ -430,6 +476,16 @@ extends <a href='../../../grails/buildtestdata/builders/ValidateableDataBuilder.
                             </li>
                         </ul>
                     
+                        <a name="findAutoTimestampPropertyNames()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Set&lt;java.lang.String&gt; <strong>findAutoTimestampPropertyNames</strong>()</h4>
+                                <p> Mirrors how GORM's AutoTimestampEventListener decides which properties it stamps: nothing when the entity is mapped
+ with autoTimestamp false, otherwise dateCreated, lastUpdated and anything annotated with<DL><DT><B>AutoTimestamp:</B></DT><DD>(or Spring
+ Data's</DD></DL><DL><DT><B>CreatedDate:</B></DT><DD>/</DD></DL> @LastModifiedDate). </p>
+                            </li>
+                        </ul>
+                    
                         <a name="findInStore(grails.buildtestdata.builders.DataBuilderContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -483,6 +539,25 @@ extends <a href='../../../grails/buildtestdata/builders/ValidateableDataBuilder.
                             <li class="blockList">
                                 <h4>org.grails.datastore.mapping.model.PersistentEntity <strong>getPersistentEntity</strong>()</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isAutoTimestampProperty(org.grails.datastore.mapping.model.PersistentProperty)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>isAutoTimestampProperty</strong>(org.grails.datastore.mapping.model.PersistentProperty property)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="populateAutoTimestamps(java.lang.Object, grails.buildtestdata.builders.DataBuilderContext)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>populateAutoTimestamps</strong>(java.lang.Object instance, <a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</h4>
+                                <p> GORM stamps the auto-timestamp properties itself, but only when the insert actually happens. In the unit datastore,
+ or in Hibernate with a sequence generator, that is at flush time, so build() would otherwise hand back null
+ timestamps. GORM also never applies a nullable constraint to them, so populateRequiredValues has nothing to act on
+ and leaves them alone. Give them a value here; GORM replaces it with its own timestamp when the insert runs.</p>
                             </li>
                         </ul>
                     
