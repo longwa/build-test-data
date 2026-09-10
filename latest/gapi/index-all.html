@@ -139,6 +139,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/handler/AssociationMinSizeHandler.html#AssociationMinSizeHandler(org.grails.datastore.mapping.model.PersistentEntity)" title="Constructor in AssociationMinSizeHandler">AssociationMinSizeHandler(org.grails.datastore.mapping.model.PersistentEntity)</a></span> - Constructor in <a href="grails/buildtestdata/handler/AssociationMinSizeHandler.html">AssociationMinSizeHandler</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#autoTimestampPropertyNames" title="Property in PersistentEntityDataBuilder">autoTimestampPropertyNames</a></span> - Property in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
+</dt><dd> <div class="block">properties GORM stamps itself on insert/update, see <a href='#findAutoTimestampPropertyNames()'>findAutoTimestampPropertyNames()</a></div></dd>
 </dl>
 
     
@@ -301,6 +303,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 <dt><span class="strong"><a href="grails/buildtestdata/TestData.html#factories" title="Property in TestData">factories</a></span> - Property in <a href="grails/buildtestdata/TestData.html">TestData</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#findAutoTimestampPropertyNames()" title="Method in PersistentEntityDataBuilder">findAutoTimestampPropertyNames()</a></span> - Method in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
+</dt><dd> <div class="block">Mirrors how GORM's AutoTimestampEventListener decides which properties it stamps: nothing when the entity is mapped
+ with autoTimestamp false, otherwise dateCreated, lastUpdated and anything annotated with<DL><DT><B>AutoTimestamp:</B></DT><DD>(or Spring
+ Data's</DD></DL><DL><DT><B>CreatedDate:</B></DT><DD>/</DD></DL> @LastModifiedDate). </div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/TestData.html#findBuilder(java.lang.Class)" title="Method in TestData">findBuilder(java.lang.Class)</a></span> - Method in <a href="grails/buildtestdata/TestData.html">TestData</a>
 </dt><dd> <div class="block">Find in cache or create a builder</div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/utils/DomainUtil.html#findConcreteSubclass(java.lang.Class)" title="Method in DomainUtil">findConcreteSubclass(java.lang.Class)</a></span> - Method in <a href="grails/buildtestdata/utils/DomainUtil.html">DomainUtil</a>
@@ -487,6 +493,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/utils/DomainUtil.html#isAbstract(java.lang.Class)" title="Method in DomainUtil">isAbstract(java.lang.Class)</a></span> - Method in <a href="grails/buildtestdata/utils/DomainUtil.html">DomainUtil</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#isAutoTimestampProperty(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in PersistentEntityDataBuilder">isAutoTimestampProperty(org.grails.datastore.mapping.model.PersistentProperty)</a></span> - Method in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/utils/IsoDateUtil.html" title="Class in grails.buildtestdata.utils">IsoDateUtil</a></span> - Class in <a href="./grails/buildtestdata/utils/package-summary.html">grails.buildtestdata.utils</a>
 </dt><dd><div class="block">Provides a set of methods for parsing/formatting ISO 8601 dates.
  </div></dd>
@@ -639,6 +647,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html#PogoDataBuilder(java.lang.Class)" title="Constructor in PogoDataBuilder">PogoDataBuilder(java.lang.Class)</a></span> - Constructor in <a href="grails/buildtestdata/builders/PogoDataBuilder.html">PogoDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#populateAutoTimestamps(java.lang.Object, grails.buildtestdata.builders.DataBuilderContext)" title="Method in PersistentEntityDataBuilder">populateAutoTimestamps(java.lang.Object, grails.buildtestdata.builders.DataBuilderContext)</a></span> - Method in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
+</dt><dd> <div class="block">GORM stamps the auto-timestamp properties itself, but only when the insert actually happens. </div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/ValidateableDataBuilder.html#populateRequiredValues(java.lang.Object, grails.buildtestdata.builders.DataBuilderContext)" title="Method in ValidateableDataBuilder">populateRequiredValues(java.lang.Object, grails.buildtestdata.builders.DataBuilderContext)</a></span> - Method in <a href="grails/buildtestdata/builders/ValidateableDataBuilder.html">ValidateableDataBuilder</a>
 </dt><dd> <div class="block">primary entry method for populating the entity data</div></dd>
 </dl>
@@ -699,6 +709,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/buildtestdata/handler/SizeConstraintHandler.html#SizeConstraintHandler()" title="Constructor in SizeConstraintHandler">SizeConstraintHandler()</a></span> - Constructor in <a href="grails/buildtestdata/handler/SizeConstraintHandler.html">SizeConstraintHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/ValidateableDataBuilder.html#sortedConstraints(Collection<Constraint>)" title="Method in ValidateableDataBuilder">sortedConstraints(Collection&lt;Constraint&gt;)</a></span> - Method in <a href="grails/buildtestdata/builders/ValidateableDataBuilder.html">ValidateableDataBuilder</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#SPRING_DATA_TIMESTAMP_ANNOTATIONS" title="Property in PersistentEntityDataBuilder">SPRING_DATA_TIMESTAMP_ANNOTATIONS</a></span> - Property in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/DataBuilderFactory.html#supports(java.lang.Class)" title="Method in DataBuilderFactory">supports(java.lang.Class)</a></span> - Method in <a href="grails/buildtestdata/builders/DataBuilderFactory.html">DataBuilderFactory</a>
 </dt><dd> <div class="block"></div></dd>
