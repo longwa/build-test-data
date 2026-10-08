@@ -104,6 +104,46 @@ class TestDataConfigurationHolderTests extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    void testFailOnBindingErrorDefaultsToTrue() {
+        when:
+        TDHC.reset()
+
+        then:
+        TDHC.failOnBindingError
+    }
+
+    void testMergeFailOnBindingErrorAndThenReset() {
+        when:
+        TDHC.mergeConfig({ ->
+            testDataConfig {
+                failOnBindingError = false
+            }
+        })
+
+        then:
+        !TDHC.failOnBindingError
+
+        when: 'a merged config that does not set it'
+        TDHC.mergeConfig({ ->
+            testDataConfig {
+                sampleData {
+                    'TestDomain' {
+                        testProperty = 'XYZ'
+                    }
+                }
+            }
+        })
+
+        then: 'keeps the current value'
+        !TDHC.failOnBindingError
+
+        when:
+        TDHC.reset()
+
+        then:
+        TDHC.failOnBindingError
+    }
+
     void cleanupSpec() {
         TestDataConfigurationHolder.reset()
     }

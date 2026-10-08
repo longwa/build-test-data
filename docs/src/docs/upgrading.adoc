@@ -23,6 +23,14 @@ Previously, a value passed to `build()` that could not be converted to its prope
 
 Values for properties that don't exist on the class are still ignored, but are now logged as a warning.
 
+To ease migrating existing tests, set `failOnBindingError` to `false` in `TestDataConfig.groovy` to restore the previous behavior. The values that could not be bound are then skipped and logged as a warning instead of failing the build. See <<testdataconfig>>.
+
+```groovy
+testDataConfig {
+    failOnBindingError = false
+}
+```
+
 ==== UnitTestDataBuilder Removed
 The deprecated `UnitTestDataBuilder` trait has been removed. Implement `BuildDataUnitTest` instead.
 

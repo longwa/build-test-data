@@ -93,18 +93,24 @@ class PogoDataBuilder implements DataBuilder {
 
     /**
      * The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
-     * fail instead of building an instance without it
+     * fail instead of building an instance without it. Setting failOnBindingError = false in TestDataConfig logs the
+     * values instead, to ease migrating tests that relied on them being skipped.
      */
     void bindData(Object instance, Map<String, ?> data) {
         BindingErrorCollector collector = new BindingErrorCollector()
         dataBinder.bind(instance, new SimpleMapDataBindingSource(data), collector)
-        if (collector.bindingErrors) {
-            String details = collector.bindingErrors.collect { BindingError error -> describeBindingError(error) }.join('\n')
+        if (!collector.bindingErrors) {
+            return
+        }
+
+        String details = collector.bindingErrors.collect { BindingError error -> describeBindingError(error) }.join('\n')
+        if (TestDataConfigurationHolder.failOnBindingError) {
             throw new IllegalArgumentException(
                 "Unable to build ${targetClass.name}, the following values could not be bound:\n$details",
                 collector.bindingErrors.first().cause
             )
         }
+        log.warn("Ignoring values that could not be bound when building {}:\n{}", targetClass.name, details)
     }
 
     static String describeBindingError(BindingError error) {

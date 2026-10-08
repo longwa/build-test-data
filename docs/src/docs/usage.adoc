@@ -91,7 +91,7 @@ That modified script prints:
     Last Name: lastName
     Author ID: 2
 
-NOTE: Values in the map are converted to the property's type with Grails data binding. If a value can't be converted, such as `'abc'` for an `Integer` property, `build()` throws an `IllegalArgumentException` listing every value that could not be bound. Values for properties that don't exist on the class are ignored and logged as a warning.
+NOTE: Values in the map are converted to the property's type with Grails data binding. If a value can't be converted, such as `'abc'` for an `Integer` property, `build()` throws an `IllegalArgumentException` listing every value that could not be bound, unless `failOnBindingError` is disabled in <<testdataconfig>>. Values for properties that don't exist on the class are ignored and logged as a warning.
 
 With Book, we have a more complex domain class.  It has a few different property types and it also has required related domain class of Author.
 

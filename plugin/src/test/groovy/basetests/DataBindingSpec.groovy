@@ -2,10 +2,15 @@ package basetests
 
 import grails.buildtestdata.BuildDomainTest
 import grails.buildtestdata.TestData
+import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.builders.PogoDataBuilder
 import spock.lang.Specification
 
 class DataBindingSpec extends Specification implements BuildDomainTest<DataBindingDom> {
+
+    void cleanup() {
+        TestDataConfigurationHolder.reset()
+    }
 
     void "values are converted to the property type"() {
         when:
@@ -63,6 +68,35 @@ class DataBindingSpec extends Specification implements BuildDomainTest<DataBindi
         then:
         IllegalArgumentException e = thrown()
         e.message.contains('basetests.DataBindingPogo.count')
+    }
+
+    void "values that can't be converted are skipped when failOnBindingError is disabled"() {
+        given:
+        TestDataConfigurationHolder.mergeConfig {
+            testDataConfig {
+                failOnBindingError = false
+            }
+        }
+
+        when:
+        def domainObject = DataBindingDom.build(name: 'real', age: 'abc', status: 'BOGUS')
+
+        then:
+        domainObject.name == 'real'
+        domainObject.age == null
+        domainObject.status == null
+    }
+
+    void "a value that can't be converted for a POGO is skipped when failOnBindingError is disabled"() {
+        given:
+        TestDataConfigurationHolder.mergeConfig {
+            testDataConfig {
+                failOnBindingError = false
+            }
+        }
+
+        expect:
+        TestData.build(DataBindingPogo, [count: 'abc']).count == null
     }
 
     void "a value for a property that doesn't exist is ignored"() {

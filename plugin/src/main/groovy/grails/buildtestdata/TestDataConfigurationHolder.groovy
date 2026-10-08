@@ -59,6 +59,10 @@ class TestDataConfigurationHolder {
         config.getConfigPropertyNames(domainName)
     }
 
+    static boolean isFailOnBindingError() {
+        config.failOnBindingError
+    }
+
     static Object getSuppliedPropertyValue(Map<String, Object> propertyValues, String domainName, String propertyName) {
         config.getSuppliedPropertyValue(propertyValues, domainName, propertyName)
     }
@@ -95,6 +99,7 @@ class TestDataConfiguration {
     Map<String, Object> sampleData
     Map<String, List<Class>> unitAdditionalBuild
     Map<String, Class> abstractDefault
+    boolean failOnBindingError
 
     TestDataConfiguration(Resource testDataConfigResource) {
         initialize(testDataConfigResource)
@@ -104,6 +109,7 @@ class TestDataConfiguration {
         sampleData = [:]
         unitAdditionalBuild = [:]
         abstractDefault = [:]
+        failOnBindingError = true
 
         if (testDataConfigResource) {
             ConfigObject configFile = configSlurper.parse(testDataConfigResource.URL)
@@ -117,6 +123,12 @@ class TestDataConfiguration {
         sampleData += config['testDataConfig']['sampleData'] as Map ?: [:]
         unitAdditionalBuild += config['testDataConfig']['unitAdditionalBuild'] as Map ?: [:]
         abstractDefault += config['testDataConfig']['abstractDefault'] as Map ?: [:]
+
+        // Only override when set, so a merged config without it keeps the current value
+        Map testDataConfig = config['testDataConfig'] as Map
+        if (testDataConfig?.containsKey('failOnBindingError')) {
+            failOnBindingError = testDataConfig['failOnBindingError'] as boolean
+        }
 
         // If we have abstract defaults, automatically add transitive dependencies
         // for them since they may need to be built.

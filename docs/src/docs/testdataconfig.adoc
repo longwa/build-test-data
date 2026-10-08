@@ -184,6 +184,18 @@ This default will also apply if you manually build an instance of an abstract cl
 [IMPORTANT]
 Prior to version 3.3, build-test-data would automatically try to find a concrete subclass. However, this was *horribly* slow as Java makes it very difficult to accomplish this task. For this reason, it's now required to use `abstractDefaults` when subclasses are required.
 
+=== Values That Can't Be Bound
+By default, `build()` throws an `IllegalArgumentException` when a value, whether passed to `build()` or from `sampleData`, can't be converted to its property's type, such as `'abc'` for an `Integer` property or a name that isn't one of an enum's constants.
+
+Earlier versions silently skipped these values and left the property unset. If your existing tests rely on that, set `failOnBindingError` to `false` while you migrate them. The values are then skipped and logged as a warning:
+```groovy
+    testDataConfig {
+        failOnBindingError = false
+    }
+```
+
+Like the rest of the config, it can also be set for a single test with `doWithTestDataConfig`.
+
 === Using a different name for TestDataConfig.groovy
 In some cases you need to have a different name for `TestDataConfig.groovy`. The reason could be, that you have project that depends on several inline plugins all using this plugin. If all plugins contains `TestDataConfig.groovy` you will end up with a compile error saying that `TestDataConfig.groovy` is duplicated in your classpath.
 

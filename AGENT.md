@@ -97,6 +97,7 @@ testDataConfig {
     }
     unitAdditionalBuild = ['com.example.Hotel': [Author]]  // implicit @Build dependencies
     abstractDefault = ['com.example.AbstractBase': ConcreteImpl]  // polymorphic defaults
+    failOnBindingError = false  // log values that can't be bound instead of failing (defaults to true)
 }
 ```
 
@@ -104,7 +105,7 @@ testDataConfig {
 
 ## Key Design Points
 
-- `TestData.build(MyDomain, [name: 'override'])` — overrides specific properties while auto-satisfying the rest. `PogoDataBuilder` binds the map with `TestDataBinder`; a value that can't be converted to its property's type throws an `IllegalArgumentException`, and a key that isn't a property is logged as a warning and ignored
+- `TestData.build(MyDomain, [name: 'override'])` — overrides specific properties while auto-satisfying the rest. `PogoDataBuilder` binds the map with `TestDataBinder`; a value that can't be converted to its property's type throws an `IllegalArgumentException` (or is logged as a warning and skipped when `testDataConfig.failOnBindingError = false`, for legacy migration), and a key that isn't a property is logged as a warning and ignored
 - `TestData.build([save: false], MyDomain)` — builds without persisting
 - `TestData.build([find: true], MyDomain)` — finds an existing record or builds one
 - `TestData.build([includes: ['optionalField']], MyDomain)` — also populate optional fields; `includes: '*'` populates all
