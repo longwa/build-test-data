@@ -5,7 +5,8 @@ file('../gradle.properties').withInputStream {
 }
 
 repositories {
-    maven { url "https://repo.grails.org/grails/restricted" }
+    mavenCentral()
+    maven { url = 'https://repo.grails.org/grails/restricted' }
     maven {
         url = 'https://central.sonatype.com/repository/maven-snapshots'
         content {
@@ -21,7 +22,8 @@ repositories {
 }
 
 dependencies {
-    implementation platform("org.apache.grails:grails-bom:${gradleProperties.grailsVersion}")
+    // Gradle 9 embeds Groovy 4, so use the Gradle plugin BOM rather than the application grails-bom (Groovy 5)
+    implementation platform("org.apache.grails:grails-gradle-bom:${gradleProperties.grailsVersion}")
     implementation "org.apache.grails:grails-gradle-plugins"
     implementation 'org.apache.grails.gradle:grails-publish'
     implementation "cloud.wondrify:asset-pipeline-gradle"

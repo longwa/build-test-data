@@ -3,7 +3,6 @@ package grails.buildtestdata.builders
 import grails.buildtestdata.handler.AssociationMinSizeHandler
 import grails.buildtestdata.handler.PersistentEntityNullableConstraintHandler
 import grails.buildtestdata.utils.DomainUtil
-import grails.gorm.annotation.AutoTimestamp
 import grails.gorm.api.GormAllOperations
 import grails.gorm.validation.ConstrainedEntity
 import grails.gorm.validation.ConstrainedProperty
@@ -11,7 +10,9 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.config.AuditMetadataType
 import org.grails.datastore.mapping.config.Entity
+import org.grails.datastore.mapping.model.AuditMetadataUtils
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -23,11 +24,7 @@ import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.util.ReflectionUtils
 import org.springframework.validation.Validator
-
-import java.lang.annotation.Annotation
-import java.lang.reflect.Field
 
 @Slf4j
 @CompileStatic
@@ -45,9 +42,6 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
             GormEntity.isAssignableFrom(clazz)
         }
     }
-
-    // Spring Data's audit annotations, which GORM 7.1+ also honours. Matched by simple name so there is no hard dependency.
-    static final List<String> SPRING_DATA_TIMESTAMP_ANNOTATIONS = ['CreatedDate', 'LastModifiedDate'].asImmutable()
 
     Set<Class> requiredDomainClasses
 
@@ -71,8 +65,8 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
 
     /**
      * Mirrors how GORM's AutoTimestampEventListener decides which properties it stamps: nothing when the entity is mapped
-     * with autoTimestamp false, otherwise dateCreated, lastUpdated and anything annotated with @AutoTimestamp (or Spring
-     * Data's @CreatedDate / @LastModifiedDate).
+     * with autoTimestamp false, otherwise dateCreated, lastUpdated and anything annotated with @CreatedDate or
+     * @LastModifiedDate (GORM's or Spring Data's).
      */
     Set<String> findAutoTimestampPropertyNames() {
         PersistentEntity entity = persistentEntity
@@ -89,13 +83,9 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
         if (property.name == GormProperties.DATE_CREATED || property.name == GormProperties.LAST_UPDATED) {
             return true
         }
-        Field field = ReflectionUtils.findField(persistentEntity.javaClass, property.name)
-        if (field == null) {
-            return false
-        }
-        field.isAnnotationPresent(AutoTimestamp) || field.annotations.any { Annotation annotation ->
-            annotation.annotationType().simpleName in SPRING_DATA_TIMESTAMP_ANNOTATIONS
-        }
+        // don't cache, so the property's mapping metadata is left for GORM to populate
+        AuditMetadataType type = AuditMetadataUtils.getAuditMetadataType(property, false)
+        type == AuditMetadataType.CREATED || type == AuditMetadataType.UPDATED
     }
 
     Set<String> findPropsToSaveFirst() {
@@ -256,7 +246,7 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
             }
         }
 
-        return entitySave(domainInstance, saveArgs)
+        return (GormEntity) entitySave(domainInstance, saveArgs)
     }
 
     /**

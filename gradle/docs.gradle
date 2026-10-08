@@ -1,22 +1,17 @@
 tasks.register('cleanDocs', Delete) {
-	delete file("${rootProject.buildDir}/docs")
+	delete rootProject.layout.buildDirectory.dir('docs')
 }
 
-tasks.register('aggregateGroovyApiDoc', Groovydoc) {
-	def groovyDocProjects = subprojects.findAll { it.name in ['build-test-data'] }
-	dependsOn = [tasks.named('cleanDocs')] + groovyDocProjects.collect { it.tasks.named('groovydoc') }
+// Gradle 9 does not allow resolving another project's classpath from a root project task, so copy the plugin's own
+// groovydoc output instead of generating the documentation here
+tasks.register('aggregateGroovyApiDoc', Copy) {
+	dependsOn = [tasks.named('cleanDocs')]
 
-	description = 'Generates Groovy API Documentation for all plugin projects under rootDir/gapi'
+	description = 'Copies the Groovy API Documentation for the plugin project under rootDir/gapi'
 
 	group = JavaBasePlugin.DOCUMENTATION_GROUP
-	access = GroovydocAccess.PROTECTED
-	includeAuthor = false
-	includeMainForScripts = true
-	processScripts = true
-	source = groovyDocProjects.groovydoc.source
-	destinationDir = file("${rootProject.buildDir}/docs/gapi")
-	classpath = files(groovyDocProjects.groovydoc.classpath)
-	groovyClasspath = files(groovyDocProjects.groovydoc.groovyClasspath)
+	from project(':build-test-data').tasks.named('groovydoc')
+	into rootProject.layout.buildDirectory.dir('docs/gapi')
 }
 
 tasks.register('docs') {
@@ -30,7 +25,7 @@ tasks.register('copyAsciiDoctorDocs', Copy) {
 	dependsOn = ['docs']
 	from "${rootProject.allprojects.find { it.name == 'docs'}.projectDir}/build"
 	includes = ['docs/**']
-	into rootProject.buildDir
+	into rootProject.layout.buildDirectory
 	includeEmptyDirs = false
 }
 
@@ -38,6 +33,6 @@ tasks.register('ghPagesRootIndexPage', Copy) {
 	group = 'documentation'
 	dependsOn = ['docs']
 	from file("${rootProject.allprojects.find { it.name == 'docs'}.projectDir}/src/docs/index.tmpl")
-	into rootProject.buildDir.toPath().resolve('docs').toFile()
+	into rootProject.layout.buildDirectory.dir('docs')
 	rename 'index.tmpl', 'ghpages.html'
 }

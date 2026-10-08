@@ -67,7 +67,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
         ConstrainedProperty.BLANK_CONSTRAINT, // precluded by no '' default value applied in the nullable constraint handling
     ].reverse()
 
-    static Map<String, ? extends ConstraintHandler> defaultHandlers = [
+    static Map<String, ConstraintHandler> defaultHandlers = [
         (ConstrainedProperty.MIN_SIZE_CONSTRAINT): new MinSizeConstraintHandler(),
         (ConstrainedProperty.MAX_SIZE_CONSTRAINT): new MaxSizeConstraintHandler(),
         (ConstrainedProperty.IN_LIST_CONSTRAINT): new InListConstraintHandler(),
@@ -85,7 +85,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     ]
 
     // TODO: filter to actual list for this class, or possibly each property value?
-    Map<String, ? extends ConstraintHandler> handlers
+    Map<String, ConstraintHandler> handlers
 
     //Collection<String> requiredPropertyNames
     Set<String> requiredPropertyNames
@@ -93,7 +93,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     ValidateableDataBuilder(Class target) {
         super(target)
         this.requiredPropertyNames = findRequiredPropertyNames()
-        this.handlers = new HashMap<String, ? extends ConstraintHandler>(defaultHandlers)
+        this.handlers = new HashMap<String, ConstraintHandler>(defaultHandlers)
 
     }
 

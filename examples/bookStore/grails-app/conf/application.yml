@@ -54,6 +54,11 @@ grails:
         defaultScope: singleton
     converters:
         encoding: UTF-8
+    gorm:
+        default:
+            # Grails 8 makes unconstrained domain properties nullable. These tests were written against the
+            # Grails 7 required-by-default behaviour, see the plugin's GormDefaultNullableSpec for the Grails 8 default.
+            nullable: false
     views:
         default:
             codec: html

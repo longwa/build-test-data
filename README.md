@@ -3,8 +3,13 @@ Build Test Data
 [![Java CI](https://github.com/longwa/build-test-data/actions/workflows/gradle.yml/badge.svg?event=push)](https://github.com/longwa/build-test-data/actions/workflows/gradle.yml)
 
 ## Build Test Data Grails Plugin
-### Grails 7.x or later
-`testImplementation 'io.github.longwa:build-test-data:6.0.0-M2'`
+### Grails 8.x or later
+`testImplementation 'io.github.longwa:build-test-data:7.0.0'`
+
+http://longwa.github.io/build-test-data/index
+
+### Grails 7.x
+`testImplementation 'io.github.longwa:build-test-data:6.0.3'`
 
 http://longwa.github.io/build-test-data/index
 

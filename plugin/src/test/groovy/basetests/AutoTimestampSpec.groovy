@@ -100,19 +100,20 @@ class AutoTimestampSpec extends Specification implements DomainTestBase {
         domainClass.count() == 2
     }
 
-    void "properties annotated with @AutoTimestamp are populated too"() {
+    void "properties annotated with @CreatedDate or @LastModifiedDate are populated too"() {
         given:
         Class domainClass = createDomainClass("""
-            import grails.gorm.annotation.AutoTimestamp
+            import grails.gorm.annotation.CreatedDate
+            import grails.gorm.annotation.LastModifiedDate
 
             @grails.persistence.Entity
             class TestAnnotatedTimestamp {
                 Long id
                 Long version
                 String name
-                @AutoTimestamp
+                @CreatedDate
                 java.time.LocalDateTime created
-                @AutoTimestamp(AutoTimestamp.EventType.UPDATED)
+                @LastModifiedDate
                 java.time.LocalDateTime modified
             }
         """)

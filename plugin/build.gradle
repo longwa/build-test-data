@@ -2,7 +2,7 @@ plugins {
     id 'org.apache.grails.gradle.grails-plugin'
 }
 
-group 'io.github.longwa'
+group = 'io.github.longwa'
 
 dependencies {
     implementation "dk.brics:automaton:1.12-4"
@@ -16,7 +16,7 @@ dependencies {
     compileOnly "org.apache.grails.data:grails-datamapping-core"
     compileOnly "org.apache.grails:grails-web-boot"
 
-	runtimeOnly 'org.apache.groovy:groovy-dateutil:4.0.29'
+	runtimeOnly 'org.apache.groovy:groovy-dateutil:5.1.3'
 
     testImplementation platform("org.apache.grails:grails-bom:$grailsVersion")
 	testImplementation "org.apache.grails:grails-data-hibernate5"
@@ -27,17 +27,16 @@ dependencies {
 }
 
 grails {
-    springDependencyManagement = false
+    // Do not apply the grails-bom as a platform so it is not added to the published pom
+    bom = null
 }
 
 //this makes the groovy docs much more readable by shorting packages and providing links
 groovydoc {
 	excludes = ['**/*GrailsPlugin.groovy', '**/Application.groovy']
-	link('https://docs.oracle.com/en/java/javase/17/docs/api', 'java.', 'org.xml', 'org.xml.')
-	link('https://jakarta.ee/specifications/platform/9/apidocs', 'jakarta.')
-	link("https://docs.spring.io/spring/docs/6.1.x/javadoc-api", 'org.springframework')
-	link('https://docs.groovy-lang.org/4.0.24/html/gapi', 'groovy.', 'org.apache.groovy.')
-	link('https://docs.grails.org/7.0.0/api', 'grails.', 'org.grails.')
-	link('https://testing.grails.org/latest/api', 'grails.testing.', 'org.grails.testing.')
-	link('http://gorm.grails.org/9.0.x/hibernate/api/', 'grails.gorm', 'grails.orm', 'org.grails.datastore', 'org.grails.orm')
+	link('https://docs.oracle.com/en/java/javase/21/docs/api', 'java.', 'org.xml', 'org.xml.')
+	link('https://jakarta.ee/specifications/platform/11/apidocs', 'jakarta.')
+	link('https://docs.spring.io/spring-framework/docs/7.0.x/javadoc-api', 'org.springframework')
+	link('https://docs.groovy-lang.org/5.1.3/html/gapi', 'groovy.', 'org.apache.groovy.')
+	link("https://grails.apache.org/docs/${grailsVersion}/api", 'grails.', 'org.grails.')
 }

@@ -9,7 +9,7 @@ String getGrailsDocumentationVersion(String version) {
 }
 
 plugins {
-	id 'org.asciidoctor.jvm.convert' version "4.0.3"
+	id 'org.asciidoctor.jvm.convert' version "4.0.5"
 }
 
 def asciidoctorAttributes = [
@@ -24,9 +24,9 @@ def asciidoctorAttributes = [
 		version             : project.version,
 		projectUrl          : "https://github.com/longwa/build-test-data",
 		sourcedir           : "${rootProject.allprojects.find { it.name == 'build-test-data' }.projectDir}/src/main/groovy",
-		gormDetailedLink    : "https://gorm.grails.org/${getGrailsDocumentationVersion(project.grailsVersion)}/hibernate/manual/index.html",
-		gormSummaryLink     : "https://docs.grails.org/${getGrailsDocumentationVersion(project.grailsVersion)}/guide/GORM.html",
-		grailsDocBase       : "https://docs.grails.org/${getGrailsDocumentationVersion(project.grailsVersion)}"
+		gormDetailedLink    : "https://grails.apache.org/docs/${getGrailsDocumentationVersion(project.grailsVersion)}/grails-data/hibernate5/manual/index.html",
+		gormSummaryLink     : "https://grails.apache.org/docs/${getGrailsDocumentationVersion(project.grailsVersion)}/guide/GORM.html",
+		grailsDocBase       : "https://grails.apache.org/docs/${getGrailsDocumentationVersion(project.grailsVersion)}"
 ]
 
 tasks.named('asciidoctor', AsciidoctorTask) { AsciidoctorTask it ->
@@ -37,7 +37,7 @@ tasks.named('asciidoctor', AsciidoctorTask) { AsciidoctorTask it ->
 	it.baseDirFollowsSourceDir()
 	it.sourceDir project.file('src/docs')
 	it.sources { include 'index.adoc' }
-	it.outputDir = project.buildDir.toPath().resolve('docs').toFile()
+	it.outputDir = project.layout.buildDirectory.dir('docs').get().asFile
 	it.options doctype: 'book'
 	it.attributes asciidoctorAttributes
 }

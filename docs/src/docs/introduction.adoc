@@ -27,7 +27,8 @@ def author = TestData.build(Author, name: 'Ted Naleid')
 * Changes to domain objects that do not affect the the code under test should not break the test.
 
 === Release History
-* Grails 7+ - Build Test Data 6.x
+* Grails 8+ - Build Test Data 7.x
+* Grails 7.x - Build Test Data 6.x
 * Grails 5.x to 6.x - Build Test Data 5.x
 * Grails 3.3 to 4.x - Build Test Data 4.x
 * Grails 2.4.x to 3.2.x - Build Test Data 3.x

@@ -3,8 +3,8 @@ plugins {
 	id "org.apache.grails.gradle.grails-gsp"
 }
 
-version "0.1"
-group "bookStore"
+version = "0.1"
+group = "bookStore"
 
 dependencies {
     profile("org.apache.grails.profiles:web")
@@ -29,13 +29,11 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-logging"
     implementation "org.springframework.boot:spring-boot-starter-tomcat"
     implementation "org.springframework.boot:spring-boot-starter-validation"
-
-    console "org.apache.grails:grails-console"
+    implementation "org.springframework.boot:spring-boot-tomcat"
 
     runtimeOnly "cloud.wondrify:asset-pipeline-grails"
     runtimeOnly "com.h2database:h2"
     runtimeOnly "com.zaxxer:HikariCP"
-    runtimeOnly "org.fusesource.jansi:jansi"
 
     integrationTestImplementation testFixtures("org.apache.grails:grails-geb")
 
