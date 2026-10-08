@@ -18,6 +18,11 @@ class AuthorSpec extends Specification implements BuildDataUnitTest {
 }
 ```
 
+==== Values That Can't Be Bound Fail the Build
+Previously, a value passed to `build()` that could not be converted to its property's type, such as `'abc'` for an `Integer` property or a name that isn't one of an enum's constants, was silently skipped and the property was left `null`. `build()` now throws an `IllegalArgumentException` listing every value that could not be bound. This also applies to the `sampleData` values in `TestDataConfig.groovy`.
+
+Values for properties that don't exist on the class are still ignored, but are now logged as a warning.
+
 ==== UnitTestDataBuilder Removed
 The deprecated `UnitTestDataBuilder` trait has been removed. Implement `BuildDataUnitTest` instead.
 

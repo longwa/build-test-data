@@ -4,12 +4,15 @@ import grails.buildtestdata.TestDataConfigurationHolder
 import grails.buildtestdata.utils.Basics
 import grails.buildtestdata.utils.DomainUtil
 import grails.databinding.DataBinder
-import grails.databinding.SimpleDataBinder
 import grails.databinding.SimpleMapDataBindingSource
+import grails.databinding.errors.BindingError
+import grails.databinding.events.DataBindingListenerAdapter
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
+@Slf4j
 @CompileStatic
 class PogoDataBuilder implements DataBuilder {
 
@@ -32,7 +35,7 @@ class PogoDataBuilder implements DataBuilder {
     PogoDataBuilder(Class targetClass) {
         // findConcreteSubclass takes care of subtituing in concrete classes for abstracts
         this.targetClass = DomainUtil.findConcreteSubclass(targetClass)
-        this.dataBinder = new SimpleDataBinder()
+        this.dataBinder = new TestDataBinder()
     }
 
     @Override
@@ -64,10 +67,60 @@ class PogoDataBuilder implements DataBuilder {
             }
         }
         if (ctx.data) {
-            dataBinder.bind(instance, new SimpleMapDataBindingSource(ctx.data))
+            warnUnknownProperties(instance, ctx.data)
+            bindData(instance, ctx.data)
         }
 
         instance
+    }
+
+    /**
+     * The data binder skips values for properties that don't exist, let the user know in case it's a typo
+     */
+    void warnUnknownProperties(Object instance, Map<String, ?> data) {
+        for (String key in findUnknownProperties(instance, data)) {
+            log.warn("Ignoring '{}' when building {}, it is not a property of the class", key, targetClass.name)
+        }
+    }
+
+    Set<String> findUnknownProperties(Object instance, Map<String, ?> data) {
+        data.keySet().findAll { String key ->
+            // indexed properties such as books[0] bind to the books property
+            String propertyName = key.contains('[') ? key.substring(0, key.indexOf('[')) : key
+            instance.metaClass.getMetaProperty(propertyName) == null
+        }
+    }
+
+    /**
+     * The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
+     * fail instead of building an instance without it
+     */
+    void bindData(Object instance, Map<String, ?> data) {
+        BindingErrorCollector collector = new BindingErrorCollector()
+        dataBinder.bind(instance, new SimpleMapDataBindingSource(data), collector)
+        if (collector.bindingErrors) {
+            String details = collector.bindingErrors.collect { BindingError error -> describeBindingError(error) }.join('\n')
+            throw new IllegalArgumentException(
+                "Unable to build ${targetClass.name}, the following values could not be bound:\n$details",
+                collector.bindingErrors.first().cause
+            )
+        }
+    }
+
+    static String describeBindingError(BindingError error) {
+        Object value = error.rejectedValue
+        Class propertyType = error.object.metaClass.getMetaProperty(error.propertyName)?.type
+        "  - ${error.object.getClass().name}.${error.propertyName} (${propertyType?.name}) cannot be set to " +
+            "'${value}' (${value?.getClass()?.name}): ${error.cause}"
+    }
+
+    static class BindingErrorCollector extends DataBindingListenerAdapter {
+        List<BindingError> bindingErrors = []
+
+        @Override
+        void bindingError(BindingError error, Object errors) {
+            bindingErrors << error
+        }
     }
 
     Map<String, Object> findMissingConfigValues(Map propValues, Object newInstance) {
