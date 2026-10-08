@@ -8,7 +8,7 @@ Build Test Data 7.0 requires Grails 8. Grails 8 also changes the default nullabi
 ==== BuildDataTest Renamed
 The `BuildDataTest` trait has been renamed to `BuildDataUnitTest` to make it clear that it is only meant for unit tests. Integration tests should continue to implement `TestDataBuilder`.
 
-Update the import and trait name in your unit tests:
+`BuildDataTest` remains as a deprecated alias of `BuildDataUnitTest` and will be removed in a future release. Update the import and trait name in your unit tests:
 
 ```groovy
 import grails.buildtestdata.BuildDataUnitTest
