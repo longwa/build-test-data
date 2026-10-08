@@ -4,14 +4,14 @@ Starting with Grails 3.3, unit testing is implemented via a set of traits that a
 
 The build-test-data plugin uses the same approach by adding the:
 
-    trait BuildDataTest
+    trait BuildDataUnitTest
 
 This trait extends the built-in `DataTest` trait to setup the domain objects and domain graph for construction by build-test-data.
 
 For unit tests, you can use the standard `getDomainClassesToMock` method to provide the top-level list of domain objects that are required by the test.
 
 ```groovy
-class BookUnitSpec extends Specification implements BuildDataTest {
+class BookUnitSpec extends Specification implements BuildDataUnitTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Book] // Author will be mocked automatically
@@ -29,7 +29,7 @@ class BookUnitSpec extends Specification implements BuildDataTest {
 
 or it can be done in setupSpec
 ```groovy
-class LibraryUnitSpec extends Specification implements BuildDataTest {
+class LibraryUnitSpec extends Specification implements BuildDataUnitTest {
     void setupSpec(){
         mockDomains(Book, Magazine)
     }
@@ -67,7 +67,7 @@ Alternately, you can continue to use the legacy build-test-data `@Build` annotat
 
 ```groovy
 @Build([Book])
-class BookUnitSpec extends Specification implements BuildDataTest {
+class BookUnitSpec extends Specification implements BuildDataUnitTest {
     void "building a book will also build an author"() {
         when:
         def book = Book.build()
@@ -78,10 +78,10 @@ class BookUnitSpec extends Specification implements BuildDataTest {
 }
 ```
 
-NOTE: Even if you are using the `@Build` annotation, you must still implement the `BuildDataTest` trait.
+NOTE: Even if you are using the `@Build` annotation, you must still implement the `BuildDataUnitTest` trait.
 
 === Trait Methods
-The `TestDataBuilder` and therefore the `BuildDataTest` trait adds the builder methods to your test class if you prefer to call them directly.
+The `TestDataBuilder` and therefore the `BuildDataUnitTest` trait adds the builder methods to your test class if you prefer to call them directly.
 These call out to statics in the `TestData` class.
 ```groovy
     public <T> T build(Map args = [:], Class<T> clazz) {
@@ -105,7 +105,7 @@ In that case you can just call `build()` and pass in the Class that you which to
 See the groovyDocs on the TestData for more details
 
 ```groovy
-class BookUnitSpec extends Specification implements BuildDataTest {
+class BookUnitSpec extends Specification implements BuildDataUnitTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Book]

@@ -2,11 +2,11 @@ package base
 
 import abstractclass.ConcreteSubClass
 import abstractclass.RelatedToAbstract
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import grails.buildtestdata.TestDataConfigurationHolder
 import spock.lang.Specification
 
-class AbstractRelatedUnitTests extends Specification implements BuildDataTest {
+class AbstractRelatedUnitTests extends Specification implements BuildDataUnitTest {
     void setup() {
         TestDataConfigurationHolder.reset()
     }

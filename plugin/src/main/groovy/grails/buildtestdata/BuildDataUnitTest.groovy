@@ -10,10 +10,12 @@ import groovy.transform.CompileStatic
 /**
  * Unit tests should implement this trait to add build-test-data functionality.
  * Meant as a drop in replacement for Grails Testing Support's DataTest
+ *
+ * Integration tests should implement {@link TestDataBuilder} instead.
  */
 @CompileStatic
 @SuppressWarnings("GroovyUnusedDeclaration")
-trait BuildDataTest extends DependencyDataTest implements TestDataBuilder {
+trait BuildDataUnitTest extends DependencyDataTest implements TestDataBuilder {
 
     @Override
     void mockDomains(Class<?>... domainClassesToMock) {

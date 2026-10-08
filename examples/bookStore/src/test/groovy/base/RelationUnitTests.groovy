@@ -3,7 +3,7 @@ package base
 import bookstore.Author
 import bookstore.Book
 import bookstore.Invoice
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import human.Arm
 import human.Face
 import magazine.Issue
@@ -11,7 +11,7 @@ import magazine.Page
 
 import spock.lang.Specification
 
-class RelationUnitTests extends Specification implements BuildDataTest {
+class RelationUnitTests extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(Face, Book, Author, Invoice, Page, Issue, Arm)
     }

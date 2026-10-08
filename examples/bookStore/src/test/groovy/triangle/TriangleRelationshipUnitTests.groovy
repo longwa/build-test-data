@@ -1,9 +1,9 @@
 package triangle
 
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 
-class TriangleRelationshipUnitTests extends Specification implements BuildDataTest {
+class TriangleRelationshipUnitTests extends Specification implements BuildDataUnitTest {
     @Override
     Class[] getDomainClassesToMock() {
         [Worker, Manager, Director]

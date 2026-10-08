@@ -1,10 +1,10 @@
 package base
 
 import bookstore.Author
-import grails.buildtestdata.BuildDataTest
+import grails.buildtestdata.BuildDataUnitTest
 import spock.lang.Specification
 
-class BuildLazyUnitTests extends Specification implements BuildDataTest {
+class BuildLazyUnitTests extends Specification implements BuildDataUnitTest {
 
     void setupSpec() {
         mockDomains(Author)

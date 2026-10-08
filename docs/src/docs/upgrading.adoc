@@ -5,8 +5,21 @@ When upgrading from older versions of Grails, first follow the standard Grails u
 === Upgrading to 7.0
 Build Test Data 7.0 requires Grails 8. Grails 8 also changes the default nullability of domain properties, see <<installation>> for how this affects Build Test Data.
 
+==== BuildDataTest Renamed
+The `BuildDataTest` trait has been renamed to `BuildDataUnitTest` to make it clear that it is only meant for unit tests. Integration tests should continue to implement `TestDataBuilder`.
+
+Update the import and trait name in your unit tests:
+
+```groovy
+import grails.buildtestdata.BuildDataUnitTest
+
+class AuthorSpec extends Specification implements BuildDataUnitTest {
+    ...
+}
+```
+
 ==== UnitTestDataBuilder Removed
-The deprecated `UnitTestDataBuilder` trait has been removed. Implement `BuildDataTest` instead.
+The deprecated `UnitTestDataBuilder` trait has been removed. Implement `BuildDataUnitTest` instead.
 
 === Upgrading to 3.3
 
@@ -52,7 +65,7 @@ class AuthorSpec extends Specification {
 Just add the trait:
 ```groovy
 @Build([Author])
-class AuthorSpec extends Specification implements BuildDataTest {
+class AuthorSpec extends Specification implements BuildDataUnitTest {
     ...
 }
 ```
@@ -60,7 +73,7 @@ class AuthorSpec extends Specification implements BuildDataTest {
 Optionally, use the standard Grails mock method:
 
 ```groovy
-class AuthorSpec extends Specification implements BuildDataTest {
+class AuthorSpec extends Specification implements BuildDataUnitTest {
     void setupSpec() {
         mockDomains(Author)
     }
@@ -71,7 +84,7 @@ class AuthorSpec extends Specification implements BuildDataTest {
 or by overriding the *getDomainClassesToMock* method:
 
 ```groovy
-class AuthorSpec extends Specification implements BuildDataTest {
+class AuthorSpec extends Specification implements BuildDataUnitTest {
     Class[] getDomainClassesToMock() {
         [Author]
     }
