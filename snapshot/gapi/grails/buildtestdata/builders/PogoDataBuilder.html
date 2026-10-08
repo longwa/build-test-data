@@ -106,7 +106,8 @@ if (location.href.indexOf('is-external=true') == -1) {
             <!-- todo: direct known subclasses -->
             <hr>
 
-<pre>@<a href='https://docs.groovy-lang.org/5.1.3/html/gapi/groovy/transform/CompileStatic.html' title='CompileStatic'>CompileStatic</a>
+<pre>@<a href='https://docs.groovy-lang.org/5.1.3/html/gapi/groovy/util/logging/Slf4j.html' title='Slf4j'>Slf4j</a>
+@<a href='https://docs.groovy-lang.org/5.1.3/html/gapi/groovy/transform/CompileStatic.html' title='CompileStatic'>CompileStatic</a>
 class PogoDataBuilder
 extends <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a>
 implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>DataBuilder</a></pre>
@@ -133,6 +134,12 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href='../../../grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html'>PogoDataBuilder.BindingErrorCollector</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href='../../../grails/buildtestdata/builders/PogoDataBuilder.Factory.html'>PogoDataBuilder.Factory</a></code></td>
                             <td class="colLast"></td>
@@ -222,14 +229,27 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a></code></td>
-                            <td class="colLast"><code><strong><a href="#build(grails.buildtestdata.builders.DataBuilderContext)">build</a></strong>(<a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</code><br></td>
+                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code><strong><a href="#bindData(java.lang.Object, Map)">bindData</a></strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</code><br>The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
+ fail instead of building an instance without it</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a></code></td>
+                            <td class="colLast"><code><strong><a href="#build(grails.buildtestdata.builders.DataBuilderContext)">build</a></strong>(<a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a></code></td>
                             <td class="colLast"><code><strong><a href="#build(java.util.Map, grails.buildtestdata.builders.DataBuilderContext)">build</a></strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a> args, <a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a></code></td>
+                            <td class="colLast"><code><strong><a href="#describeBindingError(grails.databinding.errors.BindingError)">describeBindingError</a></strong>(<a href='https://grails.apache.org/docs/8.0.0/api/grails/databinding/errors/BindingError.html' title='BindingError'>BindingError</a> error)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -246,8 +266,20 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Set.html' title='Set'>Set</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findUnknownProperties(java.lang.Object, Map)">findUnknownProperties</a></strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a></code></td>
                             <td class="colLast"><code><strong><a href="#getNewInstance()">getNewInstance</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code><strong><a href="#warnUnknownProperties(java.lang.Object, Map)">warnUnknownProperties</a></strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</code><br>The data binder skips values for properties that don't exist, let the user know in case it's a typo</td>
                         </tr>
                         
                     </table>
@@ -344,6 +376,15 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="bindData(java.lang.Object, Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>bindData</strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</h4>
+                                <p> The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
+ fail instead of building an instance without it</p>
+                            </li>
+                        </ul>
+                    
                         <a name="build(grails.buildtestdata.builders.DataBuilderContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -356,6 +397,14 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Override.html' title='Override'>Override</a><br><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> <strong>build</strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a> args, <a href='../../../grails/buildtestdata/builders/DataBuilderContext.html'>DataBuilderContext</a> ctx)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="describeBindingError(grails.databinding.errors.BindingError)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a> <strong>describeBindingError</strong>(<a href='https://grails.apache.org/docs/8.0.0/api/grails/databinding/errors/BindingError.html' title='BindingError'>BindingError</a> error)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -376,11 +425,27 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                             </li>
                         </ul>
                     
+                        <a name="findUnknownProperties(java.lang.Object, Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Set.html' title='Set'>Set</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>&gt; <strong>findUnknownProperties</strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getNewInstance()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> <strong>getNewInstance</strong>()</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="warnUnknownProperties(java.lang.Object, Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>warnUnknownProperties</strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</h4>
+                                <p> The data binder skips values for properties that don't exist, let the user know in case it's a typo</p>
                             </li>
                         </ul>
                     

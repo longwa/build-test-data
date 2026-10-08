@@ -152,6 +152,13 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">handles creating data for common types when filling fields that are required.</div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/utils/Basics.html#Basics()" title="Constructor in Basics">Basics()</a></span> - Constructor in <a href="grails/buildtestdata/utils/Basics.html">Basics</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html#bindData(java.lang.Object, Map<String, ?>)" title="Method in PogoDataBuilder">bindData(java.lang.Object, Map&lt;String, ?&gt;)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.html">PogoDataBuilder</a>
+</dt><dd> <div class="block">The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
+ fail instead of building an instance without it</div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html#bindingError(grails.databinding.errors.BindingError, java.lang.Object)" title="Method in PogoDataBuilder.BindingErrorCollector">bindingError(grails.databinding.errors.BindingError, java.lang.Object)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html">PogoDataBuilder.BindingErrorCollector</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html#bindingErrors" title="Property in PogoDataBuilder.BindingErrorCollector">bindingErrors</a></span> - Property in <a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html">PogoDataBuilder.BindingErrorCollector</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/handler/BlankConstraintHandler.html" title="Class in grails.buildtestdata.handler">BlankConstraintHandler</a></span> - Class in <a href="./grails/buildtestdata/handler/package-summary.html">grails.buildtestdata.handler</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/handler/BlankConstraintHandler.html#BlankConstraintHandler()" title="Constructor in BlankConstraintHandler">BlankConstraintHandler()</a></span> - Constructor in <a href="grails/buildtestdata/handler/BlankConstraintHandler.html">BlankConstraintHandler</a>
@@ -223,6 +230,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/handler/ConstraintHandlerException.html#ConstraintHandlerException(java.lang.String)" title="Constructor in ConstraintHandlerException">ConstraintHandlerException(java.lang.String)</a></span> - Constructor in <a href="grails/buildtestdata/handler/ConstraintHandlerException.html">ConstraintHandlerException</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/TestDataBinder.html#convertStringToEnum(Class<? extends Enum>, java.lang.String)" title="Method in TestDataBinder">convertStringToEnum(Class&lt;? extends Enum&gt;, java.lang.String)</a></span> - Method in <a href="grails/buildtestdata/builders/TestDataBinder.html">TestDataBinder</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/TestData.html#createBuilder(java.lang.Class)" title="Method in TestData">createBuilder(java.lang.Class)</a></span> - Method in <a href="grails/buildtestdata/TestData.html">TestData</a>
 </dt><dd> <div class="block">creates a new DataBuilder by looking through the factories for one that supports the class.</div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/DataBuilderContext.html#createCopy(java.lang.String)" title="Method in DataBuilderContext">createCopy(java.lang.String)</a></span> - Method in <a href="grails/buildtestdata/builders/DataBuilderContext.html">DataBuilderContext</a>
@@ -259,6 +268,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/testing/DependencyDataTest.html" title="Trait in grails.buildtestdata.testing">DependencyDataTest</a></span> - Trait in <a href="./grails/buildtestdata/testing/package-summary.html">grails.buildtestdata.testing</a>
 </dt><dd><div class="block">Overrides the mockDomains on DataTest to mock the dependency tree</div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html#describeBindingError(grails.databinding.errors.BindingError)" title="Method in PogoDataBuilder">describeBindingError(grails.databinding.errors.BindingError)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.html">PogoDataBuilder</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/handler/NullableConstraintHandler.html#determineBasicValue(java.lang.String, grails.gorm.validation.ConstrainedProperty)" title="Method in NullableConstraintHandler">determineBasicValue(java.lang.String, grails.gorm.validation.ConstrainedProperty)</a></span> - Method in <a href="grails/buildtestdata/handler/NullableConstraintHandler.html">NullableConstraintHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/handler/NullableConstraintHandler.html#determineNonStandardValue(java.lang.Object, java.lang.String, grails.gorm.validation.Constraint, grails.gorm.validation.ConstrainedProperty, grails.buildtestdata.builders.DataBuilderContext)" title="Method in NullableConstraintHandler">determineNonStandardValue(java.lang.Object, java.lang.String, grails.gorm.validation.Constraint, grails.gorm.validation.ConstrainedProperty, grails.buildtestdata.builders.DataBuilderContext)</a></span> - Method in <a href="grails/buildtestdata/handler/NullableConstraintHandler.html">NullableConstraintHandler</a>
@@ -327,6 +338,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#findRequiredDomainClasses()" title="Method in PersistentEntityDataBuilder">findRequiredDomainClasses()</a></span> - Method in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/ValidateableDataBuilder.html#findRequiredPropertyNames()" title="Method in ValidateableDataBuilder">findRequiredPropertyNames()</a></span> - Method in <a href="grails/buildtestdata/builders/ValidateableDataBuilder.html">ValidateableDataBuilder</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html#findUnknownProperties(java.lang.Object, Map<String, ?>)" title="Method in PogoDataBuilder">findUnknownProperties(java.lang.Object, Map&lt;String, ?&gt;)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.html">PogoDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 </dl>
 
@@ -642,6 +655,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html" title="Class in grails.buildtestdata.builders">PogoDataBuilder</a></span> - Class in <a href="./grails/buildtestdata/builders/package-summary.html">grails.buildtestdata.builders</a>
 </dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html" title="Class in grails.buildtestdata.builders.PogoDataBuilder">PogoDataBuilder.BindingErrorCollector</a></span> - Class in <a href="./grails/buildtestdata/builders/package-summary.html">grails.buildtestdata.builders</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html#PogoDataBuilder.BindingErrorCollector()" title="Constructor in PogoDataBuilder.BindingErrorCollector">PogoDataBuilder.BindingErrorCollector()</a></span> - Constructor in <a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html">PogoDataBuilder.BindingErrorCollector</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.Factory.html" title="Class in grails.buildtestdata.builders.PogoDataBuilder">PogoDataBuilder.Factory</a></span> - Class in <a href="./grails/buildtestdata/builders/package-summary.html">grails.buildtestdata.builders</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.Factory.html#PogoDataBuilder.Factory()" title="Constructor in PogoDataBuilder.Factory">PogoDataBuilder.Factory()</a></span> - Constructor in <a href="grails/buildtestdata/builders/PogoDataBuilder.Factory.html">PogoDataBuilder.Factory</a>
@@ -734,6 +751,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Primary static API to build a domain instance with test data</div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/TestData.html#TestData()" title="Constructor in TestData">TestData()</a></span> - Constructor in <a href="grails/buildtestdata/TestData.html">TestData</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/TestDataBinder.html" title="Class in grails.buildtestdata.builders">TestDataBinder</a></span> - Class in <a href="./grails/buildtestdata/builders/package-summary.html">grails.buildtestdata.builders</a>
+</dt><dd><div class="block">SimpleDataBinder that reports a binding error for a String that is not one of the enum's constants, instead of
+ silently binding null.</div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/builders/TestDataBinder.html#TestDataBinder()" title="Constructor in TestDataBinder">TestDataBinder()</a></span> - Constructor in <a href="grails/buildtestdata/builders/TestDataBinder.html">TestDataBinder</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/TestDataBuilder.html" title="Trait in grails.buildtestdata">TestDataBuilder</a></span> - Trait in <a href="./grails/buildtestdata/package-summary.html">grails.buildtestdata</a>
 </dt><dd><div class="block">Integration tests, any class really, can implement this trait to add build-test-data functionality</div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/TestDataConfiguration.html" title="Class in grails.buildtestdata">TestDataConfiguration</a></span> - Class in <a href="./grails/buildtestdata/package-summary.html">grails.buildtestdata</a>
@@ -794,6 +816,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">W</h2>
 <dl>
 
+<dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html#warnUnknownProperties(java.lang.Object, Map<String, ?>)" title="Method in PogoDataBuilder">warnUnknownProperties(java.lang.Object, Map&lt;String, ?&gt;)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.html">PogoDataBuilder</a>
+</dt><dd> <div class="block">The data binder skips values for properties that don't exist, let the user know in case it's a typo</div></dd>
 </dl>
 
     
