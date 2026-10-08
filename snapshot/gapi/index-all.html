@@ -154,7 +154,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.html#bindData(java.lang.Object, Map<String, ?>)" title="Method in PogoDataBuilder">bindData(java.lang.Object, Map&lt;String, ?&gt;)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.html">PogoDataBuilder</a>
 </dt><dd> <div class="block">The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
- fail instead of building an instance without it</div></dd>
+ fail instead of building an instance without it. </div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html#bindingError(grails.databinding.errors.BindingError, java.lang.Object)" title="Method in PogoDataBuilder.BindingErrorCollector">bindingError(grails.databinding.errors.BindingError, java.lang.Object)</a></span> - Method in <a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html">PogoDataBuilder.BindingErrorCollector</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html#bindingErrors" title="Property in PogoDataBuilder.BindingErrorCollector">bindingErrors</a></span> - Property in <a href="grails/buildtestdata/builders/PogoDataBuilder.BindingErrorCollector.html">PogoDataBuilder.BindingErrorCollector</a>
@@ -315,6 +315,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dl>
 
 <dt><span class="strong"><a href="grails/buildtestdata/TestData.html#factories" title="Property in TestData">factories</a></span> - Property in <a href="grails/buildtestdata/TestData.html">TestData</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/TestDataConfiguration.html#failOnBindingError" title="Property in TestDataConfiguration">failOnBindingError</a></span> - Property in <a href="grails/buildtestdata/TestDataConfiguration.html">TestDataConfiguration</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#findAutoTimestampPropertyNames()" title="Method in PersistentEntityDataBuilder">findAutoTimestampPropertyNames()</a></span> - Method in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
 </dt><dd> <div class="block">Mirrors how GORM's AutoTimestampEventListener decides which properties it stamps: nothing when the entity is mapped
@@ -508,6 +510,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/buildtestdata/utils/DomainUtil.html#isAbstract(java.lang.Class)" title="Method in DomainUtil">isAbstract(java.lang.Class)</a></span> - Method in <a href="grails/buildtestdata/utils/DomainUtil.html">DomainUtil</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html#isAutoTimestampProperty(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in PersistentEntityDataBuilder">isAutoTimestampProperty(org.grails.datastore.mapping.model.PersistentProperty)</a></span> - Method in <a href="grails/buildtestdata/builders/PersistentEntityDataBuilder.html">PersistentEntityDataBuilder</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/buildtestdata/TestDataConfigurationHolder.html#isFailOnBindingError()" title="Method in TestDataConfigurationHolder">isFailOnBindingError()</a></span> - Method in <a href="grails/buildtestdata/TestDataConfigurationHolder.html">TestDataConfigurationHolder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/buildtestdata/utils/IsoDateUtil.html" title="Class in grails.buildtestdata.utils">IsoDateUtil</a></span> - Class in <a href="./grails/buildtestdata/utils/package-summary.html">grails.buildtestdata.utils</a>
 </dt><dd><div class="block">Provides a set of methods for parsing/formatting ISO 8601 dates.

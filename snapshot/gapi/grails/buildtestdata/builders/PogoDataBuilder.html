@@ -231,7 +231,7 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#bindData(java.lang.Object, Map)">bindData</a></strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</code><br>The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
- fail instead of building an instance without it</td>
+ fail instead of building an instance without it. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -381,7 +381,8 @@ implements <a href='../../../grails/buildtestdata/builders/DataBuilder.html'>Dat
                             <li class="blockList">
                                 <h4>void <strong>bindData</strong>(<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Object.html' title='Object'>Object</a> instance, <a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html' title='Map'>Map</a>&lt;<a href='https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/String.html' title='String'>String</a>, ?&gt; data)</h4>
                                 <p> The data binder skips a value that can't be converted to its property's type, leaving the property unset, so
- fail instead of building an instance without it</p>
+ fail instead of building an instance without it. Setting failOnBindingError = false in TestDataConfig logs the
+ values instead, to ease migrating tests that relied on them being skipped.</p>
                             </li>
                         </ul>
                     
