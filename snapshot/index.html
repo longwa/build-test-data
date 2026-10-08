@@ -566,13 +566,8 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </li>
 <li><a href="#upgrading">5. Upgrading</a>
 <ul class="sectlevel2">
-<li><a href="#performance-improvements">5.1. Performance Improvements</a></li>
-<li><a href="#abstract-classes">5.2. Abstract Classes</a></li>
-<li><a href="#config-parameters">5.3. Config Parameters</a></li>
-<li><a href="#disabling-via-testdataconfig">5.4. Disabling Via TestDataConfig</a></li>
-<li><a href="#build-methods-refactored">5.5. Build methods refactored</a></li>
-<li><a href="#unit-tests">5.6. Unit Tests</a></li>
-<li><a href="#integration-tests">5.7. Integration Tests</a></li>
+<li><a href="#upgrading-to-7-0">5.1. Upgrading to 7.0</a></li>
+<li><a href="#upgrading-to-3-3">5.2. Upgrading to 3.3</a></li>
 </ul>
 </li>
 <li><a href="#usage">6. Usage</a>
@@ -974,7 +969,39 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 <p>When upgrading from older versions of Grails, first follow the standard Grails upgrade process.</p>
 </div>
 <div class="sect2">
-<h3 id="performance-improvements">5.1. Performance Improvements</h3>
+<h3 id="upgrading-to-7-0">5.1. Upgrading to 7.0</h3>
+<div class="paragraph">
+<p>Build Test Data 7.0 requires Grails 8. Grails 8 also changes the default nullability of domain properties, see <a href="#installation">Installation</a> for how this affects Build Test Data.</p>
+</div>
+<div class="sect3">
+<h4 id="builddatatest-renamed">5.1.1. BuildDataTest Renamed</h4>
+<div class="paragraph">
+<p>The <code>BuildDataTest</code> trait has been renamed to <code>BuildDataUnitTest</code> to make it clear that it is only meant for unit tests. Integration tests should continue to implement <code>TestDataBuilder</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>BuildDataTest</code> remains as a deprecated alias of <code>BuildDataUnitTest</code> and will be removed in a future release. Update the import and trait name in your unit tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.buildtestdata.BuildDataUnitTest</span>
+
+<span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
+    ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="unittestdatabuilder-removed">5.1.2. UnitTestDataBuilder Removed</h4>
+<div class="paragraph">
+<p>The deprecated <code>UnitTestDataBuilder</code> trait has been removed. Implement <code>BuildDataUnitTest</code> instead.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="upgrading-to-3-3">5.2. Upgrading to 3.3</h3>
+<div class="sect3">
+<h4 id="performance-improvements">5.2.1. Performance Improvements</h4>
 <div class="paragraph">
 <p>The core plugin has been refactored to reduce metaClass dependency and remove a few poor performing contructs (I&#8217;m looking at you ClassPathScanningCandidateComponentProvider).</p>
 </div>
@@ -982,8 +1009,8 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 <p>Most of the plugin classes have also been converted to <code>@CompileStatic</code>. In addition, the DomainInstanceBuilder can be cached and re-used to prevent additional overhead.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="abstract-classes">5.2. Abstract Classes</h3>
+<div class="sect3">
+<h4 id="abstract-classes">5.2.2. Abstract Classes</h4>
 <div class="paragraph">
 <p>Concrete subclasses are no longer discovered automatically. If you graph needs to build an abstract class, use the <code>abstractDefaults</code> parameter in <code>TestDataConfig</code> to specify a concrete subclass.</p>
 </div>
@@ -996,8 +1023,8 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="config-parameters">5.3. Config Parameters</h3>
+<div class="sect3">
+<h4 id="config-parameters">5.2.3. Config Parameters</h4>
 <div class="paragraph">
 <p>Some test data config parameters such as <code>abstractDefault</code> and <code>sampleData</code> used to allow either a Class or String as the map key.</p>
 </div>
@@ -1005,22 +1032,22 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 <p>In 3.3 and later, only a full package name String is allowed.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="disabling-via-testdataconfig">5.4. Disabling Via TestDataConfig</h3>
+<div class="sect3">
+<h4 id="disabling-via-testdataconfig">5.2.4. Disabling Via TestDataConfig</h4>
 <div class="paragraph">
 <p>You can no longer disable via the <code>testDataConfig.enabled = false</code> option.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="build-methods-refactored">5.5. Build methods refactored</h3>
+<div class="sect3">
+<h4 id="build-methods-refactored">5.2.5. Build methods refactored</h4>
 <div class="paragraph">
 <p>They all go through static helpers in the TestData eventually
 <code>buildLazy</code> &#8594; <code>findOrBuild</code> or <code>build(find:true)</code>
 <code>buildWithoutSave</code> &#8594; <code>build(save: false)</code></p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="unit-tests">5.6. Unit Tests</h3>
+<div class="sect3">
+<h4 id="unit-tests">5.2.6. Unit Tests</h4>
 <div class="paragraph">
 <p>Most of the work when upgrading to Grails 3.3.x will involve refactoring related to the framework itself with only minor changes for build-test-data.</p>
 </div>
@@ -1039,7 +1066,7 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Build</span>([Author])
-<span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     ...
 }</code></pre>
 </div>
@@ -1049,7 +1076,7 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     <span class="type">void</span> setupSpec() {
         mockDomains(Author)
     }
@@ -1062,7 +1089,7 @@ Version 3.0.x is required for Grails versions 3.0 through 3.2
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">AuthorSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     <span class="predefined-type">Class</span><span class="type">[]</span> getDomainClassesToMock() {
         [Author]
     }
@@ -1093,8 +1120,8 @@ Make sure you use <strong>DomainUnitTest</strong> for unit tests and <strong>Tes
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="integration-tests">5.7. Integration Tests</h3>
+<div class="sect3">
+<h4 id="integration-tests">5.2.7. Integration Tests</h4>
 <div class="paragraph">
 <p>For integration tests, follow the standard Grails upgrade instructions and then add the <code>TestDataBuilder</code> trait:</p>
 </div>
@@ -1105,6 +1132,7 @@ Make sure you use <strong>DomainUnitTest</strong> for unit tests and <strong>Tes
 <span class="type">class</span> <span class="class">AuthorIntegrationSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> TestDataBuilder {
     ...
 }</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1361,7 +1389,7 @@ However, in cases where you might have a cycle in your graph, it can be necessar
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>trait BuildDataTest</pre>
+<pre>trait BuildDataUnitTest</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1372,7 +1400,7 @@ However, in cases where you might have a cycle in your graph, it can be necessar
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     <span class="annotation">@Override</span>
     <span class="predefined-type">Class</span><span class="type">[]</span> getDomainClassesToMock() {
         [<span class="predefined-type">Book</span>] <span class="comment">// Author will be mocked automatically</span>
@@ -1393,7 +1421,7 @@ However, in cases where you might have a cycle in your graph, it can be necessar
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">LibraryUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">LibraryUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     <span class="type">void</span> setupSpec(){
         mockDomains(<span class="predefined-type">Book</span>, Magazine)
     }
@@ -1445,7 +1473,7 @@ that allows the use of generics like so</p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Build</span>([<span class="predefined-type">Book</span>])
-<span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">building a book will also build an author</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
         <span class="keyword">def</span> book = <span class="predefined-type">Book</span>.build()
@@ -1463,7 +1491,7 @@ that allows the use of generics like so</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Even if you are using the <code>@Build</code> annotation, you must still implement the <code>BuildDataTest</code> trait.
+Even if you are using the <code>@Build</code> annotation, you must still implement the <code>BuildDataUnitTest</code> trait.
 </td>
 </tr>
 </table>
@@ -1472,7 +1500,7 @@ Even if you are using the <code>@Build</code> annotation, you must still impleme
 <div class="sect2">
 <h3 id="trait-methods">7.2. Trait Methods</h3>
 <div class="paragraph">
-<p>The <code>TestDataBuilder</code> and therefore the <code>BuildDataTest</code> trait adds the builder methods to your test class if you prefer to call them directly.
+<p>The <code>TestDataBuilder</code> and therefore the <code>BuildDataUnitTest</code> trait adds the builder methods to your test class if you prefer to call them directly.
 These call out to statics in the <code>TestData</code> class.</p>
 </div>
 <div class="listingblock">
@@ -1500,7 +1528,7 @@ See the groovyDocs on the TestData for more details</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataTest {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> BuildDataUnitTest {
     <span class="annotation">@Override</span>
     <span class="predefined-type">Class</span><span class="type">[]</span> getDomainClassesToMock() {
         [<span class="predefined-type">Book</span>]
@@ -1710,7 +1738,7 @@ Prior versions allowed a <strong>Class</strong> as a key for sampleData, but tha
 <p>It&#8217;s also possible to specify a config that is used during a particular test.</p>
 </div>
 <div class="paragraph">
-<p>Your test should implement the <code>TestDataBuilder</code> for integration tests or <code>BuildDataTest</code> for unit tests. Just override the <code>doWithTestDataConfig</code> method and return a Closure just like your <code>TestDataConfig.groovy</code>:</p>
+<p>Your test should implement the <code>TestDataBuilder</code> for integration tests or <code>BuildDataUnitTest</code> for unit tests. Just override the <code>doWithTestDataConfig</code> method and return a Closure just like your <code>TestDataConfig.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2048,7 +2076,7 @@ assertEquals <span class="integer">1</span>, Issue.list().size()</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 7.0.0-SNAPSHOT<br>
-Last updated 2026-10-08 11:49:25 UTC
+Last updated 2026-10-08 12:50:31 UTC
 </div>
 </div>
 </body>
