@@ -36,6 +36,18 @@ jobs:
         with:
           name: testreport-bookStore-${{ matrix.java }}
           path: examples/bookStore/build/reports/tests
+      - name: "📤 Upload Base Tests Results - beanValidationHibernate5"
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: testreport-beanValidationHibernate5-${{ matrix.java }}
+          path: examples/beanValidationHibernate5/build/reports/tests
+      - name: "📤 Upload Base Tests Results - beanValidationHibernate7"
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: testreport-beanValidationHibernate7-${{ matrix.java }}
+          path: examples/beanValidationHibernate7/build/reports/tests
   publish:
     if: github.event_name == 'push'
     needs: build

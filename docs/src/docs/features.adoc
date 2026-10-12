@@ -27,6 +27,43 @@ Auto generation of grails property types, including:
 - {grailsDocBase}/ref/Constraints/url.html[url]
 - {grailsDocBase}/ref/Constraints/matches.html[matches]
 
+=== Jakarta Bean Validation Annotations
+GORM validates a domain class that carries Jakarta Bean Validation (JSR 380) annotations with Hibernate Validator. The plugin translates the annotations into the equivalent GORM constraints, so the generated data satisfies both the annotations and the `constraints` block. This works in unit tests and integration tests alike, with GORM for Hibernate 5 and Hibernate 7.
+
+```groovy
+class Member {
+    @NotBlank @Size(max = 30) String name
+    @NotNull @Email String email
+    @NotNull @Min(1L) @Max(5L) Integer level
+    @Pattern(regexp = /^[A-Z]{2}-\d{4}$/) String referenceCode
+    @NotEmpty Set<Subscription> subscriptions
+
+    static hasMany = [subscriptions: Subscription]
+}
+
+Member member = build(Member)  // valid and saved, with one Subscription
+```
+
+The supported annotations and how they are satisfied:
+
+- `@NotNull`, `@NotBlank`, `@NotEmpty` - the property is populated, like `nullable: false` (and `blank: false` / `minSize: 1`). Only these make a property required, `@Size` alone on a nullable property leaves it `null` unless it is included explicitly.
+- `@Size`, Hibernate Validator's `@Length` - `minSize` / `maxSize`, including the number of elements of a `hasMany`
+- `@Min`, `@Max`, `@DecimalMin`, `@DecimalMax`, `@Positive`, `@PositiveOrZero`, `@Negative`, `@NegativeOrZero`, `@Digits`, Hibernate Validator's `@Range` - `min` / `max`
+- `@Email` - `email`, plus `matches` when a `regexp` is given
+- `@Pattern` - `matches`, with the `flags` applied as an embedded flag expression such as `(?i)` (except `CANON_EQ`, which has none). The value generator understands the `^` and `$` anchors, the `\d`, `\w` and `\s` shorthands and the `COMMENTS` flag
+- `@AssertTrue`, `@AssertFalse` - `inList`
+- `@Past`, `@PastOrPresent`, `@Future`, `@FutureOrPresent` - a value one day (one year or month for `Year` and `YearMonth`) before or after now, for the `java.util`, `java.sql` and `java.time` date types
+- `@Null` - the property is never populated, not even with `includes: '*'`
+- Hibernate Validator's `@URL` and `@CreditCardNumber` - `url` and `creditCard`
+- A custom constraint composed of the annotations above (meta-annotated with them) is satisfied through them
+
+Annotations are read from fields and getters, superclasses included, and tighten rather than replace what the `constraints` block declares: `@Size(min = 3)` combined with `maxSize: 4` gives a value of 3 or 4 characters. A property with both a `matches` constraint and a `@Pattern` keeps the `matches` one.
+
+A custom constraint with its own `ConstraintValidator` is like the GORM `validator` constraint: there is no way to derive a value from it, so provide one in the <<testdataconfig,test data config>> or when calling `build`. In integration tests the plugin checks the generated values with GORM's Bean Validation validator and logs a warning for a property it couldn't satisfy, the save then fails with the validation error.
+
+[NOTE]
+GORM ignores the `constraints` block when validating a domain class that has Bean Validation annotations and the unit test datastore does not validate the annotations at all. The plugin satisfies both regardless, so the data built in unit tests also passes in integration tests. The `examples/beanValidationHibernate5` and `examples/beanValidationHibernate7` applications show the annotations working end to end with each GORM for Hibernate version.
+
 === Unsupported Constraints
 - {grailsDocBase}/ref/Constraints/scale.html[scale]
 - {grailsDocBase}/ref/Constraints/validator.html[validator] - custom validators can have all kinds of business logic in them and there isn't a programmatic way to interrogate this.  If the test value that's tried doesn't pass your logic, you'll need to provide a value, or mock out the calls that the validator makes so that it passes.

@@ -17,13 +17,16 @@ import grails.buildtestdata.handler.SizeConstraintHandler
 import grails.buildtestdata.handler.UrlConstraintHandler
 import grails.buildtestdata.handler.ValidatorConstraintHandler
 import grails.buildtestdata.utils.Basics
+import grails.buildtestdata.validation.JakartaConstraintsEvaluator
 import grails.gorm.validation.Constrained
 import grails.gorm.validation.ConstrainedProperty
 import grails.gorm.validation.Constraint
 import grails.gorm.validation.DefaultConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegistry
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.core.annotation.Order
 
@@ -84,14 +87,23 @@ class ValidateableDataBuilder extends PogoDataBuilder {
         (ConstrainedProperty.VALIDATOR_CONSTRAINT): new ValidatorConstraintHandler()
     ]
 
+    static final boolean JAKARTA_VALIDATION_AVAILABLE = ClassUtils.isPresent(JakartaConstraintsEvaluator.CONSTRAINT_ANNOTATION_NAME)
+
     // TODO: filter to actual list for this class, or possibly each property value?
     Map<String, ConstraintHandler> handlers
 
     //Collection<String> requiredPropertyNames
     Set<String> requiredPropertyNames
 
+    /**
+     * The constraints the values are generated for: the ones from {@link #findConstraintsMap()} tightened with any
+     * Jakarta Bean Validation annotations on the class, see {@link JakartaConstraintsEvaluator}
+     */
+    final Map<String, ConstrainedProperty> constraintsMap
+
     ValidateableDataBuilder(Class target) {
         super(target)
+        this.constraintsMap = applyJakartaConstraints(findConstraintsMap())
         this.requiredPropertyNames = findRequiredPropertyNames()
         this.handlers = new HashMap<String, ConstraintHandler>(defaultHandlers)
 
@@ -101,9 +113,35 @@ class ValidateableDataBuilder extends PogoDataBuilder {
         !constrained.nullable
     }
 
-    // Assume its a grails.validation.Validateable, overrides in GormEntityDataBuilder
-    Map<String, ConstrainedProperty> getConstraintsMap() {
+    /**
+     * The constraints declared through the Grails API. Assumes a grails.validation.Validateable, PersistentEntityDataBuilder
+     * overrides this for GORM entities.
+     */
+    Map<String, ConstrainedProperty> findConstraintsMap() {
         ClassPropertyFetcher.getStaticPropertyValue(targetClass, 'constraintsMap', Map) as Map<String, ConstrainedProperty>
+    }
+
+    /**
+     * Merges the Jakarta Bean Validation annotations on the class into the constraints. Grails only validates them on
+     * GORM entities (through Hibernate Validator), but satisfying them everywhere keeps the generated data consistent
+     * between unit and integration tests.
+     */
+    Map<String, ConstrainedProperty> applyJakartaConstraints(Map<String, ConstrainedProperty> constraints) {
+        if (!JAKARTA_VALIDATION_AVAILABLE) {
+            return constraints
+        }
+        JakartaConstraintsEvaluator evaluator = new JakartaConstraintsEvaluator()
+        Map<String, ConstrainedProperty> merged = evaluator.apply(targetClass, constraints, getConstraintRegistry())
+        evaluator.unsupportedAnnotations.each { String propertyName, List<Class> annotations ->
+            log.debug("{}.{} has constraint annotations without a GORM equivalent, provide sample data if the generated value is rejected: {}",
+                targetClass.name, propertyName, annotations*.simpleName)
+        }
+        merged
+    }
+
+    /** The registry to build constraints with, when known. The evaluator falls back to the one of the existing constraints. */
+    ConstraintRegistry getConstraintRegistry() {
+        null
     }
 
     Set<String> findRequiredPropertyNames() {
@@ -184,7 +222,7 @@ class ValidateableDataBuilder extends PogoDataBuilder {
     }
 
     Object satisfyConstrained(Object instance, String propertyName, ConstrainedProperty constrained, DataBuilderContext ctx) {
-        return sortedConstraints(constrained.appliedConstraints).find { Constraint constraint ->
+        Constraint satisfiedBy = sortedConstraints(constrained.appliedConstraints).find { Constraint constraint ->
             log.debug "${targetClass?.name}.${constraint?.name} constraint, field before adjustment: ${instance[propertyName]}"
             ConstraintHandler handler = handlers[constraint.name]
             if (handler) {
@@ -199,6 +237,11 @@ class ValidateableDataBuilder extends PogoDataBuilder {
                 return true
             }
         }
+        if (satisfiedBy == null) {
+            log.warn("Unable to generate a value satisfying the constraints on {}.{}, current value: {}. " +
+                "Provide sample data for it in the test data config.", targetClass.name, propertyName, instance[propertyName])
+        }
+        satisfiedBy
     }
 
     List<Constraint> sortedConstraints(Collection<Constraint> appliedConstraints) {

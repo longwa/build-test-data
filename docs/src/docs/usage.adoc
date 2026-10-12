@@ -57,6 +57,20 @@ class Book {
 }
 ```
 
+Domain classes constrained with Jakarta Bean Validation annotations instead of (or as well as) a `constraints` block are supported in the same way, see <<features,Features>>:
+```groovy
+package bookstore
+
+import jakarta.validation.constraints.*
+
+class Review {
+    @NotBlank @Size(max = 2000) String text
+    @NotNull @Min(1L) @Max(5L) Integer stars
+
+    static belongsTo = [book: Book]
+}
+```
+
 Now, load up the grails console and lets try build on our new domain objects:
 
     grails console

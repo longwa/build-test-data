@@ -1,0 +1,43 @@
+plugins {
+	id "org.apache.grails.gradle.grails-web"
+}
+
+version = "0.1"
+group = "beanvalidation"
+
+description = "Checks that Jakarta Bean Validation annotations on domain classes work with GORM for Hibernate 7 and that build-test-data satisfies them"
+
+grails {
+	// Aligns Hibernate ORM 7 and its related libraries, it imports the regular grails-bom
+	bom = 'grails-hibernate7-bom'
+}
+
+dependencies {
+	implementation project(':build-test-data')
+
+	profile("org.apache.grails.profiles:web")
+
+	implementation platform("org.apache.grails:grails-hibernate7-bom:$grailsVersion")
+
+	implementation "org.apache.grails:grails-core"
+	implementation "org.apache.grails:grails-data-hibernate7"
+	implementation "org.apache.grails:grails-databinding"
+	implementation "org.apache.grails:grails-interceptors"
+	implementation "org.apache.grails:grails-logging"
+	implementation "org.apache.grails:grails-services"
+	implementation "org.apache.grails:grails-url-mappings"
+	implementation "org.apache.grails:grails-web-boot"
+	implementation "org.springframework.boot:spring-boot-autoconfigure"
+	implementation "org.springframework.boot:spring-boot-starter"
+	implementation "org.springframework.boot:spring-boot-starter-logging"
+	implementation "org.springframework.boot:spring-boot-starter-tomcat"
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation "org.springframework.boot:spring-boot-tomcat"
+
+	runtimeOnly "com.h2database:h2"
+	runtimeOnly "com.zaxxer:HikariCP"
+
+	testImplementation "org.apache.grails:grails-testing-support-datamapping"
+	testImplementation "org.apache.grails:grails-testing-support-web"
+	testImplementation "org.spockframework:spock-core"
+}

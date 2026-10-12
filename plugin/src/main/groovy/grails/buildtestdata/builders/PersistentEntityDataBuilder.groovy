@@ -3,6 +3,7 @@ package grails.buildtestdata.builders
 import grails.buildtestdata.handler.AssociationMinSizeHandler
 import grails.buildtestdata.handler.PersistentEntityNullableConstraintHandler
 import grails.buildtestdata.utils.DomainUtil
+import grails.buildtestdata.validation.JakartaConstraintsEvaluator
 import grails.gorm.api.GormAllOperations
 import grails.gorm.validation.ConstrainedEntity
 import grails.gorm.validation.ConstrainedProperty
@@ -10,6 +11,8 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator
+import org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegistry
 import org.grails.datastore.mapping.config.AuditMetadataType
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.model.AuditMetadataUtils
@@ -48,8 +51,15 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
     /** properties GORM stamps itself on insert/update, see {@link #findAutoTimestampPropertyNames()} */
     Set<String> autoTimestampPropertyNames
 
+    /**
+     * The Bean Validation validator GORM validates the entity with when it carries Jakarta annotations (a
+     * jakarta.validation.Validator, typed loosely as the API is optional), null when GORM validates it itself
+     */
+    Object jakartaValidator
+
     PersistentEntityDataBuilder(Class target) {
         super(target)
+        jakartaValidator = JAKARTA_VALIDATION_AVAILABLE ? JakartaConstraintsEvaluator.asJakartaValidator(entityValidator) : null
         handlers.put(
             ConstrainedProperty.NULLABLE_CONSTRAINT,
             new PersistentEntityNullableConstraintHandler(getPersistentEntity(), getMappingContext())
@@ -130,14 +140,42 @@ class PersistentEntityDataBuilder extends ValidateableDataBuilder {
     }
 
     @Override
-    Map<String, ConstrainedProperty> getConstraintsMap() {
-        Validator validator = mappingContext.getEntityValidator(persistentEntity)
+    Map<String, ConstrainedProperty> findConstraintsMap() {
+        Validator validator = entityValidator
         if (validator instanceof ConstrainedEntity) {
             return ((ConstrainedEntity) validator).constrainedProperties
         }
 
+        // GORM validates an entity carrying Jakarta Bean Validation annotations with Hibernate Validator, which exposes no
+        // constraints. The GORM constraints still drive the schema (nullable columns in particular), so evaluate them
+        // here, the annotations are merged in by applyJakartaConstraints.
+        if (validator != null && mappingContext.validatorRegistry instanceof ConstraintsEvaluator) {
+            return ((ConstraintsEvaluator) mappingContext.validatorRegistry).evaluate(targetClass)
+        }
+
         // This would mean the object isn't mocked with Grails, really shouldn't happen
         throw new RuntimeException("No constraints found for persistent entity ${targetClass.name}. Make sure it's mocked and properly initialized.")
+    }
+
+    @Override
+    ConstraintRegistry getConstraintRegistry() {
+        mappingContext.validatorRegistry instanceof ConstraintRegistry ? (ConstraintRegistry) mappingContext.validatorRegistry : null
+    }
+
+    Validator getEntityValidator() {
+        mappingContext.getEntityValidator(persistentEntity)
+    }
+
+    /**
+     * Also checks the Bean Validation annotations with GORM's own validator when it has one, as it covers custom
+     * constraints the translation to GORM constraints can't
+     */
+    @Override
+    boolean isSatisfied(Object instance, String propertyName, ConstrainedProperty constrainedProperty) {
+        if (!super.isSatisfied(instance, propertyName, constrainedProperty)) {
+            return false
+        }
+        jakartaValidator == null || JakartaConstraintsEvaluator.isValidProperty(jakartaValidator, instance, propertyName)
     }
 
     MappingContext getMappingContext() {

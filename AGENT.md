@@ -20,6 +20,7 @@ This is a multi-project Gradle build:
 - `plugin/` — the actual Grails plugin (`build-test-data`), published to Maven Central as `io.github.longwa:build-test-data`
 - `examples/bookStore/` — a full Grails app with unit and integration tests; also contains `src/test/resources/TestDataConfig.groovy` showing configuration
 - `examples/alternativeConfig/` — example demonstrating a custom config file name via `grails.buildtestdata.testDataConfig`
+- `examples/beanValidationHibernate5/` and `examples/beanValidationHibernate7/` — identical minimal apps (differing only in the GORM module, `grails-data-hibernate5` vs `grails-data-hibernate7` with `grails { bom = 'grails-hibernate7-bom' }`) checking that Jakarta Bean Validation annotations on domain classes work end to end and that the plugin satisfies them, in unit and integration tests. They keep the Grails 8 nullable default on purpose
 - `docs/` — the user guide, written in AsciiDoc (`docs/src/docs`) and built with Asciidoctor
 - `buildSrc/` — Gradle build tooling
 
@@ -37,6 +38,9 @@ The plugin project is renamed from `:plugin` to `:build-test-data` in `settings.
 # Run only bookStore example tests
 ./gradlew :examples:bookStore:test
 ./gradlew :examples:bookStore:integrationTest
+
+# Run the Bean Validation example apps (Hibernate 5 and 7)
+./gradlew :examples:beanValidationHibernate5:check :examples:beanValidationHibernate7:check
 
 # Run a single test class (Spock spec)
 ./gradlew :build-test-data:test --tests "basetests.StringTests"
@@ -70,6 +74,14 @@ Java 21 is required (see `.sdkmanrc`). Tests run with `useJUnitPlatform()` and l
 4. Validates after each handler using the constraint itself; stops when satisfied
 
 `PersistentEntityDataBuilder` extends this with GORM-specific behavior: bi-directional association wiring, ordering saves to avoid transient exceptions (saves `OneToOne` owning sides first), and `findOrBuild` support.
+
+### Jakarta Bean Validation Annotations
+
+GORM compiles Spring's `@Validated` onto any entity with a `jakarta.validation` constraint annotation and then validates it with Hibernate Validator (`GormValidatorAdapter`, from `JakartaValidatorRegistry`) instead of its `PersistentEntityValidator`. That validator exposes no constraint metadata (it is not a `ConstrainedEntity`) and ignores the `constraints` block, while the block still drives the schema. The unit test datastore ignores the annotations entirely.
+
+`JakartaConstraintsEvaluator` (`grails.buildtestdata.validation`) bridges this: `ValidateableDataBuilder.applyJakartaConstraints` copies the GORM constraints (`findConstraintsMap()`, which for an entity with a Bean Validation validator evaluates them through the registry's `ConstraintsEvaluator`) and tightens the copies with the annotations (`@NotNull` → `nullable: false`, `@Size` → `minSize`/`maxSize`, `@Min` → `min`, `@Pattern` → `matches`, `@Past` → `max`, composed constraints through their parts, etc.). The originals are never mutated because the GORM validator uses them. The merged map is cached in `constraintsMap` for the builder's lifetime (builders are cleared per spec by `TestData.clear()`). With Hibernate, `PersistentEntityDataBuilder.isSatisfied` additionally runs the entity's Bean Validation validator so custom `ConstraintValidator` annotations are at least detected; they need sample data, like the `validator` constraint. The Bean Validation API is a `compileOnly` dependency and is only touched when `ValidateableDataBuilder.JAKARTA_VALIDATION_AVAILABLE`.
+
+`MatchesConstraintHandler.toAutomatonRegex` rewrites `^`/`$` anchors and `\d`/`\w`/`\s` shorthands for the `dk.brics:automaton` generator, which otherwise treats them as literal characters.
 
 Grails 8 makes domain properties without an explicit `nullable` constraint nullable by default, so they are not populated unless the domain declares `nullable: false` or the app sets `grails.gorm.default.nullable: false`. The plugin and `bookStore` test apps set `grails.gorm.default.nullable: false`; `GormDefaultNullableSpec` covers the Grails 8 default.
 
